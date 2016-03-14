@@ -17,7 +17,7 @@ Use ezl for your data-processing tasks, to write post-processors for simulation
 results, for iterative machine learning algorithms, for general list data
 processing or any data/task parallel code. You get an expressive way to
 compose the algorithms as a pipeline of small tasks, clean separation of
-various algorithm logics from i/o or parallelization, various built-in
+various algorithm logics from i/o or parallelism, various built-in
 functions for common operations and MPI parallelism with no to little extra
 code. It makes your application clean, modular, parallel, expressive and
 all the good things in programming practices :). Check the examples listed
@@ -30,7 +30,7 @@ If you are a C++ enthusiast then possibly you will find the project quite
 interesting. Contributions and feedback of any kind are much appreciated.
 Please check [contributing.md](contributing.md) for more.
 
-## Overview:
+## Overview
 
 Here is a short example to begin with. The program calculates
 frequency of each word in the data files. Words are considered same
@@ -58,7 +58,7 @@ The data-flow starts with `rise` and subsequent operations are added to the
 pipeline. In the above example, the pipeline starts with reading data from
 file(s). `readFile` is a library function that takes column types and file(s)
 glob pattern as input and reads the file(s) in parallel. It has a lot of
-properties for controlling data-format, parallalization, denormalization etc
+properties for controlling data-format, parallelism, denormalization etc
 (shown in [demoReadFile](examples/demoReadFile.cpp)).
 
 In reduce we pass the index of the key column, the library function for counting
@@ -124,7 +124,7 @@ The demonstrations include:
 - demo for handling flows and showing some crazy pipelines.
   [demoFlow](examples/demoFlow.cpp).
 
-### Parallel
+### Parallelism
 
 The following figure shows the overview of parallel options for units in
 a pipeline. 
@@ -148,9 +148,9 @@ Following are some benchmark results on different problems.
 
 The number of trials for pi are doubled as the number of processes are doubled,
 keeping the trials per process constant (weak scaling). In this case a constant
-line implies ideal parallelization. The logistic regression and wordcount
+line implies ideal parallelism. The logistic regression and wordcount
 benchmarks show decrease in time of execution unless the time is reduced to
-less than a minute. For more info on benchmarks check the respective examples.
+around a minute. For more info on benchmarks check the respective examples.
 
 
 ### Data-flow
@@ -190,7 +190,7 @@ directory.
 
 ### Compiling
 There are no linking requirements of ezl library but it uses boost::serialization
-and bools::mpi that need to be linked.
+and boost::mpi that need to be linked.
 Here is how you can compile a program in general:
 mpic++ file.cpp -Wall -std=c++14 -O3 -I path_to_ezl_include -lboost_mpi -lboost_serialization
 
@@ -204,7 +204,7 @@ the name of the file for e.g. wordcount without extension.
 
 ### Running
 
-After compiling the executable can be run standalone or with mpirun for parallelization.
+After compiling the executable can be run standalone or with mpirun for parallelism.
 - mpirun -n 4 path_to_exe args… 
 or without mpi as simply,
 - path_to_exe args… 
