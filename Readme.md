@@ -36,7 +36,7 @@ Here is a short example to begin with. The program calculates
 frequency of each word in the data files. Words are considered same
 irrespective of their case (upper or lower).
 
-### [example 1](examples/wordcount.cpp)
+### [Example 1](examples/wordcount.cpp)
 ```cpp
 #include <boost/mpi.hpp>
 
@@ -67,7 +67,7 @@ much.
 
 Following is the data-flow for calculating pi using Monte-Carlo method [ref:].
 
-### example 2
+### [Example 2](examples/pi.cpp)
 ```cpp
 ezl::rise(ezl::kick(10000)) // 10000 trials in total
   .map([] { 
