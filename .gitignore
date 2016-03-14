@@ -1,0 +1,8 @@
+# Ignore the build and lib dirs
+build
+
+# Ignore any executables
+bin/*
+
+# Ignore DS_Store
+.DS_Store
