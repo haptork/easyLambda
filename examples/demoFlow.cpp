@@ -4,8 +4,7 @@
  *
  * Shows iterative data-flow pipeline, a diamond like pipeline with splitter
  * followed by a joiner and other expressions such as addFlow, flow<>()...
- * ![cyclic data-flow](../doc/cyclic.png)
- * ![diamond data-flow](../doc/diamond.png)
+ * ![figures](../doc/dataflow.png)
  *
  * Results are dumped on stdout.
  * */

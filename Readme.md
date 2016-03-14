@@ -145,13 +145,10 @@ option with different units and options.
 ## Data-flow
 
 There are no restrictions on data-flow connections except the type of columns.
-The following figures demonstrates a circular data-flow. 
+The following figures demonstrates a circular data-flow and a diamond like
+data-flow pipelines: 
 
-![circular](doc/circular.png)
-
-The following figure shows a data-flow with diamond like structure. 
-
-![diamond](doc/diamond.png)
+![dataflow](doc/dataflow.png)
 
 Each of these tasks can be running on multiple processes, depending on the
 availability and options. 
