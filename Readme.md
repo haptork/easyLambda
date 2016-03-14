@@ -1,7 +1,7 @@
 # ezl: easyLambda
 > data processing with modern C++ and MPI. Modular, parallel, functional map and reduce.
 
-# Long story short
+## Long story short
 
 The project started with the need for a standard way to process data with
 C++. The design goals are composability, easy interface, decoupling IO,
@@ -11,7 +11,7 @@ data-flow pipeline, map/reduce like operations, MPI parallelism; presented with
 an easy but powerful builder expression interface made possible by use of modern
 C++ features.
 
-# Why do you care
+## Why easyLambda
 
 Use ezl for your data-processing tasks, to write post-processors for simulation
 results, for iterative machine learning algorithms, for general list data
@@ -30,7 +30,7 @@ If you are a C++ enthusiast then possibly you will find the project quite
 interesting. Contributions and feedback of any kind are much appreciated.
 Please check [contributing.md](contributing.md) for more.
 
-# Overview:
+## Overview:
 
 Here is a short example to begin with. The program calculates
 frequency of each word in the data files. Words are considered same
@@ -124,7 +124,7 @@ The demonstrations include:
 - demo for handling flows and showing some crazy pipelines.
   [demoFlow](examples/demoFlow.cpp).
 
-## Parallel
+### Parallel
 
 The following figure shows the overview of parallel options for units in
 a pipeline. 
@@ -142,7 +142,7 @@ possible allocation to units. [demoPrll](examples/demoPrll.cpp) has detailed
 examples and options on this. A lot of other demos and examples use `prll`
 option with different units and options.
 
-## Data-flow
+### Data-flow
 
 There are no restrictions on data-flow connections except the type of columns.
 The following figures demonstrates a circular data-flow and a diamond like
@@ -161,15 +161,15 @@ different data.
 discussed and for above two data-flow figures. Many other examples also use
 flow properties.
 
-# How to use and install
+## How to install
 
-## Requirements
+### Requirements
 - c++14 compliant compiler and MPI (mpic++/mpicxx and mpirun)
    - Works with gcc-5.1 or later and clang-3.5 or later.
    - Tested with gcc-5.3, gcc-6.0(dev. branch), Apple LLVM version 7.0.0 (clang-700.0.72).
 - boost::mpi, boost::serialization tested with 5.8 and 6.0.
 
-## Installing
+### Installing
 This is a header only library so all that is needed to start using is to place 
 the contents of the [include](include) directory within your source tree so that
 it is available to the compiler. Include [include/ezl.hpp](include/ezl.hpp) in
@@ -177,7 +177,7 @@ your program. If you use algorithms like ezl::count etc then also include
 required files from [include/ezl/algorithms/](include/ezl/algorithms/)
 directory.
 
-## Compiling
+### Compiling
 There are no linking requirements of ezl library but it uses boost::serialization
 and bools::mpi that need to be linked.
 Here is how you can compile a program in general:
@@ -191,7 +191,7 @@ You can compile unit-tests with `make unittest` and run with `./unitTest`.
 You can compile an example using make with `make example=name`, in place of name write
 the name of the file for e.g. wordcount without extension.
 
-## Running
+### Running
 
 After compiling the executable can be run standalone or with mpirun for parallelization.
 - mpirun -n 4 path_to_exe args… 
