@@ -1,5 +1,5 @@
 # ezl: easyLambda
-> data processing with modern C++ and MPI. Modular, parallel, functional map and reduce.
+> data processing with modern C++ and MPI. Modular, parallel, based on data-flow with map and reduce.
 
 ## Long story short
 
@@ -142,14 +142,16 @@ possible allocation to units. [demoPrll](examples/demoPrll.cpp) has detailed
 examples and options on this. A lot of other demos and examples use `prll`
 option with different units and options.
 
-Following are some benchmark results on different problems. The number of
-trials for pi are doubled as the number of processes are doubled, keeping
-the trials per process constant (weak scaling). In this case a constant
+Following are some benchmark results on different problems.
+
+![benchmarks](doc/benchmarks.png)
+
+The number of trials for pi are doubled as the number of processes are doubled,
+keeping the trials per process constant (weak scaling). In this case a constant
 line implies ideal parallelization. The logistic regression and wordcount
 benchmarks show decrease in time of execution unless the time is reduced to
 less than a minute. For more info on benchmarks check the respective examples.
 
-![benchmarks](doc/benchmarks.png)
 
 ### Data-flow
 
