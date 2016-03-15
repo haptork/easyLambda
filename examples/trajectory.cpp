@@ -37,20 +37,21 @@ int main(int argc, char* argv[]) {
   boost::mpi::environment env(argc, argv);
   assert(argc>1 && "provide trajectory file-pattern as argument.");
   const string outFile = "data/output/traj.txt";
+  const auto epsilon = 0.00001F;
 
   ezl::rise(ezl::readFile<array<float, 3>>(string(argv[1]))
                 .cols({1, 2, 3})
                 .colSeparator(" \t"))
-      .reduceAll([](const vector < array<float, 3> & v) {
+      .reduceAll([](const vector<array<float, 3>> & v) {
         return difference(v[0], v[1]);
       }).adjacent()
-      .reduceAll([](const vector < array<float, 3> & v) {
+      .reduceAll([](const vector<array<float, 3>> & v) {
         return crossProd(v[0], v[1]);
       }).adjacent()
-      .map([](array<float, 3> prod) {
+      .map([&epsilon](array<float, 3> prod) {
         array<int, 3> res;
         for (auto i : {1, 2, 3}) {
-            res[i] = (x > epsilon) ? it / abs(prod[i]) : 0;
+          res[i] = (abs(prod[i]) > epsilon) ? prod[i] / abs(prod[i]) : 0;
         }
         return res;
       })

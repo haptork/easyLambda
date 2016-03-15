@@ -58,7 +58,7 @@ void readFileFileNameTest() {
   // r1 declaration and setting properties be in different statements different
   auto r1 = ezl::readFile<string, array<float, 2>, string>(
           "data/readFileTests/test?.txt");
-  r1.addFileName();
+  r1 = r1.addFileName();
   auto t1 = std::make_shared<Load<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
   auto count = 0;
   auto f1 = [&count](string f){ 
@@ -81,7 +81,7 @@ void readFileRowMaxTest() {
   using std::array;
 
   auto r1 = ezl::readFile<string, int, float, string>("data/readFileTests/test?.txt");
-  r1.addFileName().top(2);
+  r1 = r1.addFileName().top(2);
   auto t1 =
       std::make_shared<Load<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
   auto count = 0;
@@ -113,7 +113,7 @@ void readFileStrictSchemaTest() {
   assert(count == 6);
 
   auto r2 = ezl::readFile<string, int, float>("data/readFileTests/test?.txt");
-  r2.noStrict();
+  r2 = r2.noStrict();
   auto t2 =
       std::make_shared<Load<decltype(r2)>>(ProcReq{}, std::move(r2), nullptr);
 
@@ -135,7 +135,7 @@ void readFileStrictSchemaTest() {
   assert(count == 6);
 
   auto r4 = ezl::readFile<string, int>("data/readFileTests/test?.txt");
-  r4.noStrict();
+  r4 = r4.noStrict();
   auto t4 =
       std::make_shared<Load<decltype(r4)>>(ProcReq{}, std::move(r4), nullptr);
 

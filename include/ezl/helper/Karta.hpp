@@ -62,7 +62,9 @@ inline FwdIterator stableUnique(FwdIterator first, FwdIterator last) {
 
 } // namespace internal
 
+namespace detail {
 template <class T> class Source;
+}
 
 /*!
  * @ingroup helper
