@@ -8,8 +8,9 @@ C++. The design goals are composability, easy interface, decoupling IO,
 data-format and parallel code from algorithm logic, less boilerplate code,
 accessible to anyone who knows C. easyLambda achieves these goals with type-safe
 data-flow pipeline, map/reduce like operations, MPI parallelism; presented with
-an easy but powerful builder expression interface made possible by use of modern
-C++ features.
+an easy but powerful
+[ExpressionBuilder](http://martinfowler.com/bliki/ExpressionBuilder.html)
+interface made possible by use of modern C++ features.
 
 ## Why easyLambda
 
@@ -36,7 +37,7 @@ Here is a short example to begin with. The program calculates
 frequency of each word in the data files. Words are considered same
 irrespective of their case (upper or lower).
 
-### [Example 1](examples/wordcount.cpp)
+### [Example wordcount](examples/wordcount.cpp)
 ```cpp
 #include <string>
 
@@ -47,10 +48,11 @@ irrespective of their case (upper or lower).
 #include "ezl/algorithms/reduces.hpp"
 
 int main(int argc, char* argv[]) {
+  using std::string;
+  using ezl::readFile;
   boost::mpi::environment env(argc, argv);
 
-  ezl::rise(
-    ezl::readFile<std::string>(argv[1]).rowSeparator('s').colSeparator(""))
+  ezl::rise(readFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
     .reduce<1>(ezl::count(), 0).dump()
     .run();
   return 0;
@@ -69,7 +71,7 @@ the library features.
 
 Following is the data-flow for calculating pi using Monte-Carlo method.
 
-### [Example 2](examples/pi.cpp)
+#### [Example pi (Monte-Carlo)](examples/pi.cpp)
 ```cpp
 ezl::rise(ezl::kick(10000)) // 10000 trials in total
   .map([] { 
