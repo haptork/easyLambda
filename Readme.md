@@ -37,7 +37,7 @@ Here is a short example to begin with. The program calculates
 frequency of each word in the data files. Words are considered same
 irrespective of their case (upper or lower).
 
-### [Example wordcount](examples/wordcount.cpp)
+#### [Example wordcount](examples/wordcount.cpp)
 ```cpp
 #include <string>
 
@@ -190,7 +190,7 @@ flow properties.
 This is a header only library so all that is needed to start using is to place 
 the contents of the [include](include) directory within your source tree so that
 it is available to the compiler. Include [include/ezl.hpp](include/ezl.hpp) in
-your program. If you use algorithms like ezl::count etc then also include
+your program. If you use algorithms like `ezl::count` etc then also include
 required files from [include/ezl/algorithms/](include/ezl/algorithms/)
 directory.
 
@@ -198,7 +198,7 @@ directory.
 There are no linking requirements of ezl library but it uses boost::serialization
 and boost::mpi that need to be linked.
 Here is how you can compile a program in general:
-mpic++ file.cpp -Wall -std=c++14 -O3 -I path_to_ezl_include -lboost_mpi -lboost_serialization
+`mpic++ file.cpp -Wall -std=c++14 -O3 -I path_to_ezl_include -lboost_mpi -lboost_serialization`
 
 If you have added the contents of include directory to your source tree or global
 includes then you don't need to pass -I path_to_ezl_include flag.
@@ -211,6 +211,6 @@ of name write the name of the file for e.g. wordcount without extension.
 ### Running
 
 After compiling the executable can be run standalone or with mpirun for parallelism.
-- mpirun -n 4 path_to_exe args… 
+- `mpirun -n 4 path_to_exe args…`
 or without mpi as simply,
-- path_to_exe args… 
+- `path_to_exe args…` 
