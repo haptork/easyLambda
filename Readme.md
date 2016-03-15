@@ -63,9 +63,9 @@ properties for controlling data-format, parallelism, denormalization etc
 
 In reduce we pass the index of the key column, the library function for counting
 and initial value of the result. The wordcount example is too simple to show
-much.
+the library features.
 
-Following is the data-flow for calculating pi using Monte-Carlo method [ref:].
+Following is the data-flow for calculating pi using Monte-Carlo method.
 
 ### [Example 2](examples/pi.cpp)
 ```cpp
@@ -91,38 +91,40 @@ Not only the above examples are expressive and modular, they are highly
 efficient in serial as well as parallel execution, with close to linear
 speed-up with multiple cores or multiple nodes. The implementation aims at
 reducing number of copies of the data, which results in little to no overhead
-over a specific code to carry out the same operation.
+over a serial code written specifically to carry out the same operation.
 
 You can find the above examples and many more in detail with benchmarking
 results in the [examples directory](examples). Examples include:
 
- - logistic regression training and testing. [logreg](examples/logreg.cpp).
+ - logistic regression training and testing. [logreg.cpp](examples/logreg.cpp).
  - displaced atoms count and self interstitial count for post-processing
    [LAMMPS](http://lammps.sandia.gov/) simulation results.
-   [displaced](examples/displaced.cpp),
-   [interstitialcount](examples/interstitialcount.cpp).
- - example for having a overview of data stats with example from cods2016.
-   [cods2016](examples/cods2016.cpp).
+   [displaced.cpp](examples/displaced.cpp),
+   [interstitialcount.cpp](examples/interstitialcount.cpp).
+ - example for having a overview of data stats with example from
+   [cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html).
+   [cods2016.cpp](examples/cods2016.cpp).
  - given a trajectory with positions at different times, finding the count of
-   various directions of adjacent steps. [trajectory](examples/trajectory.cpp).
+   directions of adjacent steps in the trajectory.
+   [trajectory.cpp](examples/trajectory.cpp).
 
 The examples directory also has separate demonstrations for features and
 options along with explanations to get started with ezl quickly.
 The demonstrations include:
-- column selection is a very essential for good composition. ezl provides cool
+- column selection, which is a essential for good composition. ezl provides cool
   ways for column selection, be it for passing row(s) to user functions,
   selecting keys and values, passing selected input and output columns to next
-  unit. [demoColumns](examples/demoColumns.cpp).
-- demo showing options, use cases, idioms and library functions for map,
-- filter, reduce and reduceAll. [demoMapFilter](examples/demoMapFilter.cpp),
-  [demoReduce](examples/demoReduce.cpp), 
-  [demoReduceAll](examples/demoReduceAll.cpp).
-- library i/o functions (readFile, loadMem etc.) and writing custom functions
-  for rise. [demoIO](examples/demoIO.cpp),
-  [demoReadFile](examples/demoReadFile.cpp), [demoRise](examples/demoRise.cpp).
-- demo for prll options. [demoPrll](examples/demoPrll.cpp).
-- demo for handling flows and showing some crazy pipelines.
-  [demoFlow](examples/demoFlow.cpp).
+  unit. [demoColumns.cpp](examples/demoColumns.cpp).
+- options, use cases, idioms and library functions for map, filter, reduce and
+  reduceAll. [demoMapFilter.cpp](examples/demoMapFilter.cpp),
+  [demoReduce.cpp](examples/demoReduce.cpp), 
+  [demoReduceAll.cpp](examples/demoReduceAll.cpp).
+- library i/o functions (readFile, loadMem etc.) and sample custom functions
+  for rise. [demoIO.cpp](examples/demoIO.cpp),
+  [demoReadFile.cpp](examples/demoReadFile.cpp), [demoRise.cpp](examples/demoRise.cpp).
+- options for parallelism. [demoPrll.cpp](examples/demoPrll.cpp).
+- handling flows and showing some crazy pipelines.
+  [demoFlow.cpp](examples/demoFlow.cpp).
 
 ### Parallelism
 
@@ -197,10 +199,10 @@ mpic++ file.cpp -Wall -std=c++14 -O3 -I path_to_ezl_include -lboost_mpi -lboost_
 If you have added the contents of include directory to your source tree or global
 includes then you don't need to pass -I path_to_ezl_include flag.
 
-You can compile unit-tests with `make unittest` and run with `./unitTest`.
+You can compile unit-tests with `make unittest` and run with `./bin/unitTest`.
 
-You can compile an example using make with `make example=name`, in place of name write
-the name of the file for e.g. wordcount without extension.
+You can compile an example using make with `make example fname=name`, in place
+of name write the name of the file for e.g. wordcount without extension.
 
 ### Running
 
