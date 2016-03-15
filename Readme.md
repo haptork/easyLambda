@@ -88,7 +88,7 @@ ezl::rise(ezl::kick(10000)) // 10000 trials in total
 ```
 
 The steps in the algorithm have been expressed with the composition of small
-operations, some are common library functions like count, lt (less-than) and
+operations, some are common library functions like `count()`, `lt()` (less-than) and
 some are user-defined functions specific to problem.
 
 Not only the above examples are expressive and modular, they are highly
