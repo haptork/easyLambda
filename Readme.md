@@ -38,6 +38,8 @@ irrespective of their case (upper or lower).
 
 ### [Example 1](examples/wordcount.cpp)
 ```cpp
+#include <string>
+
 #include <boost/mpi.hpp>
 
 #include "ezl/ezl.hpp"

@@ -11,7 +11,7 @@
  * benchmarks at the bottom
  * */
 
-#include <algorithm>
+#include <string>
 
 #include <boost/mpi.hpp>
 
