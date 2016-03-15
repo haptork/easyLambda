@@ -212,3 +212,5 @@ of name write the name of the file for e.g. wordcount without extension.
 
 After compiling, the executable can be run with mpirun 
 `mpirun -n 4 path_to_exe args…` or simply as `path_to_exe args…`.
+
+Check [examples](examples) to begin writing with ezl.
