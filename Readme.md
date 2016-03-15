@@ -210,7 +210,5 @@ of name write the name of the file for e.g. wordcount without extension.
 
 ### Running
 
-After compiling the executable can be run standalone or with mpirun for parallelism.
-- `mpirun -n 4 path_to_exe args…`
-or without mpi as simply,
-- `path_to_exe args…` 
+After compiling, the executable can be run with mpirun 
+`mpirun -n 4 path_to_exe args…` or simply as `path_to_exe args…`.
