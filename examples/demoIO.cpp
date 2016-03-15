@@ -1,6 +1,11 @@
 /*! 
  * @file
  * demo examples for loadMem, kick, loadFileNames, dump, dumpMem.
+ *
+ * run with following cmd from project directory to check the results.
+ * `mpirun -n 1 ./bin/demoIO`
+ *
+ * add dump to any unit to check rows coming out of it.
  * 
  * For more io see `demoReadFile` and `demoRise` as well.
  * */
@@ -20,6 +25,8 @@ int demoLoadMem(std::string outFile) {
   using std::tuple;
   using std::make_tuple;
 
+  // loads every integer as a row.
+  // split() shares the rows among parallel processes
   ezl::rise(ezl::loadMem({1, 2, 3}).split())
     .dump(outFile, "loadMem with split")
     .run();

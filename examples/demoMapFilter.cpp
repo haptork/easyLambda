@@ -43,9 +43,12 @@ int main(int argc, char* argv[]) {
 
   boost::mpi::environment env(argc, argv);
 
+  // for more on rise with loadMem see `demoIO.cpp`
+  // returns row(s) of type int, char and float
   auto pipe1 = ezl::rise(ezl::loadMem({make_tuple(2, 'c', 1.F)})).build();
 
   // for more on column selection see `demoColumns`
+  // filter at the end is to show columns at the end.
   ezl::flow(pipe1)
     .map<1, 2>([](auto num, auto ch) { // lambda with auto as UDF
       return (std::to_string(num)); 
