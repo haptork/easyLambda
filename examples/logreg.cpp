@@ -54,7 +54,7 @@ auto calcGrad(const double &y, const std::array<double, dim> &x,
   for (size_t i = 0; i < w.size(); ++i) {
     grad[i] = s * x[i];
   }
-  return std::move(grad);
+  return grad;
 }
 
 int main(int argc, char* argv[]) {

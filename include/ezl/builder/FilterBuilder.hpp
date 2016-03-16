@@ -87,7 +87,7 @@ public:
     ParExpr<FilterBuilder, P, H>::build();
     auto obj = FilterExpr<FilterBuilder, I, S, F, O>::build();
     DumpExpr<FilterBuilder>::buildAdd(obj);
-    return std::move(obj);
+    return obj;
   }
 
 };

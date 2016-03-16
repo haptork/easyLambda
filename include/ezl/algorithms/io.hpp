@@ -225,7 +225,7 @@ public:
       _more = false;
       --_cur;
     }
-    return std::move(res);
+    return res;
   }
 
 private:

@@ -71,7 +71,7 @@ public:
     auto temp = MapBuilder<I, S, F, O, NP, HN>{std::forward<F>(this->_func), std::move(this->_prev)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
-    return std::move(temp);
+    return temp;
   }
 
   template <class NH>
@@ -79,14 +79,14 @@ public:
     auto temp = MapBuilder<I, S, F, O, P, NH>{std::forward<F>(this->_func), std::move(this->_prev)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
-    return std::move(temp);
+    return temp;
   }
 
   auto build() {
     ParExpr<MapBuilder, P, H>::build();
     auto obj = MapExpr<MapBuilder, I, S, F, O>::build();
     DumpExpr<MapBuilder>::buildAdd(obj);
-    return std::move(obj);
+    return obj;
   }
 
 };

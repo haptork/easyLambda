@@ -66,14 +66,14 @@ public:
       std::forward<F>(this->_func), std::move(this->_prev), this->_adjacent, this->_bunchSize};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
-    return std::move(temp);
+    return temp;
   }
 
   auto build() {
     ParExpr<ReduceAllBuilder, P, H>::build();
     auto obj = ReduceAllExpr<ReduceAllBuilder, I, P, S, F, O, H>::build();
     DumpExpr<ReduceAllBuilder>::buildAdd(obj);
-    return std::move(obj);
+    return obj;
   }
 
 };

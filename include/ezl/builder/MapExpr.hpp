@@ -39,7 +39,7 @@ struct MapExpr {
   auto build() {
     auto obj = std::make_shared<Map<meta::MapTypes<I, S, F, O>>>(std::forward<F>(_func));
     obj->prev(_prev, obj);
-    return std::move(obj);
+    return obj;
   }
 
   auto prev() { return _prev; }

@@ -207,7 +207,7 @@ template <class T> struct DataFlowExpr {
     curUnit->next(f, curUnit);
     if (refresh) Karta::inst().refresh();
     Karta::inst().run(f.get(), ProcReq{procs});
-    return std::move(buffer);  // TODO: check ROV or not. @haptork
+    return buffer;
   }
 
   auto runResult(std::initializer_list<int> lprocs = {}, bool refresh = true) {
@@ -217,7 +217,7 @@ template <class T> struct DataFlowExpr {
     using nomask =
         typename meta::fillSlct<0, std::tuple_size<I>::value>::type;
     std::vector<typename meta::SlctTupleType<I>::type> buffer;
-    if (!curUnit) return std::move(buffer);
+    if (!curUnit) return buffer;
     auto dumper = dumpMem(buffer);
     auto f = std::make_shared<Filter<I, nomask, decltype(dumper), nomask>>(dumper);
     curUnit->next(f, curUnit);
@@ -227,7 +227,7 @@ template <class T> struct DataFlowExpr {
     } else {
       Karta::inst().run(f.get(), ProcReq{procs});
     }
-    return std::move(buffer);
+    return buffer;
   }
 
   auto oneUp() {
