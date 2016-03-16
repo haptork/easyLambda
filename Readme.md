@@ -178,6 +178,12 @@ different data.
 discussed and for above two data-flow figures. Many other examples also use
 flow properties.
 
+## Quick Start
+Check out the [tutorial](tutorial.md) and follow the examples in the sequence
+given in [examples/Readme.md](examples/Readme.md). Feel free to ask for any
+specific queries. I am hoping to add more tutorials with focus on
+specific areas like simulation data-processing for old C programmers etc.
+
 ## How to install
 
 ### Requirements
@@ -213,4 +219,10 @@ of name write the name of the file for e.g. wordcount without extension.
 After compiling, the executable can be run with mpirun 
 `mpirun -n 4 path_to_exe args…` or simply as `path_to_exe args…`.
 
-Check [examples](examples) to begin writing with ezl.
+----
+
+A big thanks to cppcon, meetingc++ and other conferences and all pro C++
+speakers, committee members and compiler implementers for modernising C++ and
+teaching it with so much enthusiasm. I had fun implementing this.  Looking
+forward to learn more from the community. Hoping to see C++17 with more cool
+stuff.
