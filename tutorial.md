@@ -1,4 +1,5 @@
-### Getting started with ezl:
+Getting started with ezl
+=========================
 
 This is a introductory tutorial that assumes very little prior knowledge of
 modern C++, MPI, map, reduce etc. So, skip the parts that look quite obvious. I
@@ -27,8 +28,8 @@ In a data-flow rise is source/origin, which passes rows of some column types to
 the next unit. Map takes every row and transforms it into new row(s). Reduce takes
 a group of rows or all the rows to transform them into new row(s).
 
-Introduction to map and filter:
-===============================
+### Introduction to map and filter
+
 
 Let us assume we have a data-flow with two integers as column types and we want third
 column to have summation of two columns for each row. 
@@ -58,6 +59,7 @@ auto threeCols = ezl::flow(twoCols) // ezl::flow adds to a prior built flow
                    .map(addition).dump()
                    .build();
 ```
+
 At this point, running the program does nothing, since pipeline is just built
 not run.
 
@@ -87,8 +89,7 @@ auto fourCols = ezl::flow(twoCols)
                 .build();
 ```
 
-Introduction to column selection for user function
-==================================================
+### Introduction to column selection for user function
 
 There is some problem in the above filter, we are not using first two columns
 but we have to write our function that takes them as input. What if there are
@@ -119,8 +120,7 @@ to carry out common operations.
 
 Column selection for user function in map is same as this.
 
-Introduction to column selection for next unit in the data flow
-===============================================================
+### Introduction to column selection for next unit in the data flow
 
 Till, now we saw that map adds resulting cols to existing input cols, which
 might not be needed at times.
@@ -139,6 +139,7 @@ The `cols<...>()` property is applicable to every processing unit i.e.
 filter, reduce and reduceAll.
 
 For map we can simply do following to get just the resulting column.
+
 ```cpp
 auto oneCol = ezl::flow(twoCols)
                .map(addition).dump().colsResult()
@@ -149,6 +150,7 @@ Or we can do `.colsTransform()` if we want to replace the column in place.
 For e.g. let us say in an input data-flow 5th column is `char` specifying
 male('m') or female('f'), we want to convert this to bool false or true, we can
 do the following:
+
 ```cpp
 ezl::flow(someFlow)
   .map<5>([](char gender) { return (gender == 'm'); }).colsTransform()
@@ -160,27 +162,31 @@ multiple columns that are selected get transformed into resulting col(s). If
 all the columns are selected for function then `colsResult` and `colsTransform`
 give same results.
 
-Introduction to reduce
-======================
+### Introduction to reduce
 
 Let us say we want to add all the rows in the `oneCol` data-flow.
+
 ```cpp
 ezl::flow(oneCol)
   .reduce(addition, 0)
   .build();
 ```
+
 Here, 0 is the initial value. The reduce function receives each row and the
 prior value of result. It returns the updated result which is passed next 
 time a new row is streamed in. At the end of data the resulting row with
 final addition is passed to next unit(s).
 
 A count of rows can be done by simply incrementing the result each time.
+
 ```cpp
 ezl::flow(oneCol)
   .reduce([](int x, int res) { return res + 1; }, 0) // count of total rows
   .build();
 ```
+
 or
+
 ```cpp
 ezl::flow(oneCol)
   .reduce(ezl::count(), 0)
@@ -195,12 +201,15 @@ result in a particular value of addition (third col).
 For e.g. if rows in threeCols are (3, 4, 7), (2, 5, 7), (5, 3, 8)
 we want output to be (7, 2), (8, 1)
 we want to calculate count of rows in each group with key column 3.
+
 ```cpp
 ezl::flow(threeCols)
   .reduce<3>([](int key, int x, int y, int res) { return res+ 1; }, 0)
   .build();
 ```
+
 or
+
 ```cpp
 ezl::flow(threeCols)
   .reduce<3>(ezl::count(), 0)
@@ -215,6 +224,7 @@ One can select multiple key cols. Result also can have multiple cols.
 
 Let us say we want to add cols one and two for all the rows that have same
 value for column three.
+
 ```cpp
 ezl::flow(threeCols)
   .reduce<3>(
@@ -224,7 +234,9 @@ ezl::flow(threeCols)
     , 0, 0)
   .build();
 ```
+
 or
+
 ```cpp
 ezl::flow(threeCols)
   .reduce<3>(ezl::sum(), 0, 0)
@@ -241,7 +253,10 @@ ezl::flow(threeCols)
   .reduceAll<3>([](int key, vector<int> x, vector<int> y) { return int(y.size()); })
   .build();
 ```
+
 or
+
+
 ```cpp
 ezl::flow(threeCols)
   .reduceAll<3>([](int key, vector<tuple<int, int>> y) { return int(y.size()); })
@@ -252,14 +267,17 @@ So essentially, the parameters are key, vector of value cols. The vectors can be
 separate vector of column types or vector of tuple of column types according to the
 convenience of the operation to be carried out.
 
+ReduceAll library functions include summary, histogram and correlation. These
+are pretty neat if you want to get the idea of the data. As for most of the
+library function these are applicable to any number of columns.
+
 Reduces have same kind of column selection for resulting columns as given with
 examples of map and filter.
 
 Finally, key and value columns both can be selected with a syntax like following:
 `.reduce<ezl::key<1, 2>, ezl::val<3, 5>>(...)`.
 
-Introduction to rise
-====================
+### Introduction to rise
 
 We have seen a lot of data-flows which manipulate the input rows that flow into
 them but there must be some origin of the data. Rise is the origin of a flow.
@@ -270,11 +288,11 @@ till EndOfData implied by returning an empty vector.
 There are hardly any instances where a custom rise function will be needed. There
 are plenty of rise functions available with ezl.
 
-ReadFile: 
----------
+#### ReadFile: 
 
 So let us say we have a text file containing one string, two ints and a float
 value separated by commas and tabs. We can load the file as follows:
+
 ```cpp
 ezl::rise(
   ezl::readFile<string, array<int, 2>, float>("files*.txt").colSeparator(",\t"))
@@ -289,12 +307,11 @@ to every row which is important for simulation dumps where timesteps are
 generally written at the top and system value follows it. Check 
 [demoReadFile](examples/demoReadFile.cpp) for more on these options.
 
-loadMem:
--------
+#### loadMem:
 This loads rows from a container or intializer list.
+
 ```cpp
-ezl::rise(
-  ezl::loadMem({1,2,3})
+ezl::rise(ezl::loadMem({1,2,3}))
   .build();
 ```
 
@@ -304,16 +321,21 @@ Similarly, a vector or array or any other container can be passed to it.
 A container of type tuple, streams rows with multiple cols to the data-flow.
 Check [demoIO](examples/demoIO.cpp) to view more examples on this.
 
-kick:
-----
+#### kick:
 `kick(N)` streams N number of empty rows to the next column. 
 It takes care of the parallelism so that one can decide if total of N times
 over all the processes or N times on each process. By default the N is shared
 among the processes.
+
+```cpp
+ezl::rise(ezl::kick(20))
+  .map([] { return make_tuple("twenty", "20"); })
+  .build();
+```
+
 In addition to [demoIO](examples/demoIO.cpp), [pi](examples/pi.cpp) example also uses this.
 
-A few things more:
-=================
+### A few things more:
 
 - Instead of `run()`, if one does `runResult()` the rows flowing out of the final
   unit get returned.
