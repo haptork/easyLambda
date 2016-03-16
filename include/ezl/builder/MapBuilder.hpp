@@ -60,7 +60,7 @@ public:
     auto temp = MapBuilder<I, S, F, NO, P, H>{std::forward<F>(this->_func), std::move(this->_prev)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
-    return std::move(temp);
+    return temp;
   }
 
   template <class NOP>

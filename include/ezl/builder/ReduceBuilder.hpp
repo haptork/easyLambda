@@ -75,7 +75,7 @@ public:
     ParExpr<ReduceBuilder, P, H>::build();
     auto obj = ReduceExpr<ReduceBuilder, I, P, S, F, FO, O, H>::build();
     DumpExpr<ReduceBuilder>::buildAdd(obj);
-    return std::move(obj);
+    return obj;
   }
 
 };

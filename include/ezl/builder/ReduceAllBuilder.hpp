@@ -57,7 +57,7 @@ public:
       std::forward<F>(this->_func), std::move(this->_prev), this->_adjacent, this->_bunchSize};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
-    return std::move(temp);
+    return temp;
   }
 
   template <class NH>

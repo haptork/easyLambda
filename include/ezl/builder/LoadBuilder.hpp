@@ -37,7 +37,7 @@ public:
   auto build() {
     auto obj = LoadExpr<LoadBuilder, F>::build();
     DumpExpr<LoadBuilder>::buildAdd(obj);
-    return std::move(obj);
+    return obj;
   }
 };
 }

@@ -44,7 +44,7 @@ struct ReduceAllExpr {
     auto obj = std::make_shared<ReduceAll<meta::ReduceAllTypes<I, K, S, F, O>, H>>(
         std::forward<F>(_func), ordered, _adjacent, _bunchSize);
     obj->prev(_prev, obj);
-    return std::move(obj);
+    return obj;
   }
 
   auto prev() { return _prev; }

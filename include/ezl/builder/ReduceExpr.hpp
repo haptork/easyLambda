@@ -45,7 +45,7 @@ struct ReduceExpr {
         std::make_shared<Reduce<meta::ReduceTypes<I, K, S, F, FO, O>, H>>(
             std::forward<F>(_func), std::forward<FO>(_initVal), ordered);
     obj->prev(_prev, obj);
-    return std::move(obj);
+    return obj;
   }
 
   auto prev() { return _prev; }
