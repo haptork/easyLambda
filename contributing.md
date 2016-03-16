@@ -14,7 +14,7 @@ adding more algorithms for common data-analysis tasks. Adding examples and tests
  - Improve parallelization for tuples with plain-old-datatypes (PODs) by detecting
    POD using type-traits and then sending a fixed size.
  - Join units to join streams with different data-types.
- - Logistic regression and other ML algorithms as algorithms.
+ - Logistic regression and other ML algorithms as built-in algorithms.
 
 ## Basic Design:
 The project files are arranged in directories pipeline, mapreduce, builder,
