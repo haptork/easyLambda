@@ -16,12 +16,12 @@
 
 #include <algorithm>
 
-#include "ezl.hpp"
+#include <ezl.hpp>
 
-#include "ezl/algorithms/io.hpp"
-#include "ezl/algorithms/reduceAlls.hpp"
-#include "ezl/algorithms/reduces.hpp"
-#include "ezl/algorithms/readFile.hpp"
+#include <ezl/algorithms/io.hpp>
+#include <ezl/algorithms/reduceAlls.hpp>
+#include <ezl/algorithms/reduces.hpp>
+#include <ezl/algorithms/readFile.hpp>
 
 using namespace std;
 

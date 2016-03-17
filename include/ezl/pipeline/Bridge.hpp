@@ -12,10 +12,10 @@
 #ifndef BRIDGE_EZL_H
 #define BRIDGE_EZL_H
 
-#include "ezl/pipeline/Source.hpp"
-#include "ezl/pipeline/Task.hpp"
-#include "ezl/helper/Karta.hpp"
-#include "ezl/helper/Par.hpp"
+#include <ezl/pipeline/Source.hpp>
+#include <ezl/pipeline/Task.hpp>
+#include <ezl/helper/Karta.hpp>
+#include <ezl/helper/Par.hpp>
 
 namespace ezl {
 namespace detail {

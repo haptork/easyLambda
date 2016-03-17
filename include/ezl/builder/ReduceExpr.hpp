@@ -16,10 +16,10 @@
 #include <vector>
 #include <type_traits>
 
-#include "ezl/mapreduce/Reduce.hpp"
-#include "ezl/helper/meta/slctTuple.hpp"
-#include "ezl/helper/meta/slct.hpp"
-#include "ezl/helper/meta/typeInfo.hpp"
+#include <ezl/mapreduce/Reduce.hpp>
+#include <ezl/helper/meta/slctTuple.hpp>
+#include <ezl/helper/meta/slct.hpp>
+#include <ezl/helper/meta/typeInfo.hpp>
 
 namespace ezl {
 namespace detail {

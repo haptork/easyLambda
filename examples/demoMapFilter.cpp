@@ -7,10 +7,10 @@
  * */
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/io.hpp"
-#include "ezl/algorithms/filters.hpp"
-#include "ezl/algorithms/maps.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/io.hpp>
+#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/maps.hpp>
 
 class Op {
 public:

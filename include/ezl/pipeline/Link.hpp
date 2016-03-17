@@ -15,8 +15,8 @@
 
 #include <vector>
 
-#include "ezl/pipeline/Dest.hpp"
-#include "ezl/pipeline/Source.hpp"
+#include <ezl/pipeline/Dest.hpp>
+#include <ezl/pipeline/Source.hpp>
 
 namespace ezl {
 namespace detail {

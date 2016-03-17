@@ -16,8 +16,8 @@
 #include <vector>
 #include <functional>
 
-#include "ezl/pipeline/Root.hpp"
-#include "ezl/helper/meta/typeInfo.hpp"
+#include <ezl/pipeline/Root.hpp>
+#include <ezl/helper/meta/typeInfo.hpp>
 
 namespace ezl {
 namespace detail {

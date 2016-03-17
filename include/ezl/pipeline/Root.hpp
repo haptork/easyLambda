@@ -12,11 +12,11 @@
 #ifndef ROOT_EZL_H
 #define ROOT_EZL_H
 
-#include "ezl/pipeline/Source.hpp"
-#include "ezl/pipeline/Dest.hpp"
-#include "ezl/pipeline/Task.hpp"
-#include "ezl/helper/Karta.hpp"
-#include "ezl/helper/Par.hpp"
+#include <ezl/pipeline/Source.hpp>
+#include <ezl/pipeline/Dest.hpp>
+#include <ezl/pipeline/Task.hpp>
+#include <ezl/helper/Karta.hpp>
+#include <ezl/helper/Par.hpp>
 
 namespace ezl {
 namespace detail {

@@ -14,10 +14,10 @@
 
 #include <memory>
 
-#include "ezl/pipeline/Source.hpp"
-#include "ezl/helper/meta/slct.hpp"
-#include "ezl/helper/meta/typeInfo.hpp"
-#include "ezl/mapreduce/Filter.hpp"
+#include <ezl/pipeline/Source.hpp>
+#include <ezl/helper/meta/slct.hpp>
+#include <ezl/helper/meta/typeInfo.hpp>
+#include <ezl/mapreduce/Filter.hpp>
 
 namespace ezl {
 namespace detail {

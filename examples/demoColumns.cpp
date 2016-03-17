@@ -11,8 +11,8 @@
 
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/io.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/io.hpp>
 
 // to see more on rise and loadMem, see `demoIO`
 // the integers in the angular brackets after map <1, 1, 0> is bool mask select

@@ -16,9 +16,9 @@
 #include <boost/mpi.hpp>
 #include <boost/functional/hash.hpp>
 
-#include "ezl/mapreduce/Load.hpp"
-#include "ezl/mapreduce/Filter.hpp"
-#include "ctorTeller.hpp"
+#include <ezl/mapreduce/Load.hpp>
+#include <ezl/mapreduce/Filter.hpp>
+#include <ctorTeller.hpp>
 
 using namespace ezl::detail;
 

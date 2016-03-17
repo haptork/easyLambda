@@ -19,8 +19,8 @@
 #include <string>
 #include <tuple>
 
-#include "ezl/pipeline/Dest.hpp"
-#include "ezl/helper/meta/prettyprint.hpp"
+#include <ezl/pipeline/Dest.hpp>
+#include <ezl/helper/meta/prettyprint.hpp>
 
 namespace ezl {
 namespace detail {

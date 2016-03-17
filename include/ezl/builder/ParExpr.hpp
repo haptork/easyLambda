@@ -16,9 +16,9 @@
 #include <memory>
 #include <vector>
 
-#include "ezl/helper/meta/slct.hpp"
-#include "ezl/helper/ProcReq.hpp"
-#include "ezl/mapreduce/MPIBridge.hpp"
+#include <ezl/helper/meta/slct.hpp>
+#include <ezl/helper/ProcReq.hpp>
+#include <ezl/mapreduce/MPIBridge.hpp>
 
 namespace ezl {
 namespace detail {

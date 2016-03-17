@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include "ezl/helper/ProcReq.hpp"
+#include <ezl/helper/ProcReq.hpp>
 
 #define RSUPER DataFlowExpr<ReduceBuilder<I, S, F, FO, O, P, H>>,                   \
                ParExpr<ReduceBuilder<I, S, F, FO, O, P, H>, P, H>,                  \

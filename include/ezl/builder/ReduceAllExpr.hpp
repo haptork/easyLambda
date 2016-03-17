@@ -15,9 +15,9 @@
 #include <memory>
 #include <vector>
 
-#include "ezl/helper/meta/slctTuple.hpp"
-#include "ezl/helper/meta/slct.hpp"
-#include "ezl/mapreduce/ReduceAll.hpp"
+#include <ezl/helper/meta/slctTuple.hpp>
+#include <ezl/helper/meta/slct.hpp>
+#include <ezl/mapreduce/ReduceAll.hpp>
 
 namespace ezl {
 namespace detail {

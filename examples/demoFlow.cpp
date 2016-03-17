@@ -13,9 +13,9 @@
 
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/io.hpp"
-#include "ezl/algorithms/filters.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/io.hpp>
+#include <ezl/algorithms/filters.hpp>
 
 // returns a map-flow that can be placed in a pipeline later
 auto sqr() {

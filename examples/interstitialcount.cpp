@@ -9,12 +9,12 @@
 #include <boost/mpi.hpp>
 #include <array>
 
-#include "ezl.hpp"
-#include "AddOffset.cpp"
+#include <ezl.hpp>
+#include <AddOffset.cpp>
 
-#include "ezl/algorithms/reduces.hpp"
-#include "ezl/algorithms/filters.hpp"
-#include "ezl/algorithms/readFile.hpp"
+#include <ezl/algorithms/reduces.hpp>
+#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/readFile.hpp>
 
 int main(int argc, char* argv[]) {
   boost::mpi::environment env(argc, argv);

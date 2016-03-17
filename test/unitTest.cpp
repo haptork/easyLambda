@@ -1,21 +1,21 @@
-#include "ctorTeller.hpp"
+#include <ctorTeller.hpp>
 #include <tuple>
 
-#include "boost/mpi.hpp"
+#include <boost/mpi.hpp>
 
 
-#include "unitTest/slctTest.cpp"
-#include "unitTest/slctTupleTest.cpp"
-#include "unitTest/funcInvokeTest.cpp"
-#include "unitTest/MapTest.cpp"
-#include "unitTest/FilterTest.cpp"
+#include <unitTest/slctTest.cpp>
+#include <unitTest/slctTupleTest.cpp>
+#include <unitTest/funcInvokeTest.cpp>
+#include <unitTest/MapTest.cpp>
+#include <unitTest/FilterTest.cpp>
 // ReduceTest build only in Apple clang due to some different implementatin of
 // tie, nothing related to library. TODO: for gcc as well
-//#include "unitTest/ReduceTest.cpp"
-#include "unitTest/ReduceAllTest.cpp"
-#include "unitTest/readFileTest.cpp"
-#include "unitTest/MPIBridgeTest.cpp"
-#include "unitTest/LoadTest.cpp"
+//#include <unitTest/ReduceTest.cpp>
+#include <unitTest/ReduceAllTest.cpp>
+#include <unitTest/readFileTest.cpp>
+#include <unitTest/MPIBridgeTest.cpp>
+#include <unitTest/LoadTest.cpp>
 
 
 void slctTest();

@@ -17,9 +17,9 @@
 #include <boost/mpi.hpp>
 #include <boost/functional/hash.hpp>
 
-#include "ezl/mapreduce/Reduce.hpp"
-#include "ezl/helper/meta/typeInfo.hpp"
-#include "ctorTeller.hpp"
+#include <ezl/mapreduce/Reduce.hpp>
+#include <ezl/helper/meta/typeInfo.hpp>
+#include <ctorTeller.hpp>
 
 using namespace ezl::detail;
 

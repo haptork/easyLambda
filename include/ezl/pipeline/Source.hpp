@@ -17,7 +17,7 @@
 #include <memory>
 #include <vector>
 
-#include "ezl/helper/Karta.hpp"
+#include <ezl/helper/Karta.hpp>
 
 namespace ezl {
 namespace detail {

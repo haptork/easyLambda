@@ -4,7 +4,7 @@
  *
  * Used with interstitialcount example.
  * */
-#include "AddOffset.hpp"
+#include <AddOffset.hpp>
 
 bool AddOffset::_isUnitcell(float x, float y, float z, float l,
                             std::array<float, 3> origin) {

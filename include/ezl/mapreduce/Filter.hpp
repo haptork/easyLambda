@@ -15,9 +15,9 @@
 
 #include <tuple>
 
-#include "ezl/pipeline/Link.hpp"
-#include "ezl/helper/meta/funcInvoke.hpp"
-#include "ezl/helper/meta/slctTuple.hpp"
+#include <ezl/pipeline/Link.hpp>
+#include <ezl/helper/meta/funcInvoke.hpp>
+#include <ezl/helper/meta/slctTuple.hpp>
 
 namespace ezl {
 namespace detail {

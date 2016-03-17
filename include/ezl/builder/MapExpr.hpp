@@ -14,10 +14,10 @@
 
 #include <memory>
 
-#include "ezl/helper/meta/slct.hpp"
-#include "ezl/helper/meta/typeInfo.hpp"
-#include "ezl/helper/meta/slctTuple.hpp"
-#include "ezl/mapreduce/Map.hpp"
+#include <ezl/helper/meta/slct.hpp>
+#include <ezl/helper/meta/typeInfo.hpp>
+#include <ezl/helper/meta/slctTuple.hpp>
+#include <ezl/mapreduce/Map.hpp>
 
 namespace ezl {
 namespace detail {

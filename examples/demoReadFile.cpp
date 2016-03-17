@@ -13,9 +13,9 @@
 
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/readFile.hpp"
-#include "ezl/algorithms/reduces.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/reduces.hpp>
 
 int main(int argc, char* argv[]) {
   using std::vector;

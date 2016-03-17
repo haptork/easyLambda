@@ -9,11 +9,11 @@
  * */
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/io.hpp"
-#include "ezl/algorithms/readFile.hpp"
-#include "ezl/algorithms/reduces.hpp"
-#include "ezl/algorithms/filters.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/io.hpp>
+#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/reduces.hpp>
+#include <ezl/algorithms/filters.hpp>
 
 auto f(char ch, int n, float f, long res) {
   return res + 1;

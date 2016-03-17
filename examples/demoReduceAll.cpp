@@ -9,10 +9,10 @@
  * */
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/io.hpp"
-#include "ezl/algorithms/reduceAlls.hpp"
-#include "ezl/algorithms/filters.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/io.hpp>
+#include <ezl/algorithms/reduceAlls.hpp>
+#include <ezl/algorithms/filters.hpp>
 
 using namespace std;
 

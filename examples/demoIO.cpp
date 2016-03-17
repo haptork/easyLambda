@@ -15,9 +15,9 @@
 
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/io.hpp"
-#include "ezl/algorithms/reduces.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/io.hpp>
+#include <ezl/algorithms/reduces.hpp>
 
 int demoLoadMem(std::string outFile) {
   using std::vector;

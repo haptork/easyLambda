@@ -14,11 +14,11 @@
 
 #include <algorithm>
 
-#include "ezl.hpp"
+#include <ezl.hpp>
 
-#include "ezl/algorithms/filters.hpp"
-#include "ezl/algorithms/reduces.hpp"
-#include "ezl/algorithms/readFile.hpp"
+#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/reduces.hpp>
+#include <ezl/algorithms/readFile.hpp>
 
 auto calcDist(std::array<float, 3> p1, std::array<float, 3> p2) {
   auto diff = 0.0F;

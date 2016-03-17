@@ -16,10 +16,10 @@
 
 #include <boost/mpi.hpp>
 
-#include "ezl/mapreduce/Map.hpp"
-#include "ezl/helper/meta/typeInfo.hpp"
+#include <ezl/mapreduce/Map.hpp>
+#include <ezl/helper/meta/typeInfo.hpp>
 
-#include "ctorTeller.hpp"
+#include <ctorTeller.hpp>
 
 using namespace ezl::detail;
 

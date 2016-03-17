@@ -9,8 +9,8 @@
  * */
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/io.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/io.hpp>
 
 class Op {
 public:

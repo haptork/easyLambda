@@ -15,8 +15,8 @@
 
 #include <vector>
 
-#include "ezl/helper/Par.hpp"
-#include "ezl/helper/ProcReq.hpp"
+#include <ezl/helper/Par.hpp>
+#include <ezl/helper/ProcReq.hpp>
 
 namespace ezl {
 namespace detail {

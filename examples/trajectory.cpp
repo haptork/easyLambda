@@ -11,9 +11,9 @@
  * */
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/reduces.hpp"
-#include "ezl/algorithms/readFile.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/reduces.hpp>
+#include <ezl/algorithms/readFile.hpp>
 
 using namespace std;
 

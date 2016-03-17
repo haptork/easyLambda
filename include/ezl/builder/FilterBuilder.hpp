@@ -16,8 +16,8 @@
 
 #include <boost/functional/hash.hpp>
 
-#include "ezl/helper/meta/slctTuple.hpp"
-#include "ezl/helper/ProcReq.hpp"
+#include <ezl/helper/meta/slctTuple.hpp>
+#include <ezl/helper/ProcReq.hpp>
 
 #define FSUPER                                                                \
   DataFlowExpr<                                                               \

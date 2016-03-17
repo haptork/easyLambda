@@ -17,8 +17,8 @@
 #include <memory>
 #include <vector>
 
-#include "ezl/helper/ProcReq.hpp"
-#include "ezl/mapreduce/Load.hpp"
+#include <ezl/helper/ProcReq.hpp>
+#include <ezl/mapreduce/Load.hpp>
 
 namespace ezl {
 namespace detail {

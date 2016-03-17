@@ -21,11 +21,11 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/array.hpp>
 
-#include "ezl/pipeline/Bridge.hpp"
-#include "ezl/helper/Karta.hpp"
-#include "ezl/helper/meta/slctTuple.hpp"
-#include "ezl/helper/meta/serializeTuple.hpp"
-#include "ezl/helper/Par.hpp"
+#include <ezl/pipeline/Bridge.hpp>
+#include <ezl/helper/Karta.hpp>
+#include <ezl/helper/meta/slctTuple.hpp>
+#include <ezl/helper/meta/serializeTuple.hpp>
+#include <ezl/helper/Par.hpp>
 
 namespace ezl {
 namespace detail {

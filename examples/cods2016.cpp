@@ -13,13 +13,13 @@
 #include <algorithm>
 #include <map>
 
-#include "ezl.hpp"
+#include <ezl.hpp>
 
-#include "ezl/algorithms/filters.hpp"
-#include "ezl/algorithms/maps.hpp"
-#include "ezl/algorithms/readFile.hpp"
-#include "ezl/algorithms/reduces.hpp"
-#include "ezl/algorithms/reduceAlls.hpp"
+#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/maps.hpp>
+#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/reduces.hpp>
+#include <ezl/algorithms/reduceAlls.hpp>
 
 using namespace std;
 

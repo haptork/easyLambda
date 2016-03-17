@@ -34,10 +34,10 @@
 
 #include <boost/mpi.hpp>
 
-#include "ezl.hpp"
-#include "ezl/algorithms/io.hpp"
-#include "ezl/algorithms/reduces.hpp"
-#include "ezl/algorithms/filters.hpp"
+#include <ezl.hpp>
+#include <ezl/algorithms/io.hpp>
+#include <ezl/algorithms/reduces.hpp>
+#include <ezl/algorithms/filters.hpp>
 
 struct hashfn {
   std::size_t operator() (const std::tuple<const int&>& x) const {
