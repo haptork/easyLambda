@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __MAPEXPR_EZL_H__
-#define __MAPEXPR_EZL_H__
+#ifndef MAPEXPR_EZL_H
+#define MAPEXPR_EZL_H
 
 #include <memory>
 
@@ -88,4 +88,4 @@ struct MapExpr {
 
 }} // namespace ezl namespace ezl::detail
 
-#endif // !__MAPEXPR_EZL_H__
+#endif // !MAPEXPR_EZL_H

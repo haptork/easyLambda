@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __TASK_EZL_H__
-#define __TASK_EZL_H__
+#ifndef TASK_EZL_H
+#define TASK_EZL_H
 
 #include <vector>
 
@@ -44,4 +44,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !__TASK_EZL_H__
+#endif // !TASK_EZL_H

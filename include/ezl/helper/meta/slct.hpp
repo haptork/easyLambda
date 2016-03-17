@@ -11,8 +11,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __SLCT_EZL_H__
-#define __SLCT_EZL_H__
+#ifndef SLCT_EZL_H
+#define SLCT_EZL_H
 
 #include <type_traits>
 
@@ -163,4 +163,4 @@ using saneSlct_t = typename saneSlctImpl<N, S>::type;
 }
 } // namespace ezl detail meta
 
-#endif //!__SEQUENCE_EZL_H__
+#endif //!SLCT_EZL_H

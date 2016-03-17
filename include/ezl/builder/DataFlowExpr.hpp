@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __DATAFLOWEXPR_EZL_H__
-#define __DATAFLOWEXPR_EZL_H__
+#ifndef DATAFLOWEXPR_EZL_H
+#define DATAFLOWEXPR_EZL_H
 
 #include <functional>
 
@@ -258,4 +258,4 @@ template <class T> struct DataFlowExpr {
 }
 } // namespace ezl namespace ezl::detail
 
-#endif // !__DATAFLOWEXPR_EZL_H__
+#endif // !DATAFLOWEXPR_EZL_H

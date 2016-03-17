@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __FILTERBUILDER_EZL_H__
-#define __FILTERBUILDER_EZL_H__
+#ifndef FILTERBUILDER_EZL_H
+#define FILTERBUILDER_EZL_H
 
 #include <memory>
 
@@ -94,4 +94,4 @@ public:
 
 }} // namespace ezl namespace ezl::detail
 
-#endif // !__FILTERBUILDER_EZL_H__
+#endif // !FILTERBUILDER_EZL_H

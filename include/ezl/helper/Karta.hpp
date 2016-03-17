@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __KARTA_EZL_H__
-#define __KARTA_EZL_H__
+#ifndef KARTA_EZL_H
+#define KARTA_EZL_H
 
 #include <vector>
 #include <map>
@@ -319,4 +319,4 @@ private:
 };
 } // namespace ezl 
 
-#endif  // !__KARTA_EZL_H__
+#endif  // !KARTA_EZL_H

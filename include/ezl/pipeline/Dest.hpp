@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __DEST_EZL_H__
-#define __DEST_EZL_H__
+#ifndef DEST_EZL_H
+#define DEST_EZL_H
 
 #include <map>
 #include <memory>
@@ -96,4 +96,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !__DEST_EZL_H__
+#endif // !DEST_EZL_H

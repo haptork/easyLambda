@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __DUMPEXPR_EZL_H__
-#define __DUMPEXPR_EZL_H__
+#ifndef DUMPEXPR_EZL_H
+#define DUMPEXPR_EZL_H
 
 #include "ezl/mapreduce/DumpFile.hpp"
 
@@ -21,7 +21,7 @@ namespace detail {
  * @ingroup builder
  * For adding a `DumpFile` unit as a branch to the current unit. This
  * can be specified with property `dump` without finalizing build of
- * the current uni. The expression can be used by any unit builder 
+ * the current uni. The expression can be used by any unit builder
  * like `MapBuilder` `ReduceBuilder` etc.
  *
  * T is CRTP parent type.
@@ -47,8 +47,8 @@ template <class T> struct DumpExpr {
 
   auto dumpProps() { return std::tie(_name, _header); }
 
-  void dumpProps(std::tuple<const std::string&, const std::string&> props) { 
-    std::tie(_name, _header) = props; 
+  void dumpProps(std::tuple<const std::string&, const std::string&> props) {
+    std::tie(_name, _header) = props;
   }
 
   const std::string defStr{"__none__"};
@@ -59,4 +59,4 @@ template <class T> struct DumpExpr {
 }
 } // namespace ezl ezl::detail
 
-#endif // __DUMPEXPR_EZL_H__
+#endif // !DUMPEXPR_EZL_H

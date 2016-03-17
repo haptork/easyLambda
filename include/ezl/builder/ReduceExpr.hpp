@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __REDUCEEXPR_EZL_H__
-#define __REDUCEEXPR_EZL_H__
+#ifndef REDUCEEXPR_EZL_H
+#define REDUCEEXPR_EZL_H
 
 #include <memory>
 #include <vector>

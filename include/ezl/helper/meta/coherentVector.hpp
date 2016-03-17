@@ -10,8 +10,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __COHERENTVECTOR_EZL_H__
-#define __COHERENTVECTOR_EZL_H__
+#ifndef COHERENTVECTOR_EZL_H
+#define COHERENTVECTOR_EZL_H
 
 #include <vector>
 #include <tuple>
@@ -117,4 +117,4 @@ auto coherentSize(const std::vector<std::tuple<Is...>> &v) {
 }
 } // namespace ezl detail meta
 
-#endif // !__COHERENTVECTOR_EZL_H__
+#endif // !COHERENTVECTOR_EZL_H

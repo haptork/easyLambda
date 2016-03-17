@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __REDUCE_EZL_H__
-#define __REDUCE_EZL_H__
+#ifndef REDUCE_EZL_H
+#define REDUCE_EZL_H
 
 #include <tuple>
 #include <vector>
@@ -177,4 +177,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !__REDUCE_EZL_H__
+#endif // !REDUCE_EZL_H

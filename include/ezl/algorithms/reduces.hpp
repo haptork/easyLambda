@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __REDUCES_EZL_ALGO_H__
-#define __REDUCES_EZL_ALGO_H__
+#ifndef REDUCES_EZL_ALGO_H
+#define REDUCES_EZL_ALGO_H
 
 #include <tuple>
 
@@ -74,4 +74,4 @@ private:
 
 } // namespace ezl
 
-#endif // !__REDUCES_EZL_ALGO_H__
+#endif // !REDUCES_EZL_ALGO_H

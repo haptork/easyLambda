@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __PAR_EZL_H__
-#define __PAR_EZL_H__
+#ifndef PAR_EZL_H
+#define PAR_EZL_H
 
 #include <array>
 #include <vector>
@@ -68,4 +68,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !__PAR_EZL_H__
+#endif // !PAR_EZL_H

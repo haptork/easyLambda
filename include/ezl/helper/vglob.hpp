@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __VGLOB_EZL_H__
-#define __VGLOB_EZL_H__
+#ifndef VGLOB_EZL_H
+#define VGLOB_EZL_H
 
 #include <glob.h>
 #include <string>
@@ -35,4 +35,4 @@ inline auto vglob(const std::string &pat, size_t max = 0) {
 } // naepsace detail
 } // namespace ezl
 
-#endif // ! __VGLOB_EZL_H__
+#endif // ! VGLOB_EZL_H

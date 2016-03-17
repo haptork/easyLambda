@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __BRIDGE_EZL_H__
-#define __BRIDGE_EZL_H__
+#ifndef BRIDGE_EZL_H
+#define BRIDGE_EZL_H
 
 #include "ezl/pipeline/Source.hpp"
 #include "ezl/pipeline/Task.hpp"
@@ -113,4 +113,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !__BRIDGE_EZL_H__
+#endif // !BRIDGE_EZL_H

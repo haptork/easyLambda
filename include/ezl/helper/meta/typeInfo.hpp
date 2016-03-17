@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __TYPEINFO_EZL_H__
-#define __TYPEINFO_EZL_H__
+#ifndef TYPEINFO_EZL_H
+#define TYPEINFO_EZL_H
 
 #include <vector>
 #include <tuple>
@@ -252,4 +252,4 @@ struct isTuple<std::tuple<T...>> : public std::true_type {};
 
 }
 }} // namespace ezl detail meta
-#endif //!__TYPEINFO_EZL_H__
+#endif //!TYPEINFO_EZL_H

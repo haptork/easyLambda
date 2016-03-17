@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __IPULL_EZL_H__
-#define __IPULL_EZL_H__
+#ifndef ROOT_EZL_H
+#define ROOT_EZL_H
 
 #include "ezl/pipeline/Source.hpp"
 #include "ezl/pipeline/Dest.hpp"
@@ -75,4 +75,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !__ROOT_EZL_H__
+#endif // !ROOT_EZL_H

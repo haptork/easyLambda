@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __CTORTELLER_EZL_TEST_H__
-#define __CTORTELLER_EZL_TEST_H__
+#ifndef CTORTELLER_EZL_TEST_H
+#define CTORTELLER_EZL_TEST_H
 
 #include <iostream>
 #include <string>
@@ -90,4 +90,4 @@ private:
   static int _moveAssign;
 };
 
-#endif // __CTORTELLER_EZL_TEST_H__
+#endif // !CTORTELLER_EZL_TEST_H

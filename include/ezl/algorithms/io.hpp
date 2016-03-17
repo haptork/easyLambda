@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __IO_EZL_ALGO_H__
-#define __IO_EZL_ALGO_H__
+#ifndef IO_EZL_ALGO_H
+#define IO_EZL_ALGO_H
 
 #include <tuple>
 #include <vector>
@@ -322,4 +322,4 @@ private:
 
 } // namespace ezl
 
-#endif // !__IO_EZL_ALGO_H__
+#endif // !IO_EZL_ALGO_H

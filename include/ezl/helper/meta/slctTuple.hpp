@@ -10,8 +10,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __SLCTTUPLE_EZL_H__
-#define __SLCTTUPLE_EZL_H__
+#ifndef SLCTTUPLE_EZL_H
+#define SLCTTUPLE_EZL_H
 
 #include <vector>
 #include <string>
@@ -126,4 +126,4 @@ struct colCount : colCountImpl<0, I> {};
 }
 }
 } // namespace ezl detail meta
-#endif // !__SLCTTUPLE_EZL_H__
+#endif // !SLCTTUPLE_EZL_H

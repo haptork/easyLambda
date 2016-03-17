@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __LOAD_EZL_H__
-#define __LOAD_EZL_H__
+#ifndef LOAD_EZL_H
+#define LOAD_EZL_H
 
 #include <vector>
 #include <functional>
@@ -104,4 +104,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !__LOAD_EZL_H__
+#endif // !LOAD_EZL_H

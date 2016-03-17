@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __FILTEREXPR_EZL_H__
-#define __FILTEREXPR_EZL_H__
+#ifndef FILTEREXPR_EZL_H
+#define FILTEREXPR_EZL_H
 
 #include <memory>
 
@@ -67,4 +67,4 @@ struct FilterExpr {
 }
 } // namespace ezl namespace ezl::detail
 
-#endif // !__FILTEREXPR_EZL_H__
+#endif // !FILTEREXPR_EZL_H

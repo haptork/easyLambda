@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __LOADFILE_EZL_H__
-#define __LOADFILE_EZL_H__
+#ifndef LOADFILE_EZL_H
+#define LOADFILE_EZL_H
 
 #include <fstream>
 #include <functional>
@@ -658,4 +658,4 @@ auto readFile(std::vector<std::string> flist) {
 
 } // namespace ezl
 
-#endif // !__LOADFILE_EZL_H__
+#endif // !LOADFILE_EZL_H

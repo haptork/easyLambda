@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __FILTERS_EZL_ALGO_H__
-#define __FILTERS_EZL_ALGO_H__
+#ifndef FILTERS_EZL_ALGO_H
+#define FILTERS_EZL_ALGO_H
 
 #include <tuple>
 
@@ -203,4 +203,4 @@ public:
 
 } // namespace ezl
 
-#endif // __FILTERS_EZL_ALGO_H__
+#endif // FILTERS_EZL_ALGO_H

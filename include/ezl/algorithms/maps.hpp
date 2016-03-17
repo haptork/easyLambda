@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __MAPS_EZL_ALGO_H__
-#define __MAPS_EZL_ALGO_H__
+#ifndef MAPS_EZL_ALGO_H
+#define MAPS_EZL_ALGO_H
 
 #include <tuple>
 #include <array>
@@ -175,4 +175,4 @@ auto buffer(size_t size) {
 
 }  // namespace ezl
 
-#endif // !__MAPS_EZL_ALGO_H__
+#endif // !MAPS_EZL_ALGO_H

@@ -11,8 +11,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __FUNCINVOKE_EZL_H__
-#define __FUNCINVOKE_EZL_H__
+#ifndef FUNCINVOKE_EZL_H
+#define FUNCINVOKE_EZL_H
 
 #include <vector>
 #include <tuple>
@@ -250,4 +250,4 @@ inline decltype(auto) invokeReduce(F &&reduceUDF, const std::tuple<Ks...>& key, 
 }
 }
 } // namespace ezl detail meta
-#endif //!__FUNCINVOKE_EZL_H__
+#endif //!FUNCINVOKE_EZL_H

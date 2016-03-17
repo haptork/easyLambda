@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __LOADUNITEXPR_EZL_H__
-#define __LOADUNITEXPR_EZL_H__
+#ifndef LOADUNITEXPR_EZL_H
+#define LOADUNITEXPR_EZL_H
 
 #include <memory>
 
@@ -42,4 +42,4 @@ template <class T, class I> struct LoadUnitExpr {
 }
 } // namespace ezl namespace ezl::detail
 
-#endif //!__LOADUNITEXPR_EZL_H__
+#endif //!LOADUNITEXPR_EZL_H

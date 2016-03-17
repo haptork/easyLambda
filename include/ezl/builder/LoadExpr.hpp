@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __LOADEXPR__EZL__H__
-#define __LOADEXPR__EZL__H__
+#ifndef LOADEXPR__EZL__H
+#define LOADEXPR__EZL__H
 
 #include <initializer_list>
 #include <map>

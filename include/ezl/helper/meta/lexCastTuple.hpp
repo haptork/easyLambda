@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __LEXCASTTUPLE_EZL_H__
-#define __LEXCASTTUPLE_EZL_H__
+#ifndef LEXCASTTUPLE_EZL_H
+#define LEXCASTTUPLE_EZL_H
 
 #include <string>
 #include <vector>

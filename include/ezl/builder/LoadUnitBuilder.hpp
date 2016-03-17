@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __LOADUNITBUILDER_EZL_H__
-#define __LOADUNITBUILDER_EZL_H__
+#ifndef LOADUNITBUILDER_EZL_H
+#define LOADUNITBUILDER_EZL_H
 
 #define LSUPER DataFlowExpr<LoadUnitBuilder<I>>,    \
                LoadUnitExpr<LoadUnitBuilder<I>, I>
@@ -40,4 +40,4 @@ public:
 }
 } // namespace ezl namespace ezl::detail
 
-#endif // !__LOADUNITBUILDER_EZL_H__
+#endif // !LOADUNITBUILDER_EZL_H

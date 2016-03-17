@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __PROCREQ_EZL_H__
-#define __PROCREQ_EZL_H__
+#ifndef PROCREQ_EZL_H
+#define PROCREQ_EZL_H
 
 #include <vector>
 
@@ -103,4 +103,4 @@ private:
 }
 } // namespace ezl // namespace detail
 
-#endif // !__PROCREQ_EZL_H__
+#endif // !PROCREQ_EZL_H

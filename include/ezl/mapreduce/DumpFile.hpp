@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef __DUMPFILE_EZL_H__
-#define __DUMPFILE_EZL_H__
+#ifndef DUMPFILE_EZL_H
+#define DUMPFILE_EZL_H
 
 #include <fstream>
 #include <iostream>
@@ -105,4 +105,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !__DUMPFILE_EZL_H__
+#endif // !DUMPFILE_EZL_H

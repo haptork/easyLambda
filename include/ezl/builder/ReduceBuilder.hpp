@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __REDUCEBUILDER_EZL_H__
-#define __REDUCEBUILDER_EZL_H__
+#ifndef REDUCEBUILDER_EZL_H
+#define REDUCEBUILDER_EZL_H
 
 #include <memory>
 
@@ -82,4 +82,4 @@ public:
 }
 } // namespace ezl namespace ezl::detail
 
-#endif // !__REDUCEBUILDER_EZL_H__
+#endif // !REDUCEBUILDER_EZL_H

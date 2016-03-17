@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __ezl__EZL__H__
-#define __ezl__EZL__H__
+#ifndef EZL_EZL_H
+#define EZL_EZL_H
 
 #include <memory>
 #include <tuple>
@@ -22,7 +22,6 @@
 #include "ezl/builder/LoadUnitExpr.hpp"
 #include "ezl/helper/meta/slct.hpp"
 #include "ezl/helper/meta/slctTuple.hpp"
-#include "ezl/helper/meta/typeInfo.hpp"
 
 namespace ezl {
 
@@ -52,4 +51,4 @@ template <class F> inline auto rise(F&& sourceFunc) {
 
 } // namespace ezl
 
-#endif // ! EZL
+#endif // ! EZL_EZL_H

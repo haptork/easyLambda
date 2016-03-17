@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __REDUCEALLEXPR_EZL_H__
-#define __REDUCEALLEXPR_EZL_H__
+#ifndef REDUCEALLEXPR_EZL_H
+#define REDUCEALLEXPR_EZL_H
 
 #include <memory>
 #include <vector>
@@ -84,4 +84,4 @@ struct ReduceAllExpr {
 }
 } // namespace ezl namespace ezl::detail
 
-#endif //!__REDUCEALLEXPR_EZL_H__
+#endif //!REDUCEALLEXPR_EZL_H

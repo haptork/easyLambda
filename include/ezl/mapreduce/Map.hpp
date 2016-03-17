@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __MAP_EZL_H__
-#define __MAP_EZL_H__
+#ifndef MAP_EZL_H
+#define MAP_EZL_H
 
 #include <tuple>
 #include <type_traits>
@@ -89,4 +89,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // ! __MAP_EZL_H__
+#endif // ! MAP_EZL_H

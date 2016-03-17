@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __LOADBUILDER_EZL_H__
-#define __LOADBUILDER_EZL_H__
+#ifndef LOADBUILDER_EZL_H
+#define LOADBUILDER_EZL_H
 
 #define SUPERLA DataFlowExpr<LoadBuilder<F>>,     \
                 DumpExpr<LoadBuilder<F>>,         \
@@ -43,4 +43,4 @@ public:
 }
 } // namespace ezl namespace ezl::detail
 
-#endif //__LOADBUILDER_EZL_H__
+#endif //LOADBUILDER_EZL_H
