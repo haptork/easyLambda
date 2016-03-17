@@ -49,8 +49,8 @@ public:
   }
 
   ~DumpFile() {
-    if (_os && _os != &std::cout) {
-      if (_os) delete _os;
+    if (_os != &std::cout) {
+      delete _os;
     }
   }
 
@@ -87,9 +87,9 @@ public:
   }
 
   virtual void signalEvent(int j) override final {
-    if (_os) (*_os)<<std::flush;
-    _os = nullptr;
+    (*_os)<<std::flush;
     if (_fb) _fb->close();
+    // resetting
     _os = &std::cout;
     _fb = nullptr;
     _sigged = true;
