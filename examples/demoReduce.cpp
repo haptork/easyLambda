@@ -7,6 +7,12 @@
  * For demonstration the pipelines are just built.
  * Replace .build() with .run() and add .dump() in any unit to check the rows.
  * */
+#include <array>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <vector>
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
@@ -19,15 +25,13 @@ auto f(char ch, int n, float f, long res) {
   return res + 1;
 }
 
-int main(int argc, char* argv[]) {
+void demoReduce() {
   using std::vector;
   using std::array;
   using std::tuple;
   using std::make_tuple;
   using std::tie;
   using namespace std::string_literals;
-
-  boost::mpi::environment env(argc, argv);
 
   const std::string inFile = "data/readFileTests/test1.txt";
 
@@ -104,6 +108,18 @@ int main(int argc, char* argv[]) {
   // tuple of key, tuple of value, tuple of result column types or const-refs,
   // const-ref of tuple of const-ref of key, value, result types.
   // It is good to care about const-ref if the size of the object is big.  
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoReduce();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

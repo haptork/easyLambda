@@ -10,6 +10,8 @@
  * For more io see `demoReadFile` and `demoRise` as well.
  * */
 #include <array>
+#include <iostream>
+#include <stdexcept>
 #include <tuple>
 #include <vector>
 
@@ -19,7 +21,7 @@
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/reduces.hpp>
 
-int demoLoadMem(std::string outFile) {
+void demoLoadMem(std::string outFile) {
   using std::vector;
   using std::array;
   using std::tuple;
@@ -50,16 +52,12 @@ int demoLoadMem(std::string outFile) {
   auto flow2 = ezl::rise(mem)
                  .dump(outFile, "load from rvalue array w/o share")
                  .runResult();
-
-  return 0;
 }
 
-int main(int argc, char* argv[]) {
+void demoIO() {
   using std::vector;
   using std::tuple;
   using std::string;
-
-  boost::mpi::environment env(argc, argv);
 
   // If running multi-process it is better to dump in file rather than stdout
   const string outFile = "";  // to stdout
@@ -99,5 +97,18 @@ int main(int argc, char* argv[]) {
   // a better way to get the results is runResult()
   auto rows = ezl::rise(ezl::loadFileNames(inFile).split())
                 .runResult();
+}
+
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoIO();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

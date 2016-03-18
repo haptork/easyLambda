@@ -7,6 +7,11 @@
  * For demonstration the pipelines are not built or run.
  * Add .run() at the end of a flow and add .dump() in any unit to check rows.
  * */
+#include <array>
+#include <iostream>
+#include <stdexcept>
+#include <tuple>
+#include <vector>
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
@@ -30,11 +35,7 @@ auto g(char ch,
 }
 
 
-int main(int argc, char* argv[]) {
-  using namespace std::string_literals;
-
-  boost::mpi::environment env(argc, argv);
-
+void demoReduceAll() {
   vector<tuple<int, char, array<float, 2>>> inp;
   inp.emplace_back(2, 'c', array<float,2>{{1.F, 2.F}});
   inp.emplace_back(2, 'a', array<float,2>{{2.F, 3.F}});
@@ -96,6 +97,18 @@ int main(int argc, char* argv[]) {
   // key, vector of tuple of value column types or their const-refs,
   // tuple of key, tuple of vector of value column types, or their const-refs.
   // It is good to care about const-ref if the size of the object is big.  
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoReduceAll();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

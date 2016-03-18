@@ -10,21 +10,21 @@
  * 
  * benchmarks at the bottom
  * */
-
+#include <iostream>
+#include <stdexcept>
 #include <string>
-
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/readFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
 
-int main(int argc, char* argv[]) {
+void wordcount(int argc, char* argv[]) {
   using std::string;
-  using std::vector;
-  boost::mpi::environment env(argc, argv);
-
-  assert(argc>1 && "provide file-glob as argument.");
+  if (argc < 2) {
+    std::cerr << "provide file-glob as argument.\n";
+    return;
+  }
   const std::string outFile = "data/output/wc.txt";
 
   ezl::rise(
@@ -32,9 +32,21 @@ int main(int argc, char* argv[]) {
     .reduce<1>(ezl::count(), 0).inprocess()
     .reduce<1>(ezl::sum(), 0).dump(outFile)
     .run();
-  return 0;
 }
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    wordcount(argc, argv);
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
+  return 0;
+}
 /*!
  * benchmark results: i7(hdd); units: secs
  * *nprocs* | 1    | 2    | 4    |

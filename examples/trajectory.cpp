@@ -9,6 +9,12 @@
  * For running on some different data-set specify the columns etc. in `readFile`
  * if needed and give the file(s) as command line argument.
  * */
+#include <array>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <vector>
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
@@ -19,7 +25,7 @@ using namespace std;
 
 auto difference(const array<float, 3>& prev, const array<float, 3>& next) {
   array<float, 3> diff;
-  for(auto i : {1, 2, 3}) {
+  for(auto i : {0, 1, 2}) {
     diff[i] = next[i] - prev[i];
   }
   return diff;
@@ -33,25 +39,25 @@ auto crossProd(const array<float, 3>& v1, const array<float, 3>& v2) {
   return prod;
 }
 
-int main(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-  assert(argc>1 && "provide trajectory file-pattern as argument.");
-  const string outFile = "data/output/traj.txt";
+void trajectory(int argc, char* argv[]) {
   const auto epsilon = 0.00001F;
+  const string outFile = "data/output/traj.txt";
+  std::string inFile = "data/trajectory/traj.txt";
+  if (argc > 1) inFile = std::string(argv[1]);
 
-  ezl::rise(ezl::readFile<array<float, 3>>(string(argv[1]))
+  ezl::rise(ezl::readFile<array<float, 3>>(inFile)
                 .cols({1, 2, 3})
                 .colSeparator(" \t"))
       .reduceAll([](const vector<array<float, 3>> & v) {
         return difference(v[0], v[1]);
-      }).adjacent()
+      }).adjacent(2)
       .reduceAll([](const vector<array<float, 3>> & v) {
         return crossProd(v[0], v[1]);
-      }).adjacent()
+      }).adjacent(2)
       .map([&epsilon](array<float, 3> prod) {
         array<int, 3> res;
-        for (auto i : {1, 2, 3}) {
-          res[i] = (abs(prod[i]) > epsilon) ? prod[i] / abs(prod[i]) : 0;
+        for (auto i : {0, 1, 2}) {
+          res[i] = (fabs(prod[i]) > epsilon) ? (prod[i] / fabs(prod[i])) : 0;
         }
         return res;
       })
@@ -60,8 +66,19 @@ int main(int argc, char* argv[]) {
         sort(a.begin(), a.end());
         return a;
       }).dump(outFile)
-      .run(1); // Always run with single process
-
-  return 0;
+      .run(1); // Always runs with single process
 }
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    trajectory(argc, argv);
+  } catch (const exception& ex) {
+    cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
+  return 0;
+}

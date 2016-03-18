@@ -31,7 +31,9 @@
  * - maps and filters: in-process of their parent unit without any parallelism.
  * - reduce(All): 0.5-0.75 processes of their parent unit without task mode.
  * */
-
+#include <iostream>
+#include <stdexcept>
+#include <tuple>
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
@@ -45,11 +47,9 @@ struct hashfn {
   }
 };
 
-int main(int argc, char* argv[]) {
+void demoPrll() {
   using std::make_tuple;
   using std::tie;
-
-  boost::mpi::environment env(argc, argv);
 
   auto source = ezl::loadMem({make_tuple(200,'c',1.F)});
 
@@ -89,6 +89,18 @@ int main(int argc, char* argv[]) {
   auto flowOrd = ezl::rise(source)
                    .reduce<1>(ezl::count(), 0).hash<hashfn>().ordered()
                    .build();
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoPrll();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

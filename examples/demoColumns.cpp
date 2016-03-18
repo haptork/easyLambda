@@ -7,7 +7,10 @@
  * For demonstration the pipelines are just built.
  * Replace .build() with .run() and add .dump() in any unit to check the rows.
  * */
+#include <iostream>
+#include <stdexcept>
 #include <string>
+#include <tuple>
 
 #include <boost/mpi.hpp>
 
@@ -29,10 +32,8 @@ auto mappy() {
 
 // In the following examples, filter is used just to show the types that
 // map is passing on.
-int main(int argc, char* argv[]) {
+void demoColumns() {
   using std::string;
-  boost::mpi::environment env(argc, argv);
-
   // colsTransform replaces the input cols selected with UDF resulting cols
   // here 1,2 cols are replaced with string type
   mappy().colsTransform()
@@ -61,6 +62,18 @@ int main(int argc, char* argv[]) {
     .filter([](int, string) {
       return true;
     }).build();
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoColumns();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

@@ -12,12 +12,12 @@
  *
  * benchmarks at the bottom
  * */
+#include <array>
+#include <iostream>
+#include <stdexcept>
 #include <boost/mpi.hpp>
 
-#include <algorithm>
-
 #include <ezl.hpp>
-
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/reduceAlls.hpp>
 #include <ezl/algorithms/reduces.hpp>
@@ -42,13 +42,10 @@ double calcNorm(const array<double, dim> &weights,
 }
 
 template <size_t dim>
-auto calcGrad(const double &y, const std::array<double, dim> &x,
-                const std::array<double, dim> &w) {
+auto calcGrad(const double &y, const array<double, dim> &x,
+                const array<double, dim> &w) {
   array<double, dim> grad;
-  auto dot = 0.;
-  for (size_t i = 0; i < w.size(); ++i) {
-    dot += w[i] * x[i];
-  }
+  auto dot = std::inner_product(::begin(w), ::end(w), ::begin(x), 0);
   //auto s = (sigmoid(y * dot) - 1) * y;
   auto s = sigmoid(dot) - y;
   for (size_t i = 0; i < w.size(); ++i) {
@@ -57,11 +54,13 @@ auto calcGrad(const double &y, const std::array<double, dim> &x,
   return grad;
 }
 
-int main(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-
-  assert(argc > 1 && "Please provide train file(s) glob pattern, followed by "
-                     "test file pattern(s).");
+void logreg(int argc, char* argv[]) {
+  if (argc < 2) {
+    cerr << "Please provide arguments as glob pattern for train file(s), "
+            "followed by test file pattern(s). Check source for defaults or "
+            "for running on some other data-format.";
+    return;
+  }
 
   constexpr auto dim = 3;  // number of features
   constexpr auto maxIters = 1000;
@@ -75,12 +74,12 @@ int main(int argc, char* argv[]) {
                   .runResult();
 
   if (data.empty()) {
-    std::cout<<"no data";
-    return 0;
+    cout<<"no data";
+    return;
   }
 
   auto sumArray = [](auto &a, auto &b) -> auto & {
-    std::transform(begin(a), end(a), begin(b), begin(b), std::plus<double>());
+    transform(begin(a), end(a), begin(b), begin(b), plus<double>());
     return b;
   };
 
@@ -101,16 +100,16 @@ int main(int argc, char* argv[]) {
     array<double, dim> wn, grad;
     tie(grad) =  ezl::flow(train).runResult()[0]; // running flow
     constexpr static auto gamma = 0.002;
-    std::transform(begin(w), end(w), begin(grad), begin(wn),
+    transform(begin(w), end(w), begin(grad), begin(wn),
                    [](double a, double b) { return a - gamma * b;});
     norm = calcNorm(wn, w);
-    w = std::move(wn);
+    w = move(wn);
     constexpr auto epsilon = 0.0001;
     if(norm < epsilon)  break;
   }
-  std::cout<<"iterations: "<<iters-1<<std::endl;  // TODO: message
-  std::cout<<"norm: "<<norm<<std::endl;
-  std::cout<<"final weights: "<<w<<std::endl;
+  cout<<"iterations: "<<iters-1<<endl;  // TODO: message
+  cout<<"norm: "<<norm<<endl;
+  cout<<"final weights: "<<w<<endl;
   
   // building testing flow
   auto testFlow = ezl::rise(reader)
@@ -127,10 +126,22 @@ int main(int argc, char* argv[]) {
 
   for (int i = 1; i < argc; ++i) {
     reader = reader.filePattern(argv[i]);
-    std::cout<<"Testing for "<<argv[i]<<std::endl;
+    cout<<"Testing for "<<argv[i]<<endl;
     ezl::flow(testFlow).run();
   }
- 
+}
+
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    logreg(argc, argv);
+  } catch (const exception& ex) {
+    cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }
 

@@ -7,6 +7,11 @@
  * For demonstration the pipelines are not built or run.
  * Add .run() at the end of a flow and add .dump() in any unit to check results.
  * */
+#include <array>
+#include <iostream>
+#include <stdexcept>
+#include <tuple>
+#include <vector>
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
@@ -31,18 +36,10 @@ private:
   bool isMore {true};
 };
 
-int main(int argc, char* argv[]) {
-  using std::vector;
-  using std::array;
-  using std::tuple;
-  using std::tie;
-  using std::make_tuple;
-
-  boost::mpi::environment env(argc, argv);
-
+void demoRise() {
   // returning a vector to return multiple rows.
   // An empty vector marks the end of data.
-  array<int, 3> ar{{1,2,3}};
+  std::array<int, 3> ar{{1,2,3}};
   ezl::rise([&ar]() {
     return std::move(ar);
   });
@@ -69,12 +66,24 @@ int main(int argc, char* argv[]) {
   bool isMore = false;
   ezl::rise([&pos, &isMore]() {
     isMore = !isMore;
-    return tie(pos, isMore);
+    return std::tie(pos, isMore);
   }).procDump(procInfo);
   // The pair is filled with process information at the beginning of run().
   // The pair contains pos, ranks of processes the unit is running in pos is
   // from (0, procInfo.second.size() - 1) which is different for every proc.
   // The rank of current process is at index pos in the ranks vector.
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoRise();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

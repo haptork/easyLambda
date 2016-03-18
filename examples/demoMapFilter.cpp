@@ -5,6 +5,13 @@
  * For demonstration the pipelines are not built or run.
  * Add .run() at the end of a flow and add .dump() in a unit to check the rows.
  * */
+#include <array>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
@@ -33,15 +40,13 @@ auto fvec(int x) {
   return make_tuple(std::vector<int>{1, x});
 }
 
-int main(int argc, char* argv[]) {
+void demoMapFilter() {
   using std::string;
   using std::tuple;
   using std::vector;
   using std::array;
   using std::make_tuple;
   using namespace std::string_literals;
-
-  boost::mpi::environment env(argc, argv);
 
   // for more on rise with loadMem see `demoIO.cpp`
   // returns row(s) of type int, char and float
@@ -95,6 +100,18 @@ int main(int argc, char* argv[]) {
     .filter([](const array<int, 2>&, const int&) {return true;})
     .map(ezl::mergeAr()).colsTransform()  // merges an array and int to one col
     .filter(ezl::gtAr<1>(2));              // row passes if 1st col of array > 2
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoMapFilter();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

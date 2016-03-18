@@ -10,6 +10,7 @@
  * benchmarks at the bottom
  * */
 #include <random>
+#include <stdexcept>
 
 #include <boost/mpi.hpp>
 
@@ -34,11 +35,11 @@ private:
   std::uniform_real_distribution<T> dis;
 };
 
-int main(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-
-  assert(argc > 1 && "Please provide number of MC trials");
-
+void valueOfPi(int argc, char* argv[]) {
+  if (argc < 2) {
+    std::cout<<"Please provide number of MC trials as argument\n";
+    return;
+  }
   auto trials = std::stoll(argv[1]);
 
   RandReal<double> rand01{0.0,1.0};
@@ -56,11 +57,24 @@ int main(int argc, char* argv[]) {
       return (4.0 * res / trials); 
     }).colsTransform().dump("", "pi in " + std::to_string(trials) + " trials:")
     .run();
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    valueOfPi(argc, argv);
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }
 
 /*!
+ * The benchmarks are using rand() function for random.
  * benchmark results: i7(hdd); input: 4 x 10^9; units: secs
  *  *nprocs* | 1   | 2   | 4    |
  *  ---      |---  |---  |---   |

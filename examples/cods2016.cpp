@@ -7,14 +7,13 @@
  * 
  * To see an example on logistic regression see example `logreg`.
  * */
-#include <boost/mpi.hpp>
-#include <boost/mpi.hpp>
+#include <array>
+#include <iostream>
+#include <stdexcept>
 
-#include <algorithm>
-#include <map>
+#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
-
 #include <ezl/algorithms/filters.hpp>
 #include <ezl/algorithms/maps.hpp>
 #include <ezl/algorithms/readFile.hpp>
@@ -23,14 +22,12 @@
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv);
-
-  // salary, (e, l, q, domain scores), gender
-  auto feat1 = ezl::readFile<float, std::array<float, 4>, char>(
-                   "data/datachallenge_cods2016/train.csv")
-                   .cols({3, 24, 25, 26, 27, 8})
-                   .colSeparator("\t");
+void cods() {
+  auto feat1 =
+      ezl::readFile<float, array<float, 4>, char>(
+          "data/datachallenge_cods2016/train.csv")
+          .cols({"Salary", "English", "Logical", "Quant", "Domain", "Gender"})
+          .colSeparator("\t");
 
   auto source = ezl::rise(feat1)
                     .reduce(ezl::count(), 0).dump("", "Total rows:").oneUp()
@@ -43,6 +40,18 @@ int main(int argc, char *argv[]) {
     .map<2, 3>(ezl::mergeAr()).colsTransform()
     .reduceAll(ezl::corr()).dump("", "corr. salary, e,l,q, domain, gender")
     .run();
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    cods();
+  } catch (const exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

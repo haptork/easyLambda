@@ -8,6 +8,8 @@
  * different number of processes.
  * */
 #include <array>
+#include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -17,12 +19,10 @@
 #include <ezl/algorithms/readFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
 
-int main(int argc, char* argv[]) {
+void demoReadFile() {
   using std::vector;
   using std::array;
   using std::string;
-
-  boost::mpi::environment env(argc, argv);
 
   const std::string inFile = "data/readFileTests/test1.txt";
   const std::string inFiles = "data/readFileTests/test?.txt";
@@ -93,6 +93,18 @@ int main(int argc, char* argv[]) {
       )
       .reduce<2>(ezl::count(), 0).inprocess().dump(outFile, "\n-- lammps")
       .run();
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoReadFile();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }

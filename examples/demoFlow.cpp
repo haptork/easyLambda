@@ -8,6 +8,8 @@
  *
  * Results are dumped on stdout.
  * */
+#include <iostream>
+#include <stdexcept>
 #include <tuple>
 #include <vector>
 
@@ -24,12 +26,10 @@ auto sqr() {
       .build();
 }
 
-int main(int argc, char* argv[]) {
+void demoFlow() {
   using std::vector;
   using std::tuple;
   using std::make_tuple;
-
-  boost::mpi::environment env(argc, argv);
 
   vector<tuple<char, vector<int>>> buf;
   buf.emplace_back(make_tuple('a', vector<int>{2}));
@@ -81,6 +81,18 @@ int main(int argc, char* argv[]) {
   source = source.buffer({6 ,9 ,8 ,7});
 
   ezl::flow(flow1).run();
+}
 
+int main(int argc, char *argv[]) {
+  boost::mpi::environment env(argc, argv, false);
+  try {
+    demoFlow();
+  } catch (const std::exception& ex) {
+    std::cerr<<"error: "<<ex.what()<<'\n';
+    env.abort(1);  
+  } catch (...) {
+    std::cerr<<"unknown exception\n";
+    env.abort(2);  
+  }
   return 0;
 }
