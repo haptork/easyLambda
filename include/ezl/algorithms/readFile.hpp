@@ -583,17 +583,16 @@ row types are different.");
       if (ksize && status.first) {
         curKey = detail::meta::slctTuple(_out, Kslct{});
       }
-      auto curBreak =
-          ((status.second != rs::nobr) &&
-           (!_props.tilleof && _cur == _rEndFile && (*_is).tellg() > _rEndByte));
-      if (curBreak && 
-          ((status.second == rs::prior && preBreak) ||
-           (status.second == rs::ignore) || (ksize && in && prepreBreak
-             && status.first && curKey != preKey))) {
+      auto isOverFlow =
+          (!_props.tilleof && _cur == _rEndFile && (*_is).tellg() > _rEndByte);
+      if (isOverFlow && ((status.second == rs::prior && preBreak) ||
+                         (status.second == rs::ignore) ||
+                         (status.second == rs::br && ksize && in &&
+                          prepreBreak && status.first && curKey != preKey))) {
         return make_pair(rs::eof, false);
       }
       prepreBreak = preBreak;
-      preBreak = curBreak;
+      preBreak =  isOverFlow;
       if (status.first) {
         if (ksize && !in && (first || curKey == preKey) && _pos &&
             _cur == _rBeginFile && _rBeginByte != 0) {
@@ -612,7 +611,10 @@ row types are different.");
         _props.fnames.clear();
         return make_pair(rs::eof, status.first);
       }
-      if ((curBreak && !ksize) || status.second == rs::eof) return make_pair(rs::eof, status.first);
+      if ((isOverFlow && status.second == rs::br && !ksize) ||
+          status.second == rs::eof) {
+        return make_pair(rs::eof, status.first);
+      }
       return make_pair(rs::ignore, status.first);
     }
     return make_pair(rs::eof, false);
