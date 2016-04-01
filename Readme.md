@@ -105,7 +105,7 @@ results in the [examples directory](examples). Examples include:
    [LAMMPS](http://lammps.sandia.gov/) simulation results.
    [displaced.cpp](examples/displaced.cpp),
    [interstitialcount.cpp](examples/interstitialcount.cpp).
- - example for having a overview of data stats with example from
+ - example for having an overview of data stats with example from
    [cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html).
    [cods2016.cpp](examples/cods2016.cpp).
  - given a trajectory with positions at different times, finding the count of

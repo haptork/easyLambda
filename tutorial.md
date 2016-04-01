@@ -1,16 +1,17 @@
 Getting started with ezl
-=========================
+========================
 
-This is a introductory tutorial that assumes very little prior knowledge of
-modern C++, MPI, map, reduce etc. So, skip the parts that look quite obvious. I
-think it covers almost everything except particular properties of the units,
-parallelism , playing around with data-flows and a few details here and there.
+This is an introductory tutorial that assumes very little prior knowledge of
+modern C++, MPI, map, reduce etc. Skip the parts that look quite obvious.
+It covers everything basic except particular properties of the units,
+parallelism, playing around with data-flows and a few details here and there.
 I am hoping to cover these and few other details, later.
 
 Th computation in easy lambda can be seen as data flowing through different
 units. The data-flow can be linear or it can have branches, merges or cycles.
 
 The units in the data-flow are:
+
 1. rise.
 2. Map and Filter.
 3. Reduce and ReduceAll.
@@ -29,7 +30,6 @@ the next unit. Map takes every row and transforms it into new row(s). Reduce tak
 a group of rows or all the rows to transform them into new row(s).
 
 ### Introduction to map and filter
-
 
 Let us assume we have a data-flow with two integers as column types and we want third
 column to have summation of two columns for each row. 
