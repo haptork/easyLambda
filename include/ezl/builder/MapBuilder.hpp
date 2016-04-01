@@ -37,9 +37,7 @@ template <class T, class I, class S, class F, class O> struct MapExpr;
 /*!
  * @ingroup builder
  * Builder for `Map` unit.
- * Employs crtp, mixin or policy based design for adding expressions with
- * nearly orthogonal functionality. Mixin helps calling super build after
- * a template class is done with its part in building the unit.
+ * Employs crtp
  *
  * */
 template <class I, class S, class F, class O, class P, class H>

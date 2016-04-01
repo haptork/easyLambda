@@ -28,7 +28,7 @@ template <typename T> class Source;
 
 /*!
  * @ingroup builder
- * Terminating expression class for `ReduceBuilder`
+ * Expressions for Reduce.
  * TODO: typelist
  * */
 template <class T, class I, class K, class S, class F, class FO, class O, class H> // UDF

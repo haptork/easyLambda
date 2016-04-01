@@ -55,7 +55,7 @@ public:
     callEm<decltype(meta::invokeMap(_func, 
       meta::slctTupleRef(data, Fslct{})))>(data);
   }
-
+private:
   template <class T>
   auto callEm(const itype &data, typename std::enable_if<meta::isVector<T>{}>::type* dummy = 0) {
     auto temp = meta::slctTupleRef(data, Fslct());
@@ -81,9 +81,7 @@ public:
       it.second->dataEvent(otemp);
     }
   }
-  // TODO: skip cat and slct if otemp == mtemp, after benchmarking
     
-private:
   Func _func;
 };
 }

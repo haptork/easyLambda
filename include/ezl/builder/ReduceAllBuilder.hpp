@@ -34,9 +34,7 @@ template <class T, class I, class P, class S, class F, class O, class H> struct 
 /*!
  * @ingroup builder
  * Builder for `ReduceAll` unit.
- * Employs crtp, mixin or policy based design for adding expressions with
- * nearly orthogonal functionality. Mixin helps calling super build after
- * a template class is done with its part in building the unit.
+ * Employs crtp
  *
  * */
 template <class I, class S, class F, class O, class P, class H>

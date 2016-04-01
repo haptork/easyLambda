@@ -24,9 +24,8 @@ template <class T, class I> struct LoadUnitExpr;
 /*!
  * @ingroup builder
  * Builder for `LoadUnit`
- * Employs crtp, mixin or policy based design for adding expressions with
- * nearly orthogonal functionality. Mixin helps calling super build after
- * a template class is done with its part in building the unit.
+ * Employs crtp based design for adding expressions with
+ * nearly orthogonal functionality.
  *
  * */
 template <class I> struct LoadUnitBuilder : public LSUPER {

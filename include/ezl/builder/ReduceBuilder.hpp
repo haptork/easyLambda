@@ -34,9 +34,7 @@ template <class T, class I, class P, class S, class F, class FO, class O,
 /*!
  * @ingroup builder
  * Builder for `Reduce` unit.
- * Employs crtp, mixin or policy based design for adding expressions with
- * nearly orthogonal functionality. Mixin helps calling super build after
- * a template class is done with its part in building the unit.
+ * Employs crtp
  * 
  * TODO: typelist
  * */
