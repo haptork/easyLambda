@@ -12,6 +12,8 @@ an easy but powerful
 [ExpressionBuilder](http://martinfowler.com/bliki/ExpressionBuilder.html)
 interface made possible by use of modern C++ features.
 
+Check the [tutorials](doc/tutorial/contents.md) to begin coding with ezl.
+
 ## Why easyLambda
 
 Use ezl for your data-processing tasks, to write post-processors for simulation
