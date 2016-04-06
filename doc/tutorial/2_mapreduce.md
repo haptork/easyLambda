@@ -20,7 +20,7 @@ In a data-flow rise is source/origin, which passes rows of some column types to
 the next unit. Map takes every row and transforms it into new row(s). Reduce takes
 a group of rows or all the rows to transform them into new row(s).
 
-### A real world example
+#### A real world example
 
 Let us take an example from [Cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html). A stripped version of original
 data-file is given with ezl [here](../../data/datachallenge_cods2016/train.csv). The data contains student profiles
@@ -60,7 +60,7 @@ is given in [cods2016.cpp example](../../examples/cods2016.cpp).
 By the end of this section, we will be able to understand the details of the
 above example.
 
-### Introduction to map and filter
+#### Introduction to map and filter
 
 Let us assume we have a data-flow with two integers as column types and we want third
 column to have summation of two columns for each row. 
@@ -148,7 +148,7 @@ than 5, then we can write something like.
   .filter<1, 3>(ezl::gt(2, 5));
 ```
 
-### Introduction to reduce
+#### Introduction to reduce
 
 Let us say we want to add all the rows in the `oneCol` data-flow.
 
@@ -263,7 +263,7 @@ need to be passed ahead.
 Finally, key and value columns both can be selected with a syntax like following:
 `.reduce<ezl::key<1, 2>, ezl::val<3, 5>>(...)`.
 
-### Introduction to rise
+#### Introduction to rise
 
 Rise takes a function with no parameter that returns {row, isEndOfData} or a
 vector of rows in which case EndOfData is implied by returning an empty vector.
@@ -274,7 +274,7 @@ for loading tabulated data from files, for loading list of data from memory,
 for calling the next unit n number of times without any parameter. All
 of these functions work in parallel execution.
 
-#### FromFile: 
+##### FromFile: 
 
 Let us say we have a text file containing one string, two ints and a float
 value separated by either commas or tabs or both. We can load the file as follows:
@@ -293,7 +293,7 @@ to every row which is important for simulation dumps where timesteps are
 generally written at the top and rows follows it. Check
 [demoFromFile](../../examples/demoFromFile.cpp) for more on these options.
 
-#### fromMem:
+##### fromMem:
 This loads rows from a container or intializer list.
 
 ```cpp
@@ -307,7 +307,7 @@ Similarly, a vector or array or any other container can be passed to it.
 A container of type tuple, streams rows with multiple cols to the data-flow.
 Check [demoIO](../../examples/demoIO.cpp) to view more examples on this.
 
-#### kick:
+##### kick:
 `kick(N)` streams N number of empty rows to the next column. 
 It takes care of the parallelism so that one can decide if total of N times
 over all the processes or N times on each process. By default the N is shared
@@ -321,7 +321,7 @@ ezl::rise(ezl::kick(20))
 
 In addition to [demoIO](../../examples/demoIO.cpp), [pi](../../examples/pi.cpp) example also uses this.
 
-### A few things more:
+#### A few things more:
 
 - If you see a long compile time error, just scroll to the top, most likely
   you will see a `static_error` saying either col selection is not possible or
