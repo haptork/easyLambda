@@ -1,5 +1,5 @@
 2 Map and Reduce
-=================
+==================
 
 The section builds upon the basics of data-flow with ezl as introduced in [prior section on data-flow](1_dataflow.md).
 

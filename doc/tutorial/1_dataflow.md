@@ -53,7 +53,7 @@ details of these things in the sections that follow.
 > dependency on ezl and require no extra construct. Just take multiple input
 > parameters as usual and return the result. Moreover, there is a lot of emphasis
 > on column selection to use functions in the data-flow that do not exactly match
-> the inputs coming.  There are no other C++ library that provides map, reduce
+> the inputs coming. There is no other C++ library that provides map, reduce
 > with data-flow. In addition ezl provides MPI parallelism which notwithstanding
 > to its extensive use in HPC, lacks good library support written on top of it.
 
@@ -318,10 +318,10 @@ We can also load numbers from a file directly.
 ```cpp
 auto fileName = std::string("numbers.txt");
 
-auto srcFlowFile = ezl::rise(ezl::fromFiles<double>(fileName)).build();
+auto srcFlowFile = ezl::rise(ezl::fromFile<double>(fileName)).build();
 ```
 
-The rise function `fromFiles` can work with multi-column files as well. It is
+The rise function `fromFile` can work with multi-column files as well. It is
 quite comprehensive. It takes care of errors in reading, it has option to have
 strictSchema (reject rows that have different size of column) or noStrictSchema
 (fill in defaults if less cols, or ignore if more cols), parallel reading etc.

@@ -21,8 +21,8 @@ results, for iterative machine learning algorithms, for general list data
 processing or any data / task parallel code. Processing a flat-file with ezl is
 as simple and declarative as working with spreadsheet program or writing a SQL
 query, but using C / C++ functions. You get an expressive way to compose
-the algorithms as a data-flow of small tasks, clean separation of various
-algorithm logics from i/o, data-formats or parallelism, various built-in
+the algorithms as a data-flow of small tasks, clean separation of 
+algorithm logic from i/o, data-formats or parallelism, various built-in
 functions for common operations and MPI parallelism with no to little extra
 code. The library presents no special structure, data-types or requirements on
 the user functions. Moreover, it facilitates composition of functions with
@@ -40,6 +40,30 @@ variadics, move-semantics, tuples, type-traits.
 
 Contributions and feedback of any kind are much appreciated.
 Please check [contributing.md](contributing.md) for more.
+
+#### Related works: 
+There is no other C++ library that provides map, reduce with data-flow. ezl
+also provides MPI parallelism which notwithstanding to its extensive use in
+high performance computing, lacks good library support written on top of it.
+It does have various distinguishing features such as cyclic data-flows,
+parallelism as a property, column selection for composition, many implicit
+choices implemented with traits.
+
+There are some libraries that offer data-flow in C++ such as boost data-flow,
+tbb graphs, phish. Unlike functional paradigm languages and libraries, they
+have bloated syntax of varying degree with explicit graphs,
+edges, nodes, all sort of classes, functions with unusual signatures. It 
+defies the motive of facilitating composition of pure functions that have
+nothing but algorithm logic for better reuse, modularity and parallelism
+without bloat-code, as seen in nodejs promises, scala libraries and is one of the
+motivation for Monad idiom. 
+
+In ezl, the user functions have no dependency on library and require no extra
+construct. They just take multiple input parameters as usual and return the
+result. Moreover, there is a lot of emphasis on column selection to use the
+functions in the data-flow that do not exactly match the inputs coming. The use
+of map and reduce as the only units simplifies the code and enables
+data-parallelism along with task-parallelism inherent to data-flow.
 
 ## Overview
 
@@ -184,7 +208,7 @@ The numbers inside the circle are process rank a unit is running on.  for e.g.
 first unit can be a fromFile running on {0, 1} process ranks, {2,3,4} can be
 running a map or reduce and so on. It can be seen that a reduce task is by
 default parallel and map tasks are by default in-process. The prll option in
-the units control the behaviour. The processes can be requested by number,
+the units control the behavior. The processes can be requested by number,
 ratio of processes of parent unit, or exact rank of processes. If the requested
 processes are not available then also the program runs correctly with best
 possible allocation to units. [demoPrll](examples/demoPrll.cpp) has detailed
