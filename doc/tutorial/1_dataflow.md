@@ -67,7 +67,7 @@ of a unit with resulting types of prior unit) should match at compile time.
 A lot of times parameters of a function are (proper) subset of parameters being
 passed to it from prior unit, hence a composition is not directly possible.  In
 functional languages composition of such functions is one of the motivation for
-the use of (Monad)[https://en.wikipedia.org/wiki/Monad_(functional_programming)] idiom. 
+the use of [Monad](https://en.wikipedia.org/wiki/Monad_(functional_programming)) idiom. 
 ezl has columns / parameters selection for these cases.
 
 Let's look at an ezl program to find the sixth root of a number.
@@ -122,7 +122,7 @@ This sub-section is for the things that we mentioned or used in the above
 examples but didn't describe and for a few additional data-flow features that
 are not often used.
 
-###### Returning multiple values / columns:
+##### Returning multiple values / columns:
 
 A function can return multiple values / columns by returning a standard tuple.
 The function that returns square root and a text message can be written as.
@@ -133,7 +133,7 @@ auto mysqrt(int number) {
 }
 ```
 
-###### Branches
+##### Branches
 
 There are different ways of creating a branched data-flow. We will demonstrate
 this by creating a data-flow with two different maps, one for finding sqrt and
@@ -211,7 +211,7 @@ ezl::rise(ezl::fromMem({number}))
 If we are not reusing a flow somewhere else then we can build it inside
 `branchFlow` as well.
 
-###### Cycles
+##### Cycles
 
 We have implicitly seen that `map` unit transforms a value to another
 value. There is also a `filter` unit that passes the input values only
@@ -256,7 +256,7 @@ ezl::flow(sqrFlow)
   .run();
 ```
 
-###### More variations
+##### More variations
 
 In addition to branches and cycles, a data-flow can be constructed and run inside
 another data-flow. This cascading can be any number of times. Moreover, two-branches
@@ -266,7 +266,7 @@ the only restriction for data flow from one unit to another is that the types
 should match. Check [demoFlow](../../examples/demoFlow.cpp) for more crazy example
 flows.
 
-###### Getting result
+##### Getting result
 
 `dump()` can be added to any unit to display its output data. One can think
 of it as a branch in the main data-flow. `dump` has two optional string parameters
@@ -290,7 +290,7 @@ auto sixthRoot(double number) {
 }
 ```
 
-###### Multiple rows
+##### Multiple rows
 
 We have restricted our data-flow examples to the calculation for a single number.
 However, we can pass a list (array, vector or other containers) of numbers in the rise and
@@ -333,7 +333,7 @@ is treated as returning multiple rows. For returning vector as a column, a
 tuple of vector is to be returned.
 
 
-###### A peek at parallelism
+##### A peek at parallelism
 
 A data-flow enables task parallelism, inherently. Any unit can be made to
 run in a separate process / thread. A data-flow pipeline to calculate
@@ -356,7 +356,7 @@ The parallelism in ezl is currently implemented using MPI. It is a message-passi
 library and can be scaled to a large cluster of computers very well. We will
 discuss more on parallelism in later sections.
 
+---------------------------------------------------------------------------------------
+
 The [next section](2_mapreduce.md) introduces various details about map, filter and reduce
 units.
-
-------------------------------------------------------------------------------
