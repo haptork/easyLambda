@@ -1,5 +1,5 @@
 Sections:
 ---------
 
-1. [Data-flow](docs/tutorials/1_dataflow.md)
-2. [Map-Reduce](docs/tutorials/1_mapreduce.md)
+1. [Data-flow](1_dataflow.md)
+2. [Map-Reduce](2_mapreduce.md)

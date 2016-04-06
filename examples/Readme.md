@@ -4,7 +4,7 @@ To learn about ezl, I suggest going by the following sequence:
 0. wordcount and pi examples for overview.
 1. demoColumns. 
 2. demoMapFilter.
-3. demoReadFile.
+3. demoFromFile.
 4. demoReduce.
 5. demoReduceAll.
 6. demoPrll.

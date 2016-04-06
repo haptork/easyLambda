@@ -18,13 +18,14 @@ ezl::rise(ezl::fromMem({25.0}))
 There are three units in the above program. It starts with `rise` which takes a
 function that is source of the data. `fromMem` is an ezl function
 to get the input data to the flow. Next are two `map` units, the number flows
-from rise to map-sqrt, the result of `sqrt` is added to the input number and is
-passed to map-plus. The data coming out of second map is being printed on to
-the standard output using `dump`. The flow runs only when `run` is called. In
-addition to running a flow, it can also be built and run later multiple times
-with different data or can be added to another data-flows.  `dump()` can be
-added to any unit as a property of that unit, similar embellishments exist for
-parallelism and for compositions as we will see in further sections.
+from rise to map-sqrt, the input number and the result of `sqrt` (25.0, 5.0) is
+passed to map-plus. The data that comes out of second map (25.0, 5.0, 30.0) is
+printed on to the standard output using `dump`. The flow runs only when `run`
+is called. In addition to running a flow, it can also be built and run later
+multiple times with different data or can be added to another data-flows.
+`dump()` can be added to any unit as a property of that unit, similar
+embellishments exist for parallelism and for compositions as we will see in
+further sections.
 
 The data-flow paradigm is declarative, unlike general C++ procedural programs it
 is more expressive. The examples of declarative paradigm include computations
@@ -66,8 +67,7 @@ of a unit with resulting types of prior unit) should match at compile time.
 A lot of times parameters of a function are (proper) subset of parameters being
 passed to it from prior unit, hence a composition is not directly possible.  In
 functional languages composition of such functions is one of the motivation for
-the use of (Monad)
-[https://en.wikipedia.org/wiki/Monad_(functional_programming)] idiom. 
+the use of (Monad)[https://en.wikipedia.org/wiki/Monad_(functional_programming)] idiom. 
 ezl has columns / parameters selection for these cases.
 
 Let's look at an ezl program to find the sixth root of a number.
@@ -221,7 +221,7 @@ from it using `cols<...>()` is same as for a map unit. Using `filter`
 we can create a cyclic data-flow same as the first data-flow of the
 following figure.
 
-![dataflow](doc/dataflow.png)
+![dataflow](../dataflow.png)
 
 Following are the two ways of creating the data-flow.
 
@@ -263,7 +263,7 @@ another data-flow. This cascading can be any number of times. Moreover, two-bran
 of a data-flow or different data-flows (data-flows with different rises) can be
 merged into a single flow. A data-flow can have any number of rises as well. So,
 the only restriction for data flow from one unit to another is that the types
-should match. Check [demoFlow](examples/demoFlow.cpp) for more crazy example
+should match. Check [demoFlow](../../examples/demoFlow.cpp) for more crazy example
 flows.
 
 ###### Getting result
@@ -293,7 +293,7 @@ auto sixthRoot(double number) {
 ###### Multiple rows
 
 We have restricted our data-flow examples to the calculation for a single number.
-However, we can pass a list (array, vector, …) of numbers in the rise and
+However, we can pass a list (array, vector or other containers) of numbers in the rise and
 the same data-flows will transform each number / row in the list. This
 is the usual semantics of `map` in functional paradigm i.e. `map` transforms
 a list into a new list by applying a function to each element of the list.
@@ -325,7 +325,7 @@ The rise function `fromFiles` can work with multi-column files as well. It is
 quite comprehensive. It takes care of errors in reading, it has option to have
 strictSchema (reject rows that have different size of column) or noStrictSchema
 (fill in defaults if less cols, or ignore if more cols), parallel reading etc.
-Check [demoFromFile](examples/demoFromFile.cpp) for more on these options.
+Check [demoFromFile](../../examples/demoFromFile.cpp) for more on these options.
 
 In some cases it may be required to return zero, one or multiple rows for an
 input row from a map. For this, the map can return a vector of values which
@@ -355,5 +355,8 @@ parallel but to a lesser extent.
 The parallelism in ezl is currently implemented using MPI. It is a message-passing
 library and can be scaled to a large cluster of computers very well. We will
 discuss more on parallelism in later sections.
+
+The [next section](2_mapreduce.md) introduces various details about map, filter and reduce
+units.
 
 ------------------------------------------------------------------------------

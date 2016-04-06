@@ -19,7 +19,7 @@
 #include <ezl/algorithms/fromFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
 
-void demoReadFile() {
+void demoFromFile() {
   using std::vector;
   using std::array;
   using std::string;
@@ -27,7 +27,7 @@ void demoReadFile() {
   const std::string inFile = "data/fromFileTests/test1.txt";
   const std::string inFiles = "data/fromFileTests/test?.txt";
   const std::string lammpsFile = "data/lammps/dump.txt";
-  const std::string outFile = "data/output/demoReadFile.txt";
+  const std::string outFile = "data/output/demoFromFile.txt";
 
   // all the rows that have column convertible to column types specified
   // are read. File(s) data is equally divided among processes available.
@@ -98,7 +98,7 @@ void demoReadFile() {
 int main(int argc, char *argv[]) {
   boost::mpi::environment env(argc, argv, false);
   try {
-    demoReadFile();
+    demoFromFile();
   } catch (const std::exception& ex) {
     std::cerr<<"error: "<<ex.what()<<'\n';
     env.abort(1);  

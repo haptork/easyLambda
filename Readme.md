@@ -107,8 +107,9 @@ over a serial code written specifically to carry out the same operation.
 
 Here is another example from
 [cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html). A stripped
-version of the input data-file is given with ezl [here](). The
-data contains student profiles with scores, gender, job-salary, city etc.
+version of the input data-file is given with ezl
+[here](data/datachallenge_cods2016/train.csv). The data contains student
+profiles with scores, gender, job-salary, city etc.
 
 #### [Example cods2016](examples/cods2016.cpp)
 ```cpp
@@ -131,7 +132,7 @@ with respect to gender. We can find similarity of the above code with steps in
 a spreadsheet analysis or with SQL query. We select the columns to work with
 viz. gender and three scores. We filter the rows based on a column and predicate.
 Next, we transform a selected column in-place and then find an aggregate property
-for all the rows.
+(correlation) for all the rows.
 
 
 You can find the above examples and many more in detail with benchmarking
@@ -218,7 +219,7 @@ discussed and for above two data-flow figures. Many other examples also use
 flow properties.
 
 ## Quick Start
-Check out the [tutorial](doc/tutorials/content.md) to begin coding with ezl.
+Check out the [tutorial](doc/tutorial/contents.md) to begin coding with ezl.
 Feel free to ask for any specific queries.
 
 ## How to install

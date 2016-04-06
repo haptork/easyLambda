@@ -7,7 +7,7 @@
  *
  * add dump to any unit to check rows coming out of it.
  * 
- * For more io see `demoReadFile` and `demoRise` as well.
+ * For more io see `demoFromFile` and `demoRise` as well.
  * */
 #include <array>
 #include <iostream>
@@ -21,7 +21,7 @@
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/reduces.hpp>
 
-void demoLoadMem(std::string outFile) {
+void demoFromMem(std::string outFile) {
   using std::vector;
   using std::array;
   using std::tuple;
@@ -63,7 +63,7 @@ void demoIO() {
   const string outFile = "";  // to stdout
   const string inFile = "data/fromFilesTests/*.txt";
 
-  demoLoadMem(outFile); 
+  demoFromMem(outFile); 
 
   // kick calls the next unit N times with nothing.
   // with split N is split amont the various procs, so that total is N.

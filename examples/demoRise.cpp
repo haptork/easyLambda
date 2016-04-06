@@ -2,7 +2,7 @@
  * @file
  * demo for reduceAll.
  *
- * For library functions provided for rise see `demoReadFile` and `demoIO`.
+ * For library functions provided for rise see `demoFromFile` and `demoIO`.
  *
  * For demonstration the pipelines are not built or run.
  * Add .run() at the end of a flow and add .dump() in any unit to check results.

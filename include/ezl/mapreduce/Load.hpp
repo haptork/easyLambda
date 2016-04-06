@@ -46,7 +46,7 @@ namespace detail {
  * [](){ return vector<int>{}; }; 
  * [](){ return vector<tuple<int, float>>{}; }; 
  *
- * See `kick`, `LoadMem`... examples in `io.hpp` for generic UDFs.
+ * See `kick`, `FromMem`... examples in `io.hpp` for generic UDFs.
  *
  * */
 template <class F, class I = typename meta::LoadTypes<F>::type> 

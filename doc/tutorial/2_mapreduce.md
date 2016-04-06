@@ -1,8 +1,7 @@
 2 Map and Reduce
 =================
 
-The section is in continuation from the [prior section on
-data-flow](dataflow.md).
+The section builds upon the basics of data-flow with ezl as introduced in [prior section on data-flow](1_dataflow.md).
 
 The computation in easy lambda can be seen as data flowing through different
 units. These units are:
@@ -23,8 +22,8 @@ a group of rows or all the rows to transform them into new row(s).
 
 ### A real world example
 
-Let us take an example from [Cods2016](…). A stripped version of original
-data-file is given with ezl [here](). The data contains student profiles
+Let us take an example from [Cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html). A stripped version of original
+data-file is given with ezl [here](../../data/datachallenge_cods2016/train.csv). The data contains student profiles
 with scores, gender, job-salary, city etc.
 
 ```cpp
@@ -56,7 +55,7 @@ select columns that we want to transform and use `colsTransform()` to do it
 in-place. We reduce to find aggregate values of multiple rows like correlation
 and summary. The summary for male and female are found separately by selecting
 column 1st as grouping key in the reduce. A different analysis of the same data
-is given in [cods2016.cpp example](examples/cods2016.cpp).
+is given in [cods2016.cpp example](../../examples/cods2016.cpp).
 
 By the end of this section, we will be able to understand the details of the
 above example.
@@ -292,7 +291,7 @@ or noStrictSchema (fill in defaults if less cols, or ignore if more cols),
 parallel read. It can even sort of denormalise or attach a header information
 to every row which is important for simulation dumps where timesteps are
 generally written at the top and rows follows it. Check
-[demoFromFile](examples/demoFromFile.cpp) for more on these options.
+[demoFromFile](../../examples/demoFromFile.cpp) for more on these options.
 
 #### fromMem:
 This loads rows from a container or intializer list.
@@ -306,7 +305,7 @@ The rise in above data-flow will stream three rows having a single column of
 type integer to the data-flow. 
 Similarly, a vector or array or any other container can be passed to it.
 A container of type tuple, streams rows with multiple cols to the data-flow.
-Check [demoIO](examples/demoIO.cpp) to view more examples on this.
+Check [demoIO](../../examples/demoIO.cpp) to view more examples on this.
 
 #### kick:
 `kick(N)` streams N number of empty rows to the next column. 
@@ -320,7 +319,7 @@ ezl::rise(ezl::kick(20))
   .build();
 ```
 
-In addition to [demoIO](examples/demoIO.cpp), [pi](examples/pi.cpp) example also uses this.
+In addition to [demoIO](../../examples/demoIO.cpp), [pi](../../examples/pi.cpp) example also uses this.
 
 ### A few things more:
 

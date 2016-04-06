@@ -63,7 +63,7 @@ void demoReduce() {
   // The ordered expression in fromFile makes sure that all the contiguos rows
   // with same value of certain selected columns in a input file are read by
   // the same process in a multi-process run.  
-  // see `demoReadFile` for more on this.
+  // see `demoFromFile` for more on this.
   ezl::rise(ezl::fromFile<std::string, int, float>(inFile)
                           .cols({"name", "num", "score"})
                           .ordered<1>())

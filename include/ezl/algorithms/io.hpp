@@ -158,7 +158,7 @@ private:
  * */
 namespace detail {
 template <class T>
-class LoadMem {
+class FromMem {
 public:
   using I = typename T::value_type;
   /*!
@@ -168,7 +168,7 @@ public:
   *                among the available processes, else all the processes
   *                work on full list.
   * */
-  LoadMem(const T &source, bool isShard = false)
+  FromMem(const T &source, bool isShard = false)
       : _isSplit{isShard} {
     _isVal = false;
     _vDataHandle = &source;
@@ -177,7 +177,7 @@ public:
   /*!
   * ctor for rvalue source . The params are same as in lvalue ctor.
   * */
-  LoadMem(const T &&source, bool isShard = false)
+  FromMem(const T &&source, bool isShard = false)
       : _isSplit{isShard} {
     _isVal = true;
     _vDataVal = std::move(source);
@@ -258,12 +258,12 @@ private:
 template <class T>
 auto fromMem(T&& source, bool isSplit = false) {
   using cleanT = std::decay_t<T>;
-  return detail::LoadMem<cleanT> {std::forward<T>(source), isSplit};
+  return detail::FromMem<cleanT> {std::forward<T>(source), isSplit};
 }
 
 template <class T>
 auto fromMem(std::initializer_list<T> source, bool isSplit = false) {
-  return detail::LoadMem<std::vector<T>> {std::move(source), isSplit};
+  return detail::FromMem<std::vector<T>> {std::move(source), isSplit};
 }
 
 /*!
