@@ -178,6 +178,7 @@ private:
  * works fine with std::array as columns.
  *
  * */
+template <int I>
 class corr {
 public:
   // template<class... Vs>
@@ -185,8 +186,8 @@ public:
   auto operator()(const std::tuple<Ks...> &, const std::tuple<Vs...> &val) {
     std::vector<double> res;
     res.reserve(sizeof...(Vs));
-    std::vector<double> diff(get<0>(val).size());
-    double sqsum = _calcRefDiff(get<0>(val), diff);
+    std::vector<double> diff(get<I - 1>(val).size());
+    double sqsum = _calcRefDiff(get<I - 1>(val), diff);
     _corr(val, diff, sqsum, std::make_index_sequence<sizeof...(Vs)>{}, res);
     //std::reverse(std::begin(res), std::end(res));
     return std::make_tuple(res);
@@ -272,7 +273,6 @@ private:
     std::make_tuple(
         _vectorCorr(std::get<index>(val), rDiff, rSqsum, diff, res)...);
   }
-  
 };
 
 } // namespace ezl

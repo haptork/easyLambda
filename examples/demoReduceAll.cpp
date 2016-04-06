@@ -82,7 +82,7 @@ void demoReduceAll() {
   // gives correlation of all value columns agains first value col.
   // cols can be array or non array.
   ezl::flow(pipe1)
-    .reduceAll(ezl::corr())
+    .reduceAll(ezl::corr<1>())
     .filter([](array<double, 4>) { // corr for each column including array cols
       return true;
     });

@@ -38,7 +38,7 @@ void cods() {
     .map<3>([](char gender) { return float(gender == 'M' || gender == 'm'); })
       .colsTransform()
     .map<2, 3>(ezl::mergeAr()).colsTransform()
-    .reduceAll(ezl::corr()).dump("", "corr. salary, e,l,q, domain, gender")
+    .reduceAll(ezl::corr<1>()).dump("", "corr. salary, e,l,q, domain, gender")
     .run();
 }
 
