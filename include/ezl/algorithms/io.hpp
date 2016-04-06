@@ -146,13 +146,13 @@ private:
  *
  * Example usage:
  * @code
- * ezl::load(ezl::loadMem({1,2,3})).build();
+ * ezl::load(ezl::fromMem({1,2,3})).build();
  *
  * std::vector<std::tuple<int, char>> a;
  * a.push_back(make_tuple(4, 'c');
- * ezl::load(ezl::loadMem(a)).build();
+ * ezl::load(ezl::fromMem(a)).build();
  *
- * ezl::load(ezl::loadMem(std::array<float, 2> {4., 2.}}, false))
+ * ezl::load(ezl::fromMem(std::array<float, 2> {4., 2.}}, false))
  * @endcode
  *
  * */
@@ -256,13 +256,13 @@ private:
 // a function to help in template parameter deduction without specifying.
 // why const does not work with rvalue? TODO
 template <class T>
-auto loadMem(T&& source, bool isSplit = false) {
+auto fromMem(T&& source, bool isSplit = false) {
   using cleanT = std::decay_t<T>;
   return detail::LoadMem<cleanT> {std::forward<T>(source), isSplit};
 }
 
 template <class T>
-auto loadMem(std::initializer_list<T> source, bool isSplit = false) {
+auto fromMem(std::initializer_list<T> source, bool isSplit = false) {
   return detail::LoadMem<std::vector<T>> {std::move(source), isSplit};
 }
 

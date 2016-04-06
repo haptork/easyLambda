@@ -42,7 +42,7 @@ void demoReduceAll() {
   inp.emplace_back(4, 'a', array<float,2>{{3.F, 4.F}});
   inp.emplace_back(4, 'c', array<float,2>{{4.F, 5.F}});
 
-  auto pipe1 = ezl::rise(ezl::loadMem(inp)).build();
+  auto pipe1 = ezl::rise(ezl::fromMem(inp)).build();
 
   // output cols are key, result of the UDF.
   // cols can be selected in any order by specifying indices in cols<...>()

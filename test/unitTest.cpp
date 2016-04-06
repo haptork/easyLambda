@@ -13,7 +13,7 @@
 // tie, nothing related to library. TODO: for gcc as well
 //#include <unitTest/ReduceTest.cpp>
 #include <unitTest/ReduceAllTest.cpp>
-#include <unitTest/readFileTest.cpp>
+#include <unitTest/fromFileTest.cpp>
 #include <unitTest/MPIBridgeTest.cpp>
 #include <unitTest/LoadTest.cpp>
 
@@ -26,7 +26,7 @@ void MapTest(int, char*[]);
 void ReduceTest(int, char*[]);
 void ReduceAllTest(int, char*[]);
 void FilterTest(int, char*[]);
-void readFileTest(int, char*[]);
+void fromFileTest(int, char*[]);
 void MPIBridgeTest(int, char*[]);
 void LoadTest(int, char*[]);
 
@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
   //ReduceTest(argc, argv);
   ReduceAllTest(argc, argv);
   FilterTest(argc, argv);
-  readFileTest(argc, argv);
+  fromFileTest(argc, argv);
   MPIBridgeTest(argc, argv);
   LoadTest(argc, argv);
 

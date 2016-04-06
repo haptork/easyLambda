@@ -16,7 +16,7 @@
 #include <ezl.hpp>
 #include <ezl/algorithms/filters.hpp>
 #include <ezl/algorithms/maps.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
 #include <ezl/algorithms/reduceAlls.hpp>
 
@@ -24,7 +24,7 @@ using namespace std;
 
 void cods() {
   auto feat1 =
-      ezl::readFile<float, array<float, 4>, char>(
+      ezl::fromFile<float, array<float, 4>, char>(
           "data/datachallenge_cods2016/train.csv")
           .cols({"Salary", "English", "Logical", "Quant", "Domain", "Gender"})
           .colSeparator("\t");

@@ -1,6 +1,6 @@
 /*!
  * @file
- * Basic tests for `readFile.hpp`
+ * Basic tests for `fromFile.hpp`
  *
  * This file is a part of easyLambda(ezl) project for parallel data
  * processing with modern C++ and MPI.
@@ -22,33 +22,33 @@
 #include <ezl/mapreduce/Load.hpp>
 #include <ezl/mapreduce/Filter.hpp>
 #include <ezl/helper/ProcReq.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 #include <ctorTeller.hpp>
 
 using namespace ezl::detail;
 
-void readFileBasicTest();
+void fromFileBasicTest();
 
-void readFileTest(int argc, char* argv[]) {
+void fromFileTest(int argc, char* argv[]) {
   boost::mpi::environment env(argc, argv);
   boost::mpi::communicator comm;
-  readFileBasicTest();
+  fromFileBasicTest();
 }
 
-void readFileStrictSchemaTest();
-void readFileFileNameTest();
-void readFileRowMaxTest();
+void fromFileStrictSchemaTest();
+void fromFileFileNameTest();
+void fromFileRowMaxTest();
 
-void readFileBasicTest() {
-  readFileStrictSchemaTest();
-  readFileFileNameTest();
-  readFileRowMaxTest();
-  //readFileDelimTest();
-  //readFileSlctTest();
-  //readFilePreCheckTest();
+void fromFileBasicTest() {
+  fromFileStrictSchemaTest();
+  fromFileFileNameTest();
+  fromFileRowMaxTest();
+  //fromFileDelimTest();
+  //fromFileSlctTest();
+  //fromFilePreCheckTest();
 }
 
-void readFileFileNameTest() {
+void fromFileFileNameTest() {
   using meta::slct;
   using std::tuple;
   using std::string;
@@ -56,8 +56,8 @@ void readFileFileNameTest() {
   using std::array;
   
   // r1 declaration and setting properties be in different statements different
-  auto r1 = ezl::readFile<string, array<float, 2>, string>(
-          "data/readFileTests/test?.txt");
+  auto r1 = ezl::fromFile<string, array<float, 2>, string>(
+          "data/fromFileTests/test?.txt");
   r1 = r1.addFileName();
   auto t1 = std::make_shared<Load<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
   auto count = 0;
@@ -73,14 +73,14 @@ void readFileFileNameTest() {
   assert(count == 3);
 }
 
-void readFileRowMaxTest() {
+void fromFileRowMaxTest() {
   using meta::slct;
   using std::tuple;
   using std::string;
   using std::vector;
   using std::array;
 
-  auto r1 = ezl::readFile<string, int, float, string>("data/readFileTests/test?.txt");
+  auto r1 = ezl::fromFile<string, int, float, string>("data/fromFileTests/test?.txt");
   r1 = r1.addFileName().top(2);
   auto t1 =
       std::make_shared<Load<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
@@ -93,14 +93,14 @@ void readFileRowMaxTest() {
   assert(count == 2);
 }
 
-void readFileStrictSchemaTest() {
+void fromFileStrictSchemaTest() {
   using meta::slct;
   using std::tuple;
   using std::string;
   using std::vector;
   using std::array;
 
-  auto r1 = ezl::readFile<string, int, float>("data/readFileTests/test?.txt");
+  auto r1 = ezl::fromFile<string, int, float>("data/fromFileTests/test?.txt");
   auto t1 =
       std::make_shared<Load<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
 
@@ -112,7 +112,7 @@ void readFileStrictSchemaTest() {
   t1->pull();
   assert(count == 6);
 
-  auto r2 = ezl::readFile<string, int, float>("data/readFileTests/test?.txt");
+  auto r2 = ezl::fromFile<string, int, float>("data/fromFileTests/test?.txt");
   r2 = r2.noStrict();
   auto t2 =
       std::make_shared<Load<decltype(r2)>>(ProcReq{}, std::move(r2), nullptr);
@@ -123,7 +123,7 @@ void readFileStrictSchemaTest() {
   t2->pull();
   assert(count == 14);
 
-  auto r3 = ezl::readFile<string, int>("data/readFileTests/test?.txt");
+  auto r3 = ezl::fromFile<string, int>("data/fromFileTests/test?.txt");
   auto t3 =
       std::make_shared<Load<decltype(r3)>>(ProcReq{}, std::move(r3), nullptr);
 
@@ -134,7 +134,7 @@ void readFileStrictSchemaTest() {
   t3->pull();
   assert(count == 6);
 
-  auto r4 = ezl::readFile<string, int>("data/readFileTests/test?.txt");
+  auto r4 = ezl::fromFile<string, int>("data/fromFileTests/test?.txt");
   r4 = r4.noStrict();
   auto t4 =
       std::make_shared<Load<decltype(r4)>>(ProcReq{}, std::move(r4), nullptr);

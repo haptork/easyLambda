@@ -1,6 +1,6 @@
 /*! 
  * @file
- * demo examples for loadMem, kick, loadFileNames, dump, dumpMem.
+ * demo examples for fromMem, kick, loadFileNames, dump, dumpMem.
  *
  * run with following cmd from project directory to check the results.
  * `mpirun -n 1 ./bin/demoIO`
@@ -29,15 +29,15 @@ void demoLoadMem(std::string outFile) {
 
   // loads every integer as a row.
   // split() shares the rows among parallel processes
-  ezl::rise(ezl::loadMem({1, 2, 3}).split())
-    .dump(outFile, "loadMem with split")
+  ezl::rise(ezl::fromMem({1, 2, 3}).split())
+    .dump(outFile, "fromMem with split")
     .run();
 
   vector<tuple<int, char>> a;
   a.emplace_back(make_tuple(4, 'c'));
-  auto buf = ezl::loadMem(a).split();
+  auto buf = ezl::fromMem(a).split();
   auto ld = ezl::rise(buf)
-             .dump(outFile, "loadMem from lvalue vector")
+             .dump(outFile, "fromMem from lvalue vector")
              .run();
   a.clear(); 
   a.emplace_back(make_tuple(5, 'd'));
@@ -47,7 +47,7 @@ void demoLoadMem(std::string outFile) {
   buf.buffer(vector<tuple<int, char>>{make_tuple(6,'e')}).split(false);
   ezl::flow(ld).run();
 
-  auto mem = ezl::loadMem(array<float, 5>{{4.1, 2.1, 3.1, 1.1, 0.1}});
+  auto mem = ezl::fromMem(array<float, 5>{{4.1, 2.1, 3.1, 1.1, 0.1}});
 
   auto flow2 = ezl::rise(mem)
                  .dump(outFile, "load from rvalue array w/o share")
@@ -61,7 +61,7 @@ void demoIO() {
 
   // If running multi-process it is better to dump in file rather than stdout
   const string outFile = "";  // to stdout
-  const string inFile = "data/readFilesTests/*.txt";
+  const string inFile = "data/fromFilesTests/*.txt";
 
   demoLoadMem(outFile); 
 

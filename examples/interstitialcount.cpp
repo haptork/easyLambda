@@ -16,7 +16,7 @@
 #include <ezl.hpp>
 #include <ezl/algorithms/reduces.hpp>
 #include <ezl/algorithms/filters.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 
 #include "AddOffset.cpp"
 
@@ -42,7 +42,7 @@ void icount(int argc, char* argv[]) {
   auto obj = AddOffset(latConst, argv[4], origin);
 
   // frame, coords
-  auto reader = readFile<int, std::array<float, 3>>(argv[1])
+  auto reader = fromFile<int, std::array<float, 3>>(argv[1])
                   .lammps().cols({6, 3, 4, 5});
 
   rise(reader)

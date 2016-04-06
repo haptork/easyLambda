@@ -17,7 +17,7 @@
 
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
 #include <ezl/algorithms/filters.hpp>
 
@@ -33,7 +33,7 @@ void demoReduce() {
   using std::tie;
   using namespace std::string_literals;
 
-  const std::string inFile = "data/readFileTests/test1.txt";
+  const std::string inFile = "data/fromFileTests/test1.txt";
 
   vector<tuple<int, char, float>> inp;
   inp.emplace_back(2, 'c', 1.F);
@@ -41,7 +41,7 @@ void demoReduce() {
   inp.emplace_back(4, 'a', 3.F);
   inp.emplace_back(4, 'c', 4.F);
 
-  auto pipe1 = ezl::rise(ezl::loadMem(inp)).build();
+  auto pipe1 = ezl::rise(ezl::fromMem(inp)).build();
 
   // output cols are key, result of the UDF.
   // cols can be selected in any order by specifying indices in cols<...>()
@@ -60,11 +60,11 @@ void demoReduce() {
   // In this way the output remains ordered as well. Although, the ordered expr.
   // does not affect results, it increases speed and sets the result in same 
   // order as input.
-  // The ordered expression in readFile makes sure that all the contiguos rows
+  // The ordered expression in fromFile makes sure that all the contiguos rows
   // with same value of certain selected columns in a input file are read by
   // the same process in a multi-process run.  
   // see `demoReadFile` for more on this.
-  ezl::rise(ezl::readFile<std::string, int, float>(inFile)
+  ezl::rise(ezl::fromFile<std::string, int, float>(inFile)
                           .cols({"name", "num", "score"})
                           .ordered<1>())
     .reduce<1>(ezl::sum(), 0, 0.F) // sums the value cols.

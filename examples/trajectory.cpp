@@ -6,7 +6,7 @@
  * command to run:
  * ./bin/trajectory "data/trajectory/traj.txt"
  *
- * For running on some different data-set specify the columns etc. in `readFile`
+ * For running on some different data-set specify the columns etc. in `fromFile`
  * if needed and give the file(s) as command line argument.
  * */
 #include <array>
@@ -19,7 +19,7 @@
 
 #include <ezl.hpp>
 #include <ezl/algorithms/reduces.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 
 using namespace std;
 
@@ -45,7 +45,7 @@ void trajectory(int argc, char* argv[]) {
   std::string inFile = "data/trajectory/traj.txt";
   if (argc > 1) inFile = std::string(argv[1]);
 
-  ezl::rise(ezl::readFile<array<float, 3>>(inFile)
+  ezl::rise(ezl::fromFile<array<float, 3>>(inFile)
                 .cols({1, 2, 3})
                 .colSeparator(" \t"))
       .reduceAll([](const vector<array<float, 3>> & v) {

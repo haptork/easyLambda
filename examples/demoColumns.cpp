@@ -17,14 +17,14 @@
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
 
-// to see more on rise and loadMem, see `demoIO`
+// to see more on rise and fromMem, see `demoIO`
 // the integers in the angular brackets after map <1, 1, 0> is bool mask select
 // here first and two cols are selected, third is dropped. It is equivalent to
 // <1,2>. 
 auto mappy() {
   using std::make_tuple;
   using namespace std::string_literals;
-  return ezl::rise(ezl::loadMem({make_tuple(2, 'c', 1.F)}))
+  return ezl::rise(ezl::fromMem({make_tuple(2, 'c', 1.F)}))
            .map<1, 1, 0>([](int, char) { // boolean mask selection
              return "hi"s; 
            });

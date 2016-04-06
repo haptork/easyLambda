@@ -1,5 +1,5 @@
 Currently, it contains unit tests for accuracy and performance of various
-mapreduce units, meta helper classes and readFile algorithm.
+mapreduce units, meta helper classes and fromFile algorithm.
 
 The tests use asserts (Perhaps can be changed to some library, later).
 

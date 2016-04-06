@@ -16,7 +16,7 @@
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
 
 void demoReadFile() {
@@ -24,8 +24,8 @@ void demoReadFile() {
   using std::array;
   using std::string;
 
-  const std::string inFile = "data/readFileTests/test1.txt";
-  const std::string inFiles = "data/readFileTests/test?.txt";
+  const std::string inFile = "data/fromFileTests/test1.txt";
+  const std::string inFiles = "data/fromFileTests/test?.txt";
   const std::string lammpsFile = "data/lammps/dump.txt";
   const std::string outFile = "data/output/demoReadFile.txt";
 
@@ -36,12 +36,12 @@ void demoReadFile() {
   // as columns are ignored), runs on all available processes etc.
   // dump is for checking the results, when running on multiple processes
   // each process writes its own outFile with process rank prepended.
-  ezl::rise(ezl::readFile<string, array<float, 2>>(inFiles)).dump(outFile, "\n -- one")
+  ezl::rise(ezl::fromFile<string, array<float, 2>>(inFiles)).dump(outFile, "\n -- one")
     .run();
 
   // shows various properties like
   ezl::rise(
-      ezl::readFile<float, int, string>(inFiles)
+      ezl::fromFile<float, int, string>(inFiles)
           .addFileName()        // file name at the end of each row.
           .colSeparator("\t, ") // either of '\t', ',' or ' ' as colSeparator
           .tillEOF()            // A file is read till end by a process.
@@ -55,7 +55,7 @@ void demoReadFile() {
 
   // demos some properties
   ezl::rise(
-      ezl::readFile<int>(inFile)
+      ezl::fromFile<int>(inFile)
           .colSeparator("")  // empty string for whole row as single column.
           .rowSeparator('s') // whiteSpace(\t\n ) as row separator.
           .noShare()         // each process reads all the file(s) data.
@@ -69,7 +69,7 @@ void demoReadFile() {
   // The rows that have same value of columns selected in ordered property
   // are read by same process if they appear consecutively in an input file.
   // please take note that properties return the modified object.
-  auto r5 = ezl::readFile<int, string>(vector<string>{inFile})
+  auto r5 = ezl::fromFile<int, string>(vector<string>{inFile})
       .cols({"num", "name"}) // cols based on header
       .ordered<1>();
 
@@ -86,7 +86,7 @@ void demoReadFile() {
   // in parallel, a process reads full timestep and in process reduction on
   // timestep can be used.
   ezl::rise(
-      ezl::readFile<array<double, 3>,int>(lammpsFile)
+      ezl::fromFile<array<double, 3>,int>(lammpsFile)
           .parse(ezl::lammpsSchema()) // inshort xyz.lammps()
           .dropCols({1,2}) // An opposite of cols, a string header list
                            // similar to cols can be given

@@ -40,9 +40,9 @@ void demoFlow() {
   ezl::flow(pivot).run(); // doesn't do anything as there isn't a rise yet
 
   // a circular pipeline, also showing a pipeline run inside a map.
-  auto ld = ezl::rise(ezl::loadMem(buf).split())
+  auto ld = ezl::rise(ezl::fromMem(buf).split())
     .map<2>([](const vector<int>& v) {
-      return ezl::rise(ezl::loadMem(v)).runResult();
+      return ezl::rise(ezl::fromMem(v)).runResult();
     }).colsTransform()
     .addFlow(pivot)  // adds the flow and continues adding to it
       .filter<2>(ezl::gt(100)).dump()
@@ -62,7 +62,7 @@ void demoFlow() {
       .build();
 
   // a pipeline with a splitter followed by a joiner
-  auto source = ezl::loadMem({4, 2, 1, 3, 5}).split();
+  auto source = ezl::fromMem({4, 2, 1, 3, 5}).split();
   auto flow1 = ezl::rise(source)
                   .branchFlow(  // adds flow as a branch
                     ezl::flow<int>()

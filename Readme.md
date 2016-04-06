@@ -16,19 +16,27 @@ interface made possible by use of modern C++ features.
 
 Use ezl for your data-processing tasks, to write post-processors for simulation
 results, for iterative machine learning algorithms, for general list data
-processing or any data/task parallel code. You get an expressive way to
-compose the algorithms as a pipeline of small tasks, clean separation of
-various algorithm logics from i/o or parallelism, various built-in
+processing or any data / task parallel code. Processing a flat-file with ezl is
+as simple and declarative as working with spreadsheet program or writing a SQL
+query, but using C / C++ functions. You get an expressive way to compose
+the algorithms as a data-flow of small tasks, clean separation of various
+algorithm logics from i/o, data-formats or parallelism, various built-in
 functions for common operations and MPI parallelism with no to little extra
-code. It makes your application clean, modular, parallel, expressive and
-all the good things in programming practices :). Check the examples listed
-below to know some of the ways ezl has been used.
+code. The library presents no special structure, data-types or requirements on
+the user functions. Moreover, it facilitates composition of functions with
+core algorithm logic, irrespective of nearby columns using column selection. A
+uniform interface with just map and reduce computations simplifies programming.
+Check the examples listed below to know some of the ways ezl has been used.
 
 You can use it along with other libraries like openCV/Dlib/thrust that work
-well with standard data-types like vector and tuple.
+well with standard data-types.
 
 If you are a C++ enthusiast then possibly you will find the project quite
-interesting. Contributions and feedback of any kind are much appreciated.
+interesting. It uses template parameters in new ways to form a good interface
+based on them. It makes good use of a lot of modern C++ features including 
+variadics, move-semantics, tuples, type-traits. 
+
+Contributions and feedback of any kind are much appreciated.
 Please check [contributing.md](contributing.md) for more.
 
 ## Overview
@@ -44,15 +52,15 @@ irrespective of their case (upper or lower).
 #include <boost/mpi.hpp>
 
 #include <ezl/ezl.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
 
 int main(int argc, char* argv[]) {
   using std::string;
-  using ezl::readFile;
+  using ezl::fromFile;
   boost::mpi::environment env(argc, argv);
 
-  ezl::rise(readFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
+  ezl::rise(fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
     .reduce<1>(ezl::count(), 0).dump()
     .run();
   return 0;
@@ -60,20 +68,20 @@ int main(int argc, char* argv[]) {
 ```
 The data-flow starts with `rise` and subsequent operations are added to the
 pipeline. In the above example, the pipeline starts with reading data from
-file(s). `readFile` is a library function that takes column types and file(s)
+file(s). `fromFile` is a library function that takes column types and file(s)
 glob pattern as input and reads the file(s) in parallel. It has a lot of
 properties for controlling data-format, parallelism, denormalization etc
-(shown in [demoReadFile](examples/demoReadFile.cpp)).
+(shown in [demoFromFile](examples/demoFromFile.cpp)).
 
-In reduce we pass the index of the key column, the library function for counting
-and initial value of the result. The wordcount example is too simple to show
-the library features.
+In reduce we pass the index of the key column to group by, the library function
+for counting and initial value of the result. The wordcount example is too
+simple to show much of the library features. 
 
 Following is the data-flow for calculating pi using Monte-Carlo method.
 
 #### [Example pi (Monte-Carlo)](examples/pi.cpp)
 ```cpp
-ezl::rise(ezl::kick(10000)) // 10000 trials in total
+ezl::rise(ezl::kick(10000)) // 10000 trials shared over all processes
   .map([] { 
     auto x = rand01();
     auto y = rand01();
@@ -97,6 +105,35 @@ speed-up with multiple cores or multiple nodes. The implementation aims at
 reducing number of copies of the data, which results in little to no overhead
 over a serial code written specifically to carry out the same operation.
 
+Here is another example from
+[cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html). A stripped
+version of the input data-file is given with ezl [here](). The
+data contains student profiles with scores, gender, job-salary, city etc.
+
+#### [Example cods2016](examples/cods2016.cpp)
+```cpp
+auto scores = ezl::fromFile<char, array<float, 3>>(fileName)
+                .cols({"Gender", "English", "Logical", "Domain"})
+                .colSeparator("\t");
+
+ezl::rise(scores)
+  .filter<2>(ezl::gtAr<3>(0.F))   // filter valid domain scores > 0
+  .map<1>([] (char gender) {      // transforming with 0/1 for isMale
+    return float(gender == 'm');
+  }).colsTransform()
+  .reduceAll(ezl::corr<1>())
+    .dump("", "Corr. of gender with scores\n(gender|E|L|D)")
+  .run();
+```
+
+The above example prints the correlation of English, logical and domain scores
+with respect to gender. We can find similarity of the above code with steps in
+a spreadsheet analysis or with SQL query. We select the columns to work with
+viz. gender and three scores. We filter the rows based on a column and predicate.
+Next, we transform a selected column in-place and then find an aggregate property
+for all the rows.
+
+
 You can find the above examples and many more in detail with benchmarking
 results in the [examples directory](examples). Examples include:
 
@@ -105,7 +142,7 @@ results in the [examples directory](examples). Examples include:
    [LAMMPS](http://lammps.sandia.gov/) simulation results.
    [displaced.cpp](examples/displaced.cpp),
    [interstitialcount.cpp](examples/interstitialcount.cpp).
- - example for having an overview of data stats with example from
+ - example for having a overview of data stats with example from
    [cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html).
    [cods2016.cpp](examples/cods2016.cpp).
  - given a trajectory with positions at different times, finding the count of
@@ -123,22 +160,25 @@ The demonstrations include:
   reduceAll. [demoMapFilter.cpp](examples/demoMapFilter.cpp),
   [demoReduce.cpp](examples/demoReduce.cpp), 
   [demoReduceAll.cpp](examples/demoReduceAll.cpp).
-- library i/o functions (readFile, loadMem etc.) and sample custom functions
+- library i/o functions (fromFile, fromMem etc.) and sample custom functions
   for rise. [demoIO.cpp](examples/demoIO.cpp),
-  [demoReadFile.cpp](examples/demoReadFile.cpp), [demoRise.cpp](examples/demoRise.cpp).
+  [demoFromFile.cpp](examples/demoFromFile.cpp), [demoRise.cpp](examples/demoRise.cpp).
 - options for parallelism. [demoPrll.cpp](examples/demoPrll.cpp).
 - handling flows and showing some crazy pipelines.
   [demoFlow.cpp](examples/demoFlow.cpp).
 
 ### Parallelism
 
-The following figure shows the overview of parallel options for units in
-a pipeline. 
+The ezl makes good use of task parallelism inherent in data-flows and
+data parallelism inherent in map and reduce tasks for a default optimum
+parallelism and providing a property based interface to override if 
+required. The following figure shows the overview of parallel options for
+units in a pipeline. 
 
 ![Parallel options](doc/prll.png)
 
 The numbers inside the circle are process rank a unit is running on.  for e.g.
-first unit can be a readFile running on {0, 1} process ranks, {2,3,4} can be
+first unit can be a fromFile running on {0, 1} process ranks, {2,3,4} can be
 running a map or reduce and so on. It can be seen that a reduce task is by
 default parallel and map tasks are by default in-process. The prll option in
 the units control the behaviour. The processes can be requested by number,
@@ -157,7 +197,6 @@ keeping the trials per process constant (weak scaling). In this case a constant
 line implies ideal parallelism. The logistic regression and wordcount
 benchmarks show decrease in time of execution unless the time is reduced to
 around a minute. For more info on benchmarks check the respective examples.
-
 
 ### Data-flow
 
@@ -179,10 +218,8 @@ discussed and for above two data-flow figures. Many other examples also use
 flow properties.
 
 ## Quick Start
-Check out the [tutorial](tutorial.md) and follow the examples in the sequence
-given in [examples/Readme.md](examples/Readme.md). Feel free to ask for any
-specific queries. I am hoping to add more tutorials with focus on
-specific areas like simulation data-processing for old C programmers etc.
+Check out the [tutorial](doc/tutorials/content.md) to begin coding with ezl.
+Feel free to ask for any specific queries.
 
 ## How to install
 
@@ -223,6 +260,5 @@ After compiling, the executable can be run with mpirun
 
 A big thanks to cppcon, meetingc++ and other conferences and all pro C++
 speakers, committee members and compiler implementers for modernising C++ and
-teaching it with so much enthusiasm. I had fun implementing this.  Looking
-forward to learn more from the community. Hoping to see C++17 with more cool
-stuff.
+teaching it with so much enthusiasm. I had fun implementing this, hoping
+you will have fun using it. Looking forward to learn more from the community.

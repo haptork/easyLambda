@@ -48,9 +48,9 @@ void demoMapFilter() {
   using std::make_tuple;
   using namespace std::string_literals;
 
-  // for more on rise with loadMem see `demoIO.cpp`
+  // for more on rise with fromMem see `demoIO.cpp`
   // returns row(s) of type int, char and float
-  auto pipe1 = ezl::rise(ezl::loadMem({make_tuple(2, 'c', 1.F)})).build();
+  auto pipe1 = ezl::rise(ezl::fromMem({make_tuple(2, 'c', 1.F)})).build();
 
   // for more on column selection see `demoColumns`
   // filter at the end is to show columns at the end.
@@ -90,7 +90,7 @@ void demoMapFilter() {
 
   // mergeAr merges, N cols of type T to one col of type std::array<T, N>
   // it can be used to merge one array and N cols or two arrays of type T
-  ezl::rise(ezl::loadMem({array<int, 2>{{1, 2}}, array<int, 2>{{3, 4}}}))
+  ezl::rise(ezl::fromMem({array<int, 2>{{1, 2}}, array<int, 2>{{3, 4}}}))
     .map(ezl::explodeAr()).colsTransform() // explodes an array to separate cols
     .map(ezl::serialNumber(1))             // appends serial number to rows 
     .filter([](const tuple<const int&, const int&, const int&>&) {return true;})

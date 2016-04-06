@@ -3,7 +3,7 @@
  * wordcout: frequency of each word in given text files.
  *
  * command to run:
- * mpirun -n 4 ./bin/wordcout "data/readFileTests/test?.txt"
+ * mpirun -n 4 ./bin/wordcout "data/fromFileTests/test?.txt"
  *
  * The command line argument is the glob pattern for desired input files.
  * It can run with any number of processors given with `-n ` mpirun argument.
@@ -16,7 +16,7 @@
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
 
 void wordcount(int argc, char* argv[]) {
@@ -28,7 +28,7 @@ void wordcount(int argc, char* argv[]) {
   const std::string outFile = "data/output/wc.txt";
 
   ezl::rise(
-      ezl::readFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
+      ezl::fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
     .reduce<1>(ezl::count(), 0).inprocess()
     .reduce<1>(ezl::sum(), 0).dump(outFile)
     .run();

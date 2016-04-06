@@ -51,7 +51,7 @@ void demoPrll() {
   using std::make_tuple;
   using std::tie;
 
-  auto source = ezl::loadMem({make_tuple(200,'c',1.F)});
+  auto source = ezl::fromMem({make_tuple(200,'c',1.F)});
 
   // The example shows a useful idiom.
   // an inprocess reduce followed by another reduce to make parallism much more

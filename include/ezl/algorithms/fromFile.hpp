@@ -648,12 +648,12 @@ row types are different.");
 } // namespace ezl::detail
 
 template <class... Is>
-auto readFile(std::string fpat = "") {
+auto fromFile(std::string fpat = "") {
   return detail::LoadFile<std::tuple<Is...>, detail::meta::slct<>>{fpat};
 }
 
 template <class... Is>
-auto readFile(std::vector<std::string> flist) {
+auto fromFile(std::vector<std::string> flist) {
   return detail::LoadFile<std::tuple<Is...>, detail::meta::slct<>>{flist};
 }
 

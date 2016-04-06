@@ -6,7 +6,7 @@
  * command to run:
  * mpirung -n 4 ./bin/logreg "data/logreg/train.csv"
  *
- * For running on some different data-set specify the columns etc. in `readFile`
+ * For running on some different data-set specify the columns etc. in `fromFile`
  * Also change the `dim` parameter and inFile variable.
  * Testing data files can be given as arguments after training data file.
  *
@@ -21,7 +21,7 @@
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/reduceAlls.hpp>
 #include <ezl/algorithms/reduces.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 
 using namespace std;
 
@@ -67,7 +67,7 @@ void logreg(int argc, char* argv[]) {
 
   // specify columns and other read properties if required.
   auto reader =
-      ezl::readFile<double, array<double, dim>>(argv[1]).colSeparator(",");
+      ezl::fromFile<double, array<double, dim>>(argv[1]).colSeparator(",");
 
   // load once in memory
   auto data = ezl::rise(reader)
@@ -85,7 +85,7 @@ void logreg(int argc, char* argv[]) {
 
   array<double, dim> w{};  // weights initialised to zero;
   // build flow for final gradient value in all procs
-  auto train = ezl::rise(ezl::loadMem(data))
+  auto train = ezl::rise(ezl::fromMem(data))
                    .map([&w](auto& y, auto& x) {
                      return calcGrad(y, x, w);    
                    }).colsTransform()

@@ -21,7 +21,7 @@
 #include <ezl.hpp>
 #include <ezl/algorithms/filters.hpp>
 #include <ezl/algorithms/reduces.hpp>
-#include <ezl/algorithms/readFile.hpp>
+#include <ezl/algorithms/fromFile.hpp>
 
 auto calcDist(std::array<float, 3> p1, std::array<float, 3> p2) {
   auto diff = 0.0F;
@@ -54,7 +54,7 @@ void displaced(int argc, char* argv[]) {
   }
 
   // loading first frame atoms in the memory partitioned on atoms-id.
-  auto buffer = ezl::rise(ezl::readFile<int, std::array<float, 3>, int>(argv[1])
+  auto buffer = ezl::rise(ezl::fromFile<int, std::array<float, 3>, int>(argv[1])
                             .cols({1, 3, 4, 5, 6})  // id, coords
                             .lammps())
                     .filter(ezl::tautology()).prll<1>(1.0)
@@ -65,7 +65,7 @@ void displaced(int argc, char* argv[]) {
 
   auto latConst = float(std::stof(argv[3]));
 
-  ezl::rise(ezl::readFile<int, array<float, 3>, int>(argv[2])
+  ezl::rise(ezl::fromFile<int, array<float, 3>, int>(argv[2])
                 .cols({1, 3, 4, 5, 6}) // id, coords, timestep
                 .lammps())
       .map<1, 2>([&firstFrame](int id, array<float, 3> coords) {
