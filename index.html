@@ -40,7 +40,7 @@ an easy but powerful
 <a href="http://martinfowler.com/bliki/ExpressionBuilder.html">ExpressionBuilder</a>
 interface made possible by use of modern C++ features.</p>
 
-<p>Check the <a href="doc/tutorial/contents.md">tutorials</a> to begin coding with ezl.</p>
+<p>Check the <a href="https://github.com/haptork/easyLambda/blob/master/doc/tutorial/contents.md">tutorials</a> to begin coding with ezl.</p>
 
 <h2>
 <a id="why-easylambda" class="anchor" href="#why-easylambda" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why easyLambda</h2>
@@ -68,7 +68,7 @@ based on them. It makes good use of a lot of modern C++ features including
 variadics, move-semantics, tuples, type-traits. </p>
 
 <p>Contributions and feedback of any kind are much appreciated.
-Please check <a href="contributing.md">contributing.md</a> for more.</p>
+Please check <a href="https://github.com/haptork/easyLambda/blob/master/contributing.md">contributing.md</a> for more.</p>
 
 <h4>
 <a id="related-works" class="anchor" href="#related-works" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Related works:</h4>
@@ -104,7 +104,7 @@ frequency of each word in the data files. Words are considered same
 irrespective of their case (upper or lower).</p>
 
 <h4>
-<a id="example-wordcount" class="anchor" href="#example-wordcount" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="examples/wordcount.cpp">Example wordcount</a>
+<a id="example-wordcount" class="anchor" href="#example-wordcount" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="https://github.com/haptork/easyLambda/blob/master/examples/wordcount.cpp">Example wordcount</a>
 </h4>
 
 <div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>string<span class="pl-pds">&gt;</span></span>
@@ -131,7 +131,7 @@ pipeline. In the above example, the pipeline starts with reading data from
 file(s). <code>fromFile</code> is a library function that takes column types and file(s)
 glob pattern as input and reads the file(s) in parallel. It has a lot of
 properties for controlling data-format, parallelism, denormalization etc
-(shown in <a href="examples/demoFromFile.cpp">demoFromFile</a>).</p>
+(shown in <a href="https://github.com/haptork/easyLambda/blob/master/examples/demoFromFile.cpp">demoFromFile</a>).</p>
 
 <p>In reduce we pass the index of the key column to group by, the library function
 for counting and initial value of the result. The wordcount example is too
@@ -140,7 +140,7 @@ simple to show much of the library features. </p>
 <p>Following is the data-flow for calculating pi using Monte-Carlo method.</p>
 
 <h4>
-<a id="example-pi-monte-carlo" class="anchor" href="#example-pi-monte-carlo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="examples/pi.cpp">Example pi (Monte-Carlo)</a>
+<a id="example-pi-monte-carlo" class="anchor" href="#example-pi-monte-carlo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="https://github.com/haptork/easyLambda/blob/master/examples/pi.cpp">Example pi (Monte-Carlo)</a>
 </h4>
 
 <div class="highlight highlight-source-c++"><pre><span class="pl-en">ezl::rise</span>(ezl::kick(<span class="pl-c1">10000</span>)) <span class="pl-c">// 10000 trials shared over all processes</span>
@@ -169,11 +169,11 @@ over a serial code written specifically to carry out the same operation.</p>
 <p>Here is another example from
 <a href="http://ikdd.acm.org/Site/CoDS2016/datachallenge.html">cods2016</a>. A stripped
 version of the input data-file is given with ezl
-<a href="data/datachallenge_cods2016/train.csv">here</a>. The data contains student
+<a href="https://github.com/haptork/easyLambda/blob/master/data/datachallenge_cods2016/train.csv">here</a>. The data contains student
 profiles with scores, gender, job-salary, city etc.</p>
 
 <h4>
-<a id="example-cods2016" class="anchor" href="#example-cods2016" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="examples/cods2016.cpp">Example cods2016</a>
+<a id="example-cods2016" class="anchor" href="#example-cods2016" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="https://github.com/haptork/easyLambda/blob/master/examples/cods2016.cpp">Example cods2016</a>
 </h4>
 
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">auto</span> scores = ezl::fromFile&lt;<span class="pl-k">char</span>, array&lt;<span class="pl-k">float</span>, <span class="pl-c1">3</span>&gt;&gt;(fileName)
@@ -203,14 +203,14 @@ results in the <a href="examples">examples directory</a>. Examples include:</p>
 <li>logistic regression training and testing. <a href="examples/logreg.cpp">logreg.cpp</a>.</li>
 <li>displaced atoms count and self interstitial count for post-processing
 <a href="http://lammps.sandia.gov/">LAMMPS</a> simulation results.
-<a href="examples/displaced.cpp">displaced.cpp</a>,
-<a href="examples/interstitialcount.cpp">interstitialcount.cpp</a>.</li>
+<a href="https://github.com/haptork/easyLambda/blob/master/examples/displaced.cpp">displaced.cpp</a>,
+<a href="https://github.com/haptork/easyLambda/blob/master/https://github.com/haptork/easyLambda/blob/master/examples/interstitialcount.cpp">interstitialcount.cpp</a>.</li>
 <li>example for having a overview of data stats with example from
 <a href="http://ikdd.acm.org/Site/CoDS2016/datachallenge.html">cods2016</a>.
-<a href="examples/cods2016.cpp">cods2016.cpp</a>.</li>
+<a href="https://github.com/haptork/easyLambda/blob/master/examples/cods2016.cpp">cods2016.cpp</a>.</li>
 <li>given a trajectory with positions at different times, finding the count of
 directions of adjacent steps in the trajectory.
-<a href="examples/trajectory.cpp">trajectory.cpp</a>.</li>
+<a href="https://github.com/haptork/easyLambda/blob/master/examples/trajectory.cpp">trajectory.cpp</a>.</li>
 </ul>
 
 <p>The examples directory also has separate demonstrations for features and
@@ -225,7 +225,7 @@ parallelism and providing a property based interface to override if
 required. The following figure shows the overview of parallel options for
 units in a pipeline. </p>
 
-<p><img src="doc/prll.png" alt="Parallel options"></p>
+<p><img src="https://github.com/haptork/easyLambda/blob/master/doc/prll.png" alt="Parallel options"></p>
 
 <p>The numbers inside the circle are process rank a unit is running on.  for e.g.
 first unit can be a fromFile running on {0, 1} process ranks, {2,3,4} can be
@@ -240,7 +240,7 @@ option with different units and options.</p>
 
 <p>Following are some benchmark results on different problems.</p>
 
-<p><img src="doc/benchmarks.png" alt="benchmarks"></p>
+<p><img src="https://github.com/haptork/easyLambda/blob/master/doc/benchmarks.png" alt="benchmarks"></p>
 
 <p>The number of trials for pi are doubled as the number of processes are doubled,
 keeping the trials per process constant (weak scaling). In this case a constant
@@ -255,7 +255,7 @@ around a minute. For more info on benchmarks check the respective examples.</p>
 The following figures demonstrates a circular data-flow and a diamond like
 data-flow pipelines: </p>
 
-<p><img src="doc/dataflow.png" alt="dataflow"></p>
+<p><img src="https://github.com/haptork/easyLambda/blob/master/doc/dataflow.png" alt="dataflow"></p>
 
 <p>Each of these tasks can be running on multiple processes, depending on the
 availability and options. </p>
@@ -264,14 +264,14 @@ availability and options. </p>
 data-flows can be joined, branched and built to run later multiple times on
 different data.</p>
 
-<p><a href="examples/demoFlow.cpp">demoFlow</a> shows code and details for the options
+<p><a href="https://github.com/haptork/easyLambda/blob/master/examples/demoFlow.cpp">demoFlow</a> shows code and details for the options
 discussed and for above two data-flow figures. Many other examples also use
 flow properties.</p>
 
 <h2>
 <a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Quick Start</h2>
 
-<p>Check out the <a href="doc/tutorial/contents.md">tutorial</a> to begin coding with ezl.
+<p>Check out the <a href="https://github.com/haptork/easyLambda/blob/master/doc/tutorial/contents.md">tutorial</a> to begin coding with ezl.
 Feel free to ask for any specific queries.</p>
 
 <h2>
@@ -298,7 +298,7 @@ Feel free to ask for any specific queries.</p>
 the contents of the <a href="include">include</a> directory within your source tree so that
 it is available to the compiler. Include <a href="include/ezl.hpp">include/ezl.hpp</a> in
 your program. If you use algorithms like <code>ezl::count</code> etc then also include
-required files from <a href="include/ezl/algorithms/">include/ezl/algorithms/</a>
+required files from <a href="https://github.com/haptork/easyLambda/blob/master/include/ezl/algorithms/">include/ezl/algorithms/</a>
 directory.</p>
 
 <h3>
