@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Easylambda by haptork</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Easylambda</h1>
+        <h2>A fresh take on data-flow with map and reduce on modern C++ and MPI.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/haptork/easyLambda/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/haptork/easyLambda/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/haptork/easyLambda" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h2>
+<a id="long-story-short" class="anchor" href="#long-story-short" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Long story short</h2>
+
+<p>The project started with the need for a standard way to process data with
+C++. The design goals are composability, easy interface, decoupling IO,
+data-format and parallel code from algorithm logic, less boilerplate code,
+accessible to anyone who knows C. easyLambda achieves these goals with type-safe
+data-flow pipeline, map/reduce like operations, MPI parallelism; presented with
+an easy but powerful
+<a href="http://martinfowler.com/bliki/ExpressionBuilder.html">ExpressionBuilder</a>
+interface made possible by use of modern C++ features.</p>
+
+<p>Check the <a href="doc/tutorial/contents.md">tutorials</a> to begin coding with ezl.</p>
+
+<h2>
+<a id="why-easylambda" class="anchor" href="#why-easylambda" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why easyLambda</h2>
+
+<p>Use ezl for your data-processing tasks, to write post-processors for simulation
+results, for iterative machine learning algorithms, for general list data
+processing or any data / task parallel code. Processing a flat-file with ezl is
+as simple and declarative as working with spreadsheet program or writing a SQL
+query, but using C / C++ functions. You get an expressive way to compose
+the algorithms as a data-flow of small tasks, clean separation of 
+algorithm logic from i/o, data-formats or parallelism, various built-in
+functions for common operations and MPI parallelism with no to little extra
+code. The library presents no special structure, data-types or requirements on
+the user functions. Moreover, it facilitates composition of functions with
+core algorithm logic, irrespective of nearby columns using column selection. A
+uniform interface with just map and reduce computations simplifies programming.
+Check the examples listed below to know some of the ways ezl has been used.</p>
+
+<p>You can use it along with other libraries like openCV/Dlib/thrust that work
+well with standard data-types.</p>
+
+<p>If you are a C++ enthusiast then possibly you will find the project quite
+interesting. It uses template parameters in new ways to form a good interface
+based on them. It makes good use of a lot of modern C++ features including 
+variadics, move-semantics, tuples, type-traits. </p>
+
+<p>Contributions and feedback of any kind are much appreciated.
+Please check <a href="contributing.md">contributing.md</a> for more.</p>
+
+<h4>
+<a id="related-works" class="anchor" href="#related-works" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Related works:</h4>
+
+<p>There is no other C++ library that provides map, reduce with data-flow. ezl
+also provides MPI parallelism which notwithstanding to its extensive use in
+high performance computing, lacks good library support written on top of it.
+It does have various distinguishing features such as cyclic data-flows,
+parallelism as a property, column selection for composition, many implicit
+choices implemented with traits.</p>
+
+<p>There are some libraries that offer data-flow in C++ such as boost data-flow,
+tbb graphs, phish. Unlike functional paradigm languages and libraries, they
+have bloated syntax of varying degree with explicit graphs,
+edges, nodes, all sort of classes, functions with unusual signatures. It 
+defies the motive of facilitating composition of pure functions that have
+nothing but algorithm logic for better reuse, modularity and parallelism
+without bloat-code, as seen in nodejs promises, scala libraries and is one of the
+motivation for Monad idiom. </p>
+
+<p>In ezl, the user functions have no dependency on library and require no extra
+construct. They just take multiple input parameters as usual and return the
+result. Moreover, there is a lot of emphasis on column selection to use the
+functions in the data-flow that do not exactly match the inputs coming. The use
+of map and reduce as the only units simplifies the code and enables
+data-parallelism along with task-parallelism inherent to data-flow.</p>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>Here is a short example to begin with. The program calculates
+frequency of each word in the data files. Words are considered same
+irrespective of their case (upper or lower).</p>
+
+<h4>
+<a id="example-wordcount" class="anchor" href="#example-wordcount" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="examples/wordcount.cpp">Example wordcount</a>
+</h4>
+
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>string<span class="pl-pds">&gt;</span></span>
+
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>boost/mpi.hpp<span class="pl-pds">&gt;</span></span>
+
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>ezl/ezl.hpp<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>ezl/algorithms/fromFile.hpp<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>ezl/algorithms/reduces.hpp<span class="pl-pds">&gt;</span></span>
+
+<span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc, <span class="pl-k">char</span>* argv[]) {
+  <span class="pl-k">using</span> std::string;
+  <span class="pl-k">using</span> ezl::fromFile;
+  boost::mpi::environment <span class="pl-smi">env</span>(argc, argv);
+
+  <span class="pl-c1">ezl::rise</span>(fromFile&lt;string&gt;(argv[<span class="pl-c1">1</span>]).<span class="pl-c1">rowSeparator</span>(<span class="pl-s"><span class="pl-pds">'</span>s<span class="pl-pds">'</span></span>).<span class="pl-c1">colSeparator</span>(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>))
+    .<span class="pl-smi">reduce</span>&lt;<span class="pl-c1">1</span>&gt;(<span class="pl-c1">ezl::count</span>(), <span class="pl-c1">0</span>).<span class="pl-c1">dump</span>()
+    .<span class="pl-c1">run</span>();
+  <span class="pl-k">return</span> <span class="pl-c1">0</span>;
+}</pre></div>
+
+<p>The data-flow starts with <code>rise</code> and subsequent operations are added to the
+pipeline. In the above example, the pipeline starts with reading data from
+file(s). <code>fromFile</code> is a library function that takes column types and file(s)
+glob pattern as input and reads the file(s) in parallel. It has a lot of
+properties for controlling data-format, parallelism, denormalization etc
+(shown in <a href="examples/demoFromFile.cpp">demoFromFile</a>).</p>
+
+<p>In reduce we pass the index of the key column to group by, the library function
+for counting and initial value of the result. The wordcount example is too
+simple to show much of the library features. </p>
+
+<p>Following is the data-flow for calculating pi using Monte-Carlo method.</p>
+
+<h4>
+<a id="example-pi-monte-carlo" class="anchor" href="#example-pi-monte-carlo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="examples/pi.cpp">Example pi (Monte-Carlo)</a>
+</h4>
+
+<div class="highlight highlight-source-c++"><pre><span class="pl-en">ezl::rise</span>(ezl::kick(<span class="pl-c1">10000</span>)) <span class="pl-c">// 10000 trials shared over all processes</span>
+  .map([] { 
+    <span class="pl-k">auto</span> x = <span class="pl-c1">rand01</span>();
+    <span class="pl-k">auto</span> y = <span class="pl-c1">rand01</span>();
+    <span class="pl-k">return</span> x*x + y*y; 
+  })
+  .filter(ezl::lt(<span class="pl-c1">1</span>.))
+  .reduce(ezl::count(), 0)
+  .map([](<span class="pl-k">int</span> inCircleCount) { 
+    <span class="pl-k">return</span> (<span class="pl-c1">4.0</span> * inCircleCount / <span class="pl-c1">10000</span>); 
+  }).colsTransform().dump()
+  .run();</pre></div>
+
+<p>The steps in the algorithm have been expressed with the composition of small
+operations, some are common library functions like <code>count()</code>, <code>lt()</code> (less-than) and
+some are user-defined functions specific to problem.</p>
+
+<p>Not only the above examples are expressive and modular, they are highly
+efficient in serial as well as parallel execution, with close to linear
+speed-up with multiple cores or multiple nodes. The implementation aims at
+reducing number of copies of the data, which results in little to no overhead
+over a serial code written specifically to carry out the same operation.</p>
+
+<p>Here is another example from
+<a href="http://ikdd.acm.org/Site/CoDS2016/datachallenge.html">cods2016</a>. A stripped
+version of the input data-file is given with ezl
+<a href="data/datachallenge_cods2016/train.csv">here</a>. The data contains student
+profiles with scores, gender, job-salary, city etc.</p>
+
+<h4>
+<a id="example-cods2016" class="anchor" href="#example-cods2016" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="examples/cods2016.cpp">Example cods2016</a>
+</h4>
+
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">auto</span> scores = ezl::fromFile&lt;<span class="pl-k">char</span>, array&lt;<span class="pl-k">float</span>, <span class="pl-c1">3</span>&gt;&gt;(fileName)
+                .cols({<span class="pl-s"><span class="pl-pds">"</span>Gender<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>English<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Logical<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Domain<span class="pl-pds">"</span></span>})
+                .colSeparator(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\t</span><span class="pl-pds">"</span></span>);
+
+<span class="pl-en">ezl::rise</span>(scores)
+  .filter&lt;2&gt;(ezl::gtAr&lt;<span class="pl-c1">3</span>&gt;(<span class="pl-c1">0</span>.F))   <span class="pl-c">// filter valid domain scores &gt; 0</span>
+  .map&lt;1&gt;([] (<span class="pl-k">char</span> gender) {      <span class="pl-c">// transforming with 0/1 for isMale</span>
+    <span class="pl-k">return</span> <span class="pl-c1">float</span>(gender == <span class="pl-s"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>);
+  }).colsTransform()
+  .reduceAll(ezl::corr&lt;<span class="pl-c1">1</span>&gt;())
+    .dump(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Corr. of gender with scores<span class="pl-cce">\n</span>(gender|E|L|D)<span class="pl-pds">"</span></span>)
+  .run();</pre></div>
+
+<p>The above example prints the correlation of English, logical and domain scores
+with respect to gender. We can find similarity of the above code with steps in
+a spreadsheet analysis or with SQL query. We select the columns to work with
+viz. gender and three scores. We filter the rows based on a column and predicate.
+Next, we transform a selected column in-place and then find an aggregate property
+(correlation) for all the rows.</p>
+
+<p>You can find the above examples and many more in detail with benchmarking
+results in the <a href="examples">examples directory</a>. Examples include:</p>
+
+<ul>
+<li>logistic regression training and testing. <a href="examples/logreg.cpp">logreg.cpp</a>.</li>
+<li>displaced atoms count and self interstitial count for post-processing
+<a href="http://lammps.sandia.gov/">LAMMPS</a> simulation results.
+<a href="examples/displaced.cpp">displaced.cpp</a>,
+<a href="examples/interstitialcount.cpp">interstitialcount.cpp</a>.</li>
+<li>example for having a overview of data stats with example from
+<a href="http://ikdd.acm.org/Site/CoDS2016/datachallenge.html">cods2016</a>.
+<a href="examples/cods2016.cpp">cods2016.cpp</a>.</li>
+<li>given a trajectory with positions at different times, finding the count of
+directions of adjacent steps in the trajectory.
+<a href="examples/trajectory.cpp">trajectory.cpp</a>.</li>
+</ul>
+
+<p>The examples directory also has separate demonstrations for features and
+options along with explanations to get started with ezl quickly.</p>
+
+<h3>
+<a id="parallelism" class="anchor" href="#parallelism" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Parallelism</h3>
+
+<p>The ezl makes good use of task parallelism inherent in data-flows and
+data parallelism inherent in map and reduce tasks for a default optimum
+parallelism and providing a property based interface to override if 
+required. The following figure shows the overview of parallel options for
+units in a pipeline. </p>
+
+<p><img src="doc/prll.png" alt="Parallel options"></p>
+
+<p>The numbers inside the circle are process rank a unit is running on.  for e.g.
+first unit can be a fromFile running on {0, 1} process ranks, {2,3,4} can be
+running a map or reduce and so on. It can be seen that a reduce task is by
+default parallel and map tasks are by default in-process. The prll option in
+the units control the behavior. The processes can be requested by number,
+ratio of processes of parent unit, or exact rank of processes. If the requested
+processes are not available then also the program runs correctly with best
+possible allocation to units. <a href="examples/demoPrll.cpp">demoPrll</a> has detailed
+examples and options on this. A lot of other demos and examples use <code>prll</code>
+option with different units and options.</p>
+
+<p>Following are some benchmark results on different problems.</p>
+
+<p><img src="doc/benchmarks.png" alt="benchmarks"></p>
+
+<p>The number of trials for pi are doubled as the number of processes are doubled,
+keeping the trials per process constant (weak scaling). In this case a constant
+line implies ideal parallelism. The logistic regression and wordcount
+benchmarks show decrease in time of execution unless the time is reduced to
+around a minute. For more info on benchmarks check the respective examples.</p>
+
+<h3>
+<a id="data-flow" class="anchor" href="#data-flow" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Data-flow</h3>
+
+<p>There are no restrictions on data-flow connections except the type of columns.
+The following figures demonstrates a circular data-flow and a diamond like
+data-flow pipelines: </p>
+
+<p><img src="doc/dataflow.png" alt="dataflow"></p>
+
+<p>Each of these tasks can be running on multiple processes, depending on the
+availability and options. </p>
+
+<p>There can also be a data-flow running in user function of another data-flow. The
+data-flows can be joined, branched and built to run later multiple times on
+different data.</p>
+
+<p><a href="examples/demoFlow.cpp">demoFlow</a> shows code and details for the options
+discussed and for above two data-flow figures. Many other examples also use
+flow properties.</p>
+
+<h2>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Quick Start</h2>
+
+<p>Check out the <a href="doc/tutorial/contents.md">tutorial</a> to begin coding with ezl.
+Feel free to ask for any specific queries.</p>
+
+<h2>
+<a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to install</h2>
+
+<h3>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h3>
+
+<ul>
+<li>c++14 compliant compiler and MPI (mpic++/mpicxx and mpirun)
+
+<ul>
+<li>Works with gcc-5.1 or later and clang-3.5 or later.</li>
+<li>Tested with gcc-5.3, gcc-6.0(dev. branch), Apple LLVM version 7.0.0 (clang-700.0.72).</li>
+</ul>
+</li>
+<li>boost::mpi, boost::serialization tested with 5.8 and 6.0.</li>
+</ul>
+
+<h3>
+<a id="installing" class="anchor" href="#installing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installing</h3>
+
+<p>This is a header only library so all that is needed to start using is to place 
+the contents of the <a href="include">include</a> directory within your source tree so that
+it is available to the compiler. Include <a href="include/ezl.hpp">include/ezl.hpp</a> in
+your program. If you use algorithms like <code>ezl::count</code> etc then also include
+required files from <a href="include/ezl/algorithms/">include/ezl/algorithms/</a>
+directory.</p>
+
+<h3>
+<a id="compiling" class="anchor" href="#compiling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compiling</h3>
+
+<p>There are no linking requirements of ezl library but it uses boost::serialization
+and boost::mpi that need to be linked.
+Here is how you can compile a program in general:
+<code>mpic++ file.cpp -Wall -std=c++14 -O3 -I path_to_ezl_include -lboost_mpi -lboost_serialization</code></p>
+
+<p>If you have added the contents of include directory to your source tree or global
+includes then you don't need to pass -I path_to_ezl_include flag.</p>
+
+<p>You can compile unit-tests with <code>make unittest</code> and run with <code>./bin/unitTest</code>.</p>
+
+<p>You can compile an example using make with <code>make example fname=name</code>, in place
+of name write the name of the file for e.g. wordcount without extension.</p>
+
+<h3>
+<a id="running" class="anchor" href="#running" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running</h3>
+
+<p>After compiling, the executable can be run with mpirun 
+<code>mpirun -n 4 path_to_exe args…</code> or simply as <code>path_to_exe args…</code>.</p>
+
+<hr>
+
+<p>A big thanks to cppcon, meetingc++ and other conferences and all pro C++
+speakers, committee members and compiler implementers for modernising C++ and
+teaching it with so much enthusiasm. I had fun implementing this, hoping
+you will have fun using it. Looking forward to learn more from the community.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
