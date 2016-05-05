@@ -1,0 +1,79 @@
+# main links links
+main:
+  - title: "Getting Started"
+    url: /docs/welcome/
+
+  - title: "Reference"
+    url: /docs/starting-data-flow/
+
+  - title: "Source Repository"
+    url: https://www.github.com/haptork/easyLambda/
+
+  - title: "Blog"
+    url: /posts/
+#
+#  - title: "About"
+#    url: /about/
+#
+#  - title: "Collection Archive"
+#    url: /collection-archive/
+#
+#  - title: "Pages Archive"
+#    url: /page-archive/
+
+# documentation links
+docs:
+  - title: Getting Started
+    children:
+      - title: "Welcome"
+        url: /docs/welcome/
+      - title: "Quick Start Guide"
+        url: /docs/quick-start-guide/
+
+  - title: Learn By Example
+    children:
+      - title: "Hello world with ezl"
+        url: /docs/hello-world/
+      - title: "Analyzing Data Files"
+        url: /docs/data-files/
+      - title: "Controlling Parallelism"
+        url: /docs/parallelism/
+      - title: "Useful Idioms"
+        url: /docs/idioms/
+      - title: "Crazy Data-flows"
+        url: /docs/more-dataflows/
+      - title: "More examples"
+        url: /docs/more-examples/
+
+  - title: Reference
+    url: /docs/references/
+    children:
+      - title: "Starting a data-flow"
+        url: /docs/starting-data-flow/
+      - title: "Data-flow Expressions"
+        url: /docs/dataflow-expr/
+      - title: "Units Expressions"
+        url: /docs/dataflow-expr/
+      - title: "Parallel Options"
+        url: /docs/dataflow-expr/
+      - title: "Rise Algorithms"
+        url: /docs/rise-algos/
+      - title: "Map-Filter Algorithms"
+        url: /docs/filter-algos/
+      - title: "Reduce(all) Algorithms"
+        url: /docs/reduce-algos/
+
+  - title: Extras
+    children:
+      - title: "Modern C++ essentials"
+        url: /docs/cpp-essentials/
+      - title: "Ezl for simulations"
+        url: /docs/lammps/
+      - title: "Parallel Execution Model"
+        url: /docs/parallel-model/
+      - title: "Benchmarks"
+        url: /docs/benchmarks/
+      - title: "Implementation"
+        url: /docs/implementation/
+      - title: "License"
+        url: /docs/license/
