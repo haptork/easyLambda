@@ -32,18 +32,12 @@ docs:
 
   - title: Learn By Example
     children:
-      - title: "Hello world with ezl"
+      - title: "Hello world examples"
         url: /docs/hello-world/
-      - title: "Analyzing Data Files"
-        url: /docs/data-files/
-      - title: "Controlling Parallelism"
-        url: /docs/parallelism/
-      - title: "Useful Idioms"
-        url: /docs/idioms/
-      - title: "Crazy Data-flows"
-        url: /docs/more-dataflows/
-      - title: "More examples"
-        url: /docs/more-examples/
+      - title: "Real world examples"
+        url: /docs/real-world/
+      - title: "Out of the world examples"
+        url: /docs/out-of-the-world/
 
   - title: Reference
     url: /docs/references/

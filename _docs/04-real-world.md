@@ -1,7 +1,7 @@
 ---
-title: "Analyzing Data Files"
-permalink: /docs/data-files/
-excerpt: "Example on data-file"
+title: "Real World Examples"
+permalink: /docs/real-world/
+excerpt: "Examples on real problems"
 ---
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}

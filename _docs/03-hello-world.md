@@ -6,28 +6,36 @@ excerpt: "basic examples with ezl"
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
 
+We discuss basic set of rules that ezl is based on with the help of
+simple examples.
+
 Let's look at a minimal Hello world program with ezl.
 
-{% highlight ruby %}
-ezl::rise(ezl::fromMem({"Hello world"})).dump().run();
+{% highlight cpp %}
+using ezl::rise;
+using ezl::fromMem;
+rise(fromMem({"Hello world"})).dump()
+  .run();
 {% endhighlight %}
 
-Every ezl library call is inside `ezl` namespace so we will write `ezl::` for
-any ezl call. We can declare `using namespace ezl` or `using ezl::rise` at the
-top but this way makes it clear when we make a library call. 
+Every ezl library call is inside ezl namespace. In the above example we have
+namespace qualifier for each call at the beginning such as `using ezl::rise`.
+The other ways can be - qualifying each call separately such as
+`ezl::rise(...)` or declaring `using namespace ezl;` at the top. We will use
+either of the first two to make it clear which calls are ezl calls.
 
-Let's look at each of the constructs in the above program. We first have
-`ezl::rise`. Rise is a higher order function i.e. it takes as input another
-function. Rise is the original data source in a data-flow. It produces the
-output on with the help of the function which takes no input parameter.
-Here, inside rise we are passing `ezl::fromMem` function. This function
-can take a list / container variable or a initialize list with values, it
+Let's look at each of the step in the above program. We first have
+a rise which is a higher order function i.e. it takes another function as input. 
+Rise is the original data source in a data-flow. It produces the
+output with the help of a function which takes no input parameter.
+Here, we are passing `fromMem` library function to it. This function
+can take a list / container variable or an initialize list with values, it
 produces a row for each item in the container. A container can be a vector,
-array, map etc. We modify the property of the rise unit with `dump`. A 
-dump can be added to any unit in the dataflow and it makes the output dump
-to the console. dump expression takes two optional string parameters, first
-for output file name and other for header message at the top of the file. `run`
-is a data flow expression which makes the data-flow execute.
+array, map etc. We have added dump property to the rise unit. A
+dump can be added to any unit in the dataflow and it displays the output of the
+unit on the console. The dump expression takes two optional string parameters,
+first for output file name and other for header message at the top of the file.
+At the end we call run which executes the data data-flow.
 
 Let's look at another example which does some calculation as well. Following is 
 an ezl program to find the summation of numbers with their square root.
@@ -39,86 +47,122 @@ ezl::rise(ezl::fromMem({25.0, 100.0, 30.4}))
   .run();
 {% endhighlight %}
 
-The rise function supplies each number as a row to map. `map` is another higher
-order function or unit which is same as functional paradighm map operation. It
+The rise function streams each number as a row to map. `map` is another higher
+order function or unit which is similar to functional paradighm map operation. It
 applies the function to each row and adds the result as a new column at the
-end. The first dump, writes the numbers and their square root in a file while
-second output prints number, square root and their addition for each number
-on console. The sqrt and plus are C++ standard library functions.
+end of the row. The first map with dump, writes the numbers and their square
+root in a file. The second map prints (number, square root and their addition)
+for each row on console. The sqrt and plus are C++ standard library functions.
+You may want to run this program to better understand what its output is.
 
-Let's try to write an ezl program to find the sixth root of a number.
+### Sixth Root
 
-```cpp
+Let's write an ezl program to find the sixth root of a number.
+
+{% highlight ruby %}
 ezl::rise(ezl::fromMem({25.0, 100.0, 30.4}))
   .map(std::sqrt)
-  .map(std::cbrt).dump() // error: static_assert- function and cols don't match
+  .map(std::cbrt).dump("doesn't compile")
   .run();
-```
+{% endhighlight %}
 
 The output rows from first map have two columns viz. input number and its
-square root, while cbrt takes one number so the a static assert is raised at
-compile time. The following code composes these functions together using column
-selection expressions.
+square root, while cbrt takes one number. This data-flow is not well formed
+so a static assert is raised at compile time. easyLambda gives helpful
+static_error mesaages for ill-formed data-flows in compile error. 
 
-```cpp
+The following code composes these functions together using column selection
+expressions.
+
+{% highlight ruby %}
 ezl::rise(ezl::fromMem({number}))
-  .map(std::sqrt).colsResult()        // with colsResult() only result is passed
+  .map(std::sqrt).colsResult()
   .map(std::cbrt).colsResult().dump()
   .run();
-```
+{% endhighlight %}
 
-The `colsResult()` is a property of `map` unit. It makes only the result pass
-to the next unit. The program prints the sixth root. We can select output
-columns by their indices as well. In place of `colsResult()` we could have
-written `cols<2>()` or `colsDrop<1>()`. The `cols<...>()` and `colsDrop<...>()`
-properties are equally applicable to other computing units that we will
-introduce later.
+The colsResult is a property of map unit. It makes only the result pass
+to the next unit rather than adding result to the input columns. The program
+prints the sixth root. We can select output columns by their indices as well.
+In place of `colsResult()` we could have written `cols<2>()` or
+`colsDrop<1>()`. The cols and colsDrop properties are applicable to other
+computing units like filter and reduce.
 
 If we use `colsResult` only with first map and not with second one then the
 program will print the second root (input) and sixth root (output) both. But
 what if we want to print number and the sixth root in each row. Following is
 the program for it.
 
-```cpp
+{% highlight ruby %}
 ezl::rise(ezl::fromMem({number}))
   .map(std::sqrt)
-  .map<2>(std::cbrt).colsTransform().dump() // map<2> to pass only 2nd col
+  .map<2>(std::cbrt).colsTransform().dump()
   .run();
-```
+{% endhighlight %}
 
-The second column is selected for the input to `cbrt` with map<2>. We
-can select multiple columns, in any case the default output from the unit
-remains to be all input columns followed by output columns. The
-`colsTransform()` is a property of `map` that replaces the selected input
-columns of the map (here 2nd) by the output cols returned by the function.
-Without `colsTransform()` this will print number, sqrt, sixth root. Here,
-`colsTransform()` can be replaced by `cols<1, 3>()` or `colsDrop<2>`.
+The second column is selected for the input to cbrt function with map<2>. We
+can select multiple columns. The default output from the unit
+is all input columns followed by output columns. The colsTransform is a
+property of map that replaces the selected input columns of the map (here
+2nd) by the output cols returned by the function.  Without colsTransform
+this will print number, sqrt, sixth root. Here, `colsTransform()` can be
+replaced by `cols<1, 3>()` or `colsDrop<2>`.
 
-##### Returning multiple values / columns:
+The example has introduced machinery for column selection with composition in
+ezl which is quite useful for reuse. It is the column selection that makes
+reuse of generic algorithms in easyLambda for any data possible with minimal
+syntax.
+
+### Sqrt and Cbrt in different Columns
+
+Folowing is a data-flow to add a column for square root and another for cube
+root using a single map.
+
+{% highlight ruby %}
+ezl::rise(ezl::fromMem({25.0, 100.0, 30.4}))
+  .map([](double num) {
+    return make_tuple(sqrt(num), cbrt(num));
+  }).dump()
+  .run();
+{% endhighlight %}
 
 A function can return multiple values / columns by returning a standard tuple.
-The function that returns square root and a text message can be written as.
+For square root and cube root, it is better to use two maps one for each with
+column selection on second as the two operations are not related. However, some
+operations need to output more than one values and make_tuple is the standard
+way of returning multiple values in ezl or in general.
 
-```cpp
-auto mysqrt(int number) {
-  return std::make_tuple(std::sqrt(number), "sqrt calculated");
-}
-```
+### Sqrt and Cbrt in Different Branches
 
-##### Getting result
+Let's say we want to calculate square root and cube root with different maps
+that both have same source unit.
 
-`dump()` can be added to any unit to display its output data. One can think
-of it as a branch in the main data-flow. `dump` has two optional string parameters
-viz. file-name and header. An empty file-name prints the data to the screen. A
-non empty header string is printed at the top of the file.
+{% highlight ruby %}
+auto src = ezl::rise(ezl::fromMem({25.0, 100.0, 30.4}))
+            .build();
 
-To get the end result of the data-flow as a return value one can use
-`.runResult()` in place of `.run()`. The return value is always a vector of
-tuple of various values returned.
+ezl::flow(src)
+  .map(std::sqrt).dump("sqrt.txt").build();
+
+ezl::flow(src)
+  .map(std::cbrt).dump("cbrt.txt").run();
+{% endhighlight %}
+
+We build a source unit wiht `build()`. Building does not execute the data-flow,
+instead it returns the last unit of the data-flow. With `flow(src)` we resume
+the src data-flow and add to it a map with sqrt and then with cbrt. When we run
+the cbrt, the data from the rise starts streaming to both the child branches of
+it and results get saved into files they are dumping to. With parallelism
+property that we will see later we can run two branches in different processes
+simultaneously.  Building a data-flow can be useful in many cases like for
+cyclic flows, for building a data-flow and then running it for different data
+iteratively etc.
+
+### Data-flow to return sixthRoot
 
 Following is a function that returns sixth root of a number passed to it.
 
-```cpp
+{% highlight ruby %}
 auto sixthRoot(double number) {
   auto res = 0.0;
   std::tie(res) = ezl::rise(ezl::fromMem({number}))
@@ -127,261 +171,132 @@ auto sixthRoot(double number) {
                     .runResult()[0];
   return res;
 }
-```
+{% endhighlight %}
 
-```cpp
-int addition(int x, int y) {
- return x + y;
-}
+To get the end result of the data-flow as a return value one can use
+`.runResult()` in place of `.run()`. The return value is always a vector of
+tuple of various values returned.
 
-ezl::flow(twoCols) // ezl::flow adds to a prior built flow
-  .map(addition).dump()
-  .run();
-```
+### Count
 
-In above code if the rows coming from `twoCols` are (1,2), (3, 4) then it
-prints following:
-(1, 2, 3)
-(3, 4, 7)
+Let us say from a data source with rows having two columns, we want to count
+the number of rows that addup to more than 5. Here, is the data-flow for this.
 
-We can instead choose to build the flow for later as follows:
-
-```cpp
-// auto is like a variable type that modern c++ compiler can deduce and you
-// don't need to specify explicitly.
-
-auto threeCols = ezl::flow(twoCols) // ezl::flow adds to a prior built flow
-                   .map(addition).dump()
-                   .build();
-```
-
-At this point, running the program does nothing, since data-flow is just built
-not run. `ezl::flow(threeCols).run()` will run the data-flow later.
-
-If we want to add a column for multiplication and another for division of
-column one and two then we return two columns from a map as follows.
-
-```cpp
-auto fourCols = ezl::flow(twoCols)
-                  .map([](int x, int y) {
-                  return make_tuple(x * y, (double)x / y);
-                }).dump()
-                .build();
-```
-
-Now, let us say we want to filter rows and pass only if value of the third column
-is greater than 5.
-
-```cpp
-ezl::flow(twoCols)
-  .map(addition).dump()
-  .filter([](int x, int y, int z) {
-    return (z > 5);
-  }).dump()
+{% highlight ruby %}
+using ezl::rise;
+using ezl::fromMem;
+rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
+  .map(std::plus)
+  .filter<3>(ezl::gt(5))
+  .reduce(ezl::count(), 0).dump()
   .build();
+{% endhighlight %}
 
-// filter uses modern c++ lambda, it is just a function without a name, the
-// return type is auto deduced. The function body is same as normal fn.
-```
+Let us dissect this data-flow. We throw a bunch of tuples to the fromMem
+function in an initializer list. Each tuple provides a row with two columns.
+The map unit then adds the two columns and passes the result along with input
+numbers. Next, third column is selected for the filter predicate. The predicate
+is an ezl generic function object gt for greater than. We pass 5 as the reference
+number. If we were filtering on let's say first column be greater than 2 and addition
+be greater than 5 then our filter would be `.filter<1,3>(ezl::gt(2, 5))`.
+Similar, function objects for less that (lt) and equals (eq) are also available
+with ezl algorihtms for filter. Next, we have a reduce unit to count the
+filtered rows. reduce is another higher order function or unit which is similar
+to functional paradighm fold function. It finds a single aggregated result
+after calling the user function on all the rows. The reduce takes as parameter
+a function and the initial value of the result. For each row it calls the user
+function with key input columns, value input columns and prior result. The key
+is used to group the rows and then a single result is obtained for each group.
+We will see the grouping in next example. Here, we are counting all the rows
+so we don't require grouping. Here, We pass another generic function object
+count to reduce and an initial value for the result as zero. The count returns
+the incremented value of prior result for each row.
 
-There is some problem in the above filter, we are not using first two columns
-but we have to write our function that takes them as input. What if there are
-10 or even more columns and we are to operate on just single one. 
+Let's say we want to count the rows for each value of addition. Since, (4, 3)
+and (2, 5) both add to 7 while (2, 1) adds to 3, the desired result is
+(7, 2) and (3, 1).
 
-A better written filter would be:
-
-```cpp
-  .filter<3>([](int z) { // selecting column three
-    return (z > 5);
-  })
-```
-
-The column selection facilitates composition and encourages reuse. Hence, the
-generic functions provided by ezl for maps, filters and reduces can be
-extensively used. 
-
-Following is the filter using library function for greater than.
-
-```cpp
-  .filter<3>(ezl::gt(5));
-```
-
-If we want to filter for rows that have column one greater than 2 and column three greater
-than 5, then we can write something like.
-```cpp
-  .filter<1, 3>(ezl::gt(2, 5));
-```
-
-#### Introduction to reduce
-
-Let us say we want to add all the rows in the `oneCol` data-flow.
-
-```cpp
-ezl::flow(oneCol)
-  .reduce(addition, 0)
-  .build();
-```
-
-Here, 0 is the initial value. The reduce function receives each row and the
-prior value of result as its parameters. It returns the updated result which is
-passed next time a new row is streamed in. At the end of data the resulting row
-with final addition is passed ahead in the data-flow.
-
-A count of rows can be done by simply incrementing the result each time.
-
-```cpp
-ezl::flow(oneCol)
-  .reduce([](int x, int res) { return res + 1; }, 0) // count of total rows
-  .build();
-```
-
-A better way is to use library function count.
-
-```cpp
-ezl::flow(oneCol)
-  .reduce(ezl::count(), 0)
-  .build();
-```
-
-The reduce operation can be applied independently to different groups. These
-groups are decided by the value of key columns.
-
-Let us say in threecols data-flow we want to check how many pair of integers
-result in a particular value of addition (third col).
-For e.g. if rows in threeCols are (3, 4, 7), (2, 5, 7), (5, 3, 8)
-we want output to be (7, 2), (8, 1)
-we want to calculate count of rows in each group with key column 3.
-
-```cpp
-ezl::flow(threeCols)
-  .reduce<3>([](int key, int x, int y, int res) { return res+ 1; }, 0)
-  .build();
-```
-
-Again, it is better to use library function:
-
-```cpp
-ezl::flow(threeCols)
+{% highlight ruby %}
+using ezl::rise;
+using ezl::fromMem;
+rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
+  .map(std::plus)
   .reduce<3>(ezl::count(), 0)
   .build();
-```
+{% endhighlight %}
+
+If we were to write count function specific to our case ourselves then it
+can be written as:
+
+{% highlight ruby %}
+  .reduce<3>([](int key, int x, int y, int res) { 
+    return res + 1; 
+  }, 0)
+{% endhighlight %}
 
 Here, we take column three as key, by default all other cols are value cols.
 The function parameter are key cols, value cols, result cols. The returned
 rows are of type key cols, resulting cols.
 
-One can select multiple key cols. Result also can have multiple cols.
+or we can select value colums as well and can write as follows.
 
-Let us say we want to add cols one and two for all the rows that have same
-value for column three.
+{% highlight ruby %}
+  .reduce<key<3>, val<>>([](int key, int res) { 
+    return res + 1; 
+  }, 0)
+{% endhighlight %}
 
-```cpp
-ezl::flow(threeCols)
-  .reduce<3>(
-    [](int key, int x, int y, int sumx, int sumy) { 
-      return make_tuple(x + sumx, y + sumy); 
-    }
-    , 0, 0)
-  .build();
-```
+One can also select multiple key or value columns. Let us say we want to add
+cols one and two for all the rows that have same value for column three.
 
-Again,
-
-```cpp
-ezl::flow(threeCols)
-  .reduce<3>(ezl::sum(), 0, 0)
-  .build();
-```
+{% highlight ruby %}
+using ezl::rise;
+using ezl::fromMem;
+rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
+  .reduce(ezl::sum(), 0, 0)
+  .run();
+{% endhighlight %}
 
 Two zeros are for initial value of two resulting columns, respectively.
 
-Reduction of rows for which the successive application of a function is not applicable
-can be done using ReduceAll.
+There are reductions that might take multiple steps if we use the reduce
+unit. However, if the data is small then there is no reason to do that. For
+these cases we have reduceAll higher order function. To return the count
+of rows with same value of summation, the data-flow will look like below.
 
-```cpp
-ezl::flow(threeCols)
-  .reduceAll<3>([](int key, vector<int> x, vector<int> y) { return int(y.size()); })
-  .build();
-```
+{% highlight ruby %}
+rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
+  .map(std::plus)
+  .reduceAll<3>([](int key, vector<int> a, vector<int> v) { 
+    return int(a.size()); 
+  });
+{% endhighlight %}
 
 or
 
+{% highlight ruby %}
+rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
+  .map(std::plus)
+  .reduceAll<3>([](int key, vector<tuple<int, int>> val) { 
+    return int(val.size()); 
+  });
+{% endhighlight %}
 
-```cpp
-ezl::flow(threeCols)
-  .reduceAll<3>([](int key, vector<tuple<int, int>> y) { return int(y.size()); })
-  .build();
-```
-
-So essentially, the parameters are key, vector of value cols. The vectors can be
-separate vector of column types or vector of tuple of column types according to the
-convenience of the operation to be carried out.
-
-ReduceAll library functions include summary, histogram and correlation. These
-are pretty neat if you want to get the idea of the data. As for most of the
-library function these are applicable to any number of columns.
+So essentially, the parameters of user function in reduceAll are key, vector of
+value cols. The vectors can be separate vector of column types or vector of
+tuple of column types according to the convenience of the operation to be
+carried out.  ReduceAll library function objects include summary, histogram and
+correlation. These are pretty useful if you want to get the idea of the data. As
+for most of the library function these are applicable to any number of columns.
 
 The property `cols<...>()` can be applied to any reduce unit for columns that
 need to be passed ahead.
 
-Finally, key and value columns both can be selected with a syntax like following:
-`.reduce<ezl::key<1, 2>, ezl::val<3, 5>>(...)`.
-
-
-
-
-##### Multiple rows
-
-We have restricted our data-flow examples to the calculation for a single number.
-However, we can pass a list (array, vector or other containers) of numbers in the rise and
-the same data-flows will transform each number / row in the list. This
-is the usual semantics of `map` in functional paradigm i.e. `map` transforms
-a list into a new list by applying a function to each element of the list.
-
-Following are some of the different rises that can replace our previous
-rise.
-
-```cpp
-auto srcFlow = ezl::rise(ezl::fromMem({5.0, 19.4, 43.5})).build();
-
-auto ar = std::array<double, 3> {{5.0, 19.4, 43.5}};
-
-auto srcFlowAr = ezl::rise(ezl::fromMem(ar)).build();
-
-auto vec = std::vector<double> {5.0, 19.4, 43.5};
-
-auto srcFlowVec = ezl::rise(ezl::fromMem(vec)).build();
-```
-
-We can also load numbers from a file directly.
-
-```cpp
-auto fileName = std::string("numbers.txt");
-
-auto srcFlowFile = ezl::rise(ezl::fromFile<double>(fileName)).build();
-```
-
-The rise function `fromFile` can work with multi-column files as well. It is
-quite comprehensive. It takes care of errors in reading, it has option to have
-strictSchema (reject rows that have different size of column) or noStrictSchema
-(fill in defaults if less cols, or ignore if more cols), parallel reading etc.
-Check [demoFromFile](../../examples/demoFromFile.cpp) for more on these options.
+### Multiple rows
 
 In some cases it may be required to return zero, one or multiple rows for an
 input row from a map. For this, the map can return a vector of values which
 is treated as returning multiple rows. For returning vector as a column, a
 tuple of vector is to be returned.
 
-#### A few things more:
 
-- If you see a long compile time error, just scroll to the top, most likely
-  you will see a `static_error` saying either col selection is not possible or
-  function params and cols do not match.
-- To return zero, one or multiple rows, return a vector of rows from any unit.
-  This is also applicable for `reduce()`.
-- For big column types it is good to have params as `const bigtype&`.
-- If you are returning a big object from reduce and are worried about creating
-  a new one every time you update the result for a new row. Then worry not. You
-  can have your resulting type as `bigtype&`, update it in-place and return the
-  reference. While returning the reference if you are using auto as return type
-  or lambda function, don't forget to explicitly specify return type to be `auto&`.

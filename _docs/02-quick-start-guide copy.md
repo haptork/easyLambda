@@ -44,11 +44,11 @@ to compile wordcount example.
 After compiling, the executable can be run with mpirun 
 `mpirun -n 4 path_to_exe args…` or simply as `path_to_exe args…`.
 
-## Using Library in your program
+## Using ezl in your program
 
 Include `ezl.hpp` in your program. If you use algorithms like `ezl::count` etc
-then also include required headers from include/ezl/algorithms/ directory. There
-are many examples and demonstrations given in the examples directory, pick an
-example of your interest. Check reference and demo for information on a
-specific easyLambda construct. Learn by example introduces different concepts of
-ezl one by one with examples first.
+then also include required headers from /ezl/algorithms/ directory. There are
+many examples and demonstrations given in the examples directory, pick an
+example of your interest to begin with. You can check reference for information
+on a specific easyLambda call. Learn by example gives a humble introduction to
+ezl with examples showing many essential features.
