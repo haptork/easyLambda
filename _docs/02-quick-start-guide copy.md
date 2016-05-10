@@ -44,11 +44,15 @@ to compile wordcount example.
 After compiling, the executable can be run with mpirun 
 `mpirun -n 4 path_to_exe args…` or simply as `path_to_exe args…`.
 
-## Using ezl in your program
+## Using ezl
 
-Include `ezl.hpp` in your program. If you use algorithms like `ezl::count` etc
-then also include required headers from /ezl/algorithms/ directory. There are
+For all of the core functionality only `ezl.hpp` is needed to be included in
+the program. To use generic function objects like `ezl::count` etc header
+files from `ezl/algorithms/` directory need to be included. The function
+objects are grouped according to their use case. The algorithms for use with
+reduce are in reduces.hpp, with filter are in filters.hpp and so on. There are
 many examples and demonstrations given in the examples directory, pick an
 example of your interest to begin with. You can check reference for information
 on a specific easyLambda call. Learn by example gives a humble introduction to
-ezl with examples showing many essential features.
+ezl with examples showing many essential features. If you are starting out with
+modern C++ then you can check out the essential C++ short article in extras section.
