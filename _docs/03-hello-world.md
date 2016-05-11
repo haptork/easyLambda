@@ -121,7 +121,7 @@ root using a single map.
 {% highlight ruby %}
 ezl::rise(ezl::fromMem({25.0, 100.0, 30.4}))
   .map([](double num) {
-    return make_tuple(sqrt(num), cbrt(num));
+    return std::make_tuple(sqrt(num), cbrt(num));
   }).dump()
   .run();
 {% endhighlight %}
@@ -191,6 +191,7 @@ the number of rows that addup to more than 5. Here, is the data-flow for this.
 {% highlight ruby %}
 using ezl::rise;
 using ezl::fromMem;
+using std::make_tuple;
 rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
   .map(std::plus)
   .filter<3>(ezl::gt(5))
@@ -234,6 +235,7 @@ and (2, 5) both add to 7 while (2, 1) adds to 3, the desired result is
 {% highlight ruby %}
 using ezl::rise;
 using ezl::fromMem;
+using std::make_tuple;
 rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
   .map(std::plus)
   .reduce<3>(ezl::count(), 0)
@@ -267,6 +269,7 @@ summation of all the rows for each column.
 {% highlight ruby %}
 using ezl::rise;
 using ezl::fromMem;
+using std::make_tuple;
 rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
   .reduce(ezl::sum(), 0, 0)
   .run();
@@ -281,6 +284,9 @@ function. To return the count of rows with same value of third column, the
 data-flow will look like below.
 
 {% highlight ruby %}
+using ezl::rise;
+using ezl::fromMem;
+using std::make_tuple;
 rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
   .map(std::plus)
   .reduceAll<3>([](int key, vector<int> a, vector<int> v) { 
@@ -291,6 +297,9 @@ rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
 or
 
 {% highlight ruby %}
+using ezl::rise;
+using ezl::fromMem;
+using std::make_tuple;
 rise(fromMem({make_tuple(4,3), make_tuple(2,5), make_tuple(2,1)}))
   .map(std::plus)
   .reduceAll<3>([](int key, vector<tuple<int, int>> val) { 
@@ -313,9 +322,30 @@ need to be passed ahead.
 
 ### Multiple rows
 
-In some cases it may be required to return zero, one or multiple rows for an
-input row from a unit. For this, the user function can return a vector of
-values which is treated as returning multiple rows. For returning vector as a
-column, a tuple of vector is to be returned.
+For a source with two columns, one string and another a number, the following
+data-flow duplicates the row as many times as the corresponding number in
+the row.
+
+{% highlight ruby %}
+using ezl::rise;
+using ezl::fromMem;
+using std::make_tuple;
+rise(fromMem({make_tuple("yo", 0), make_tuple("ezl", 2), make_tuple("one", 1)}))
+  .map([](string str, int times) {
+    return vector<string>(times, str);
+  }).cols<3,2>().dump()
+  .run();
+{% endhighlight %}
+
+The rise streams the rows with string and integer columns to the map.
+The map user function returns a vector of strings which is treated as returning
+multiple rows. The output column selection works the same way as it does for
+a single return value. Each output row has third and second column i.e. output
+string and input number. The output of the program will be (("ezl", 2), ("ezl",
+2), ("one", 1)). The first row ("yo", 0) doesn't appear at all.
+
+A vector of tuple can be returned for returning multiple rows with multiple columns.
+For returning vector as a column, a tuple of vector is to be returned. This applies
+to any higher order function like reduce, reduceAll in ezl.
 
 
