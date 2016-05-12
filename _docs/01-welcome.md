@@ -1,7 +1,7 @@
 ---
 title: "Welcome"
 permalink: /docs/welcome/
-excerpt: "Introduction to easyLambda, MPI and modern C++. "
+excerpt: "Introduction to easyLambda, data-flow, map-reduce, MPI and modern C++."
 ---
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
@@ -144,7 +144,7 @@ the only library for C++ with data-flow, column selection and map-reduce.
 
 If you are new to C++14, you only know C or you are not comfortable with those
 angular brackets often used for column selection and column types in ezl then
-check the [essential C++]() section.
+check the [C++ essentials]({{ base_path }}/docs/cpp-essentials/) section.
 
 ### Why MPI in easyLambda
 
@@ -152,9 +152,10 @@ MPI is high performance message passing library which lacks good library
 support on top of it but still extensively used in HPC. The questions that
 remain are why it is not used outside HPC or why HPC doesn't use other
 libraries. These questions have been discussed a lot of times without any clear
-conclusion [link] [link]. We hope that easyLambda will make using MPI easier
-in scientific community and might make MPI more visible outside the niche
-community.
+conclusion [link](http://www.dursi.ca/hpc-is-dying-and-mpi-is-killing-it/)
+[link](http://www.csm.ornl.gov/workshops/SOS17/documents/Plimpton_sos_Mar13.pdf).
+We hope that easyLambda will make using MPI easier in scientific community and
+might make MPI more visible outside the niche community.
 
 There are no libraries in MPI that provide an easy way of using MPI for reusing
 existing serial algorithms. EasyLambda tries to fill this void.

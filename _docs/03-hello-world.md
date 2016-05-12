@@ -347,5 +347,3 @@ string and input number. The output of the program will be (("ezl", 2), ("ezl",
 A vector of tuple can be returned for returning multiple rows with multiple columns.
 For returning vector as a column, a tuple of vector is to be returned. This applies
 to any higher order function like reduce, reduceAll in ezl.
-
-
