@@ -9,9 +9,9 @@ excerpt: "basic examples with ezl"
 We discuss basic set of rules that ezl is based on with the help of
 simple examples.
 
-Let's look at a minimal Hello world program with ezl.
+Let's look at a minimal Hello world data-flow with ezl.
 
-{% highlight cpp %}
+{% highlight ruby %}
 using ezl::rise;
 using ezl::fromMem;
 rise(fromMem({"Hello world"})).dump()

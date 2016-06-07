@@ -43,19 +43,19 @@ docs:
     url: /docs/references/
     children:
       - title: "Starting a data-flow"
-        url: /docs/starting-data-flow/
+        url: /docs/starting-dataflow/
       - title: "Data-flow Expressions"
         url: /docs/dataflow-expr/
       - title: "Units Expressions"
-        url: /docs/dataflow-expr/
+        url: /docs/unit-expr/
       - title: "Parallel Options"
-        url: /docs/dataflow-expr/
+        url: /docs/prll-options/
       - title: "Rise Algorithms"
-        url: /docs/rise-algos/
+        url: /docs/rise-algo/
       - title: "Map-Filter Algorithms"
-        url: /docs/filter-algos/
+        url: /docs/map-filter-algo/
       - title: "Reduce(all) Algorithms"
-        url: /docs/reduce-algos/
+        url: /docs/reduce-algo/
 
   - title: Extras
     children:

@@ -69,11 +69,18 @@ cores in single system to thousands of processes across nodes of a cluster.
 easyLambda uses MPI internally and user code does not need to make MPI calls
 directly. 
 
+The programs that use MPI are compiled with mpicc that is a compiler wrapper.
+The compiler flags and everything else remains same. The executable can be run
+as usual as a single MPI process or it can be run with mpirun command with multiple
+process. mpirun -n 64 ./a.out runs the a.out with 64 processes. It is simple to
+use and ezl programs can take full advantage of multiple cores or multiple
+nodes on a cluster without any change in the program and data-flow.
+
 ### What are Map and Reduce
 
 The map, filter and reduce are higher order functions (i.e. they take a
-function as one of the input) that relate to map, filter and fold functions of
-functional programming. 
+function as one of the input) that relate to list processing functions
+map, filter and fold in functional programming.
 
 Map takes a function and a list as parameters, applies the function to each
 element of the list. This is equivalent of for_each loop, however map doesn't
@@ -91,18 +98,19 @@ e.g. finding number of atoms in each time-step instead of all the atoms in all
 the time steps.
 
 When running in parallel, the ordering of the rows is not maintained,
-however easyLambda provides options to preserve ordering of rows in a group.
+however easyLambda provides options to preserve ordering of rows in a group as
+shown in many examples later.
 
 ## Why easyLambda
 
-Use ezl for your data-processing tasks, to write post-processors for simulation
-results, for iterative machine learning algorithms, for general in-memory list
-processing, to write parallel codes easily, to use its many generic functions
-that include parallel type-safe reader, summary of data, correlation etc or
-may be to use data-flow. The easyLambda code split in many small units has
-almost no overhead compared to equivalent serial monolith algorithm or bare
-MPI only code. This is made possible by making minimal copies of data for
-passing between units, functions and column selection etc.
+Use ezl for your table / list-processing tasks, to write post-processors for
+simulation results, for iterative machine learning algorithms, to write
+parallel codes easily, to use its many generic functions that include parallel
+type-safe reader, summary of data, correlation etc or to use data-flow.
+The easyLambda code split in many small units has almost no overhead compared
+to equivalent serial monolith code or bare MPI only code. This is made
+possible by making minimal copies of data for passing between units, functions
+and column selection etc.
 
 The library enforces no special structure, data-types or requirements on the
 user functions. Moreover, it facilitates composition of functions with core
@@ -158,7 +166,9 @@ We hope that easyLambda will make using MPI easier in scientific community and
 might make MPI more visible outside the niche community.
 
 There are no libraries in MPI that provide an easy way of using MPI for reusing
-existing serial algorithms. EasyLambda tries to fill this void.
+existing serial algorithms. EasyLambda tries to fill this void. EasyLambda
+programs are terse compared to MPI-only implementation with no to little effect
+on performance.
 
 ### Why Data-flow and Map-Reduce in easyLambda
 
@@ -169,7 +179,6 @@ easyLambda adds its own things to it like ExpressionBuilder interface for -
 configuring parallelism, output columns selection, dumping resuts etc, 
 order based flushing in reduce, reduceAll units, input column selection, cyclic
 data-flows etc.
-
 
 The data-flow enables us to express many algorithms in exact way, nothing
 less and nothing more. In imperative programming we express the algorithms
