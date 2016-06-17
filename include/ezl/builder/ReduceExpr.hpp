@@ -36,14 +36,15 @@ struct ReduceExpr {
 
   ReduceExpr() = default;
 
-  ReduceExpr(F&& f, std::shared_ptr<Source<I>> pr, FO&& i)
-      : _func{std::forward<F>(f)}, _prev{pr}, _initVal{std::forward<FO>(i)} {}
+  ReduceExpr(F &&f, std::shared_ptr<Source<I>> pr, FO &&i, bool scan)
+      : _func{std::forward<F>(f)}, _prev{pr}, _initVal{std::forward<FO>(i)},
+        _scan{scan} {}
 
   auto build() {
     auto ordered = ((T *)this)->getOrdered();
     auto obj =
         std::make_shared<Reduce<meta::ReduceTypes<I, K, S, F, FO, O>, H>>(
-            std::forward<F>(_func), std::forward<FO>(_initVal), ordered);
+            std::forward<F>(_func), std::forward<FO>(_initVal), _scan, ordered);
     obj->prev(_prev, obj);
     return obj;
   }
@@ -64,9 +65,15 @@ struct ReduceExpr {
     return ((T *)this)->reReduceExpr(NO{});
   }
 
+  auto scan(bool isScan = true) {
+    _scan = isScan;
+    return ((T *)this)->self();
+  }
+
   F _func;
   std::shared_ptr<Source<I>> _prev;
   FO _initVal;
+  bool _scan{false};
 };
 }
 } // namespace ezl namespace ezl::detail

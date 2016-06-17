@@ -104,7 +104,7 @@ template <class T> struct DataFlowExpr {
                          boost::hash<typename types::ktype>>{
         std::forward<F>(f),
         std::make_tuple(std::forward<FO>(fo), std::forward<FOs>(fos)...),
-        std::move(curUnit)};
+        std::move(curUnit), false};
   }
 
   template <int... Ns, class F, class FO>
@@ -117,7 +117,7 @@ template <class T> struct DataFlowExpr {
     using types = meta::ReduceDefTypes<I, K, std::tuple<FO>>;
     return ReduceBuilder<I, V, F, FO, typename types::odefslct, K,
                          boost::hash<typename types::ktype>>{
-                           std::forward<F>(f), std::forward<FO>(fo), curUnit};
+        std::forward<F>(f), std::forward<FO>(fo), curUnit, false};
   }
 
   template <int... Ns, class F> auto reduceAll(F&& f) {
@@ -146,7 +146,7 @@ template <class T> struct DataFlowExpr {
                          boost::hash<typename types::ktype>>{
         std::forward<F>(f),
         std::make_tuple(std::forward<FO>(fo), std::forward<FOs>(fos)...),
-        std::move(curUnit)};
+        std::move(curUnit), false};
   }
 
   template <class K, class V, class F, class FO>
@@ -159,7 +159,7 @@ template <class T> struct DataFlowExpr {
     using types = meta::ReduceDefTypes<I, saneK, std::tuple<FO>>;
     return ReduceBuilder<I, saneV, F, FO, typename types::odefslct, saneK,
                          boost::hash<typename types::ktype>>{
-        std::forward<F>(f), std::forward<FO>(fo), curUnit};
+        std::forward<F>(f), std::forward<FO>(fo), curUnit, false};
   }
 
   template <class K, class V, class F> auto reduceAll(F&& f) {

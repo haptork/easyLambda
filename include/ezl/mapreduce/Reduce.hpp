@@ -65,7 +65,7 @@ public:
 
   static constexpr int osize = std::tuple_size<otype>::value;
 
-  Reduce(F f, FO val, bool order) : _func(f), _initVal(val), _ordered(order) {}
+  Reduce(F f, FO val, bool scan, bool order) : _func(f), _initVal(val), _scan(scan), _ordered(order) {}
 
   virtual void dataEvent(const itype &data) final override {
     auto curKey = meta::slctTupleRef(data, Kslct{});
@@ -95,13 +95,16 @@ public:
               (_initVal) ));
       }
     }
-
+    if (_scan) {
+      callKey<FO>(it);
+      return;
+    }
     if (_ordered) { 
       if (_first) {
         _first = false;
         _preIt = it;
       } else if (_preIt->first != curKey) {
-        callKey<FO>();
+        callKey<FO>(_preIt);
         _index.erase(_preIt);
         _preIt = it;
       }
@@ -109,8 +112,9 @@ public:
   }
 private:
   virtual void _dataEnd(int) final override {
-    callEm<FO>();
+    if(!_scan) callEm<FO>();
     _first = true;
+    _index.clear();
   }
 
   template <class T>
@@ -125,7 +129,6 @@ private:
     for (auto &jt : Link<itype, otype>::next()) {
       jt.second->dataEvent(res);
     }
-    _index.clear();
   }
 
   template <class T>
@@ -140,26 +143,25 @@ private:
     for (auto &jt : Link<itype, otype>::next()) {
       jt.second->dataEvent(res);
     }
-    _index.clear();
   }
 
   template <class T>
-  auto callKey(typename std::enable_if<!meta::isVector<T>{}>::type* dummy = 0) {
-    auto x = meta::slctTupleRef(meta::tieTup(_preIt->first, _preIt->second), Oslct{});
-    for (auto &it : Link<itype, otype>::next()) {
-      it.second->dataEvent(x);
+  auto callKey(typename maptype::iterator it, typename std::enable_if<!meta::isVector<T>{}>::type* dummy = 0) {
+    auto x = meta::slctTupleRef(meta::tieTup(it->first, it->second), Oslct{});
+    for (auto &jt : Link<itype, otype>::next()) {
+      jt.second->dataEvent(x);
     }
   }
 
   template <class T>
-  auto callKey(typename std::enable_if<meta::isVector<T>{}>::type* dummy = 0) {
+  auto callKey(typename maptype::iterator it, typename std::enable_if<meta::isVector<T>{}>::type* dummy = 0) {
     std::vector<otype> res;
-    res.reserve(_preIt->second.size());
-    for(const auto& jt : _preIt->second) {
-      res.push_back(meta::slctTupleRef(meta::tieTup(_preIt->first, jt), Oslct{}));
+    res.reserve(it->second.size());
+    for(const auto& jt : it->second) {
+      res.push_back(meta::slctTupleRef(meta::tieTup(it->first, jt), Oslct{}));
     }
-    for (auto &it : Link<itype, otype>::next()) {
-      it.second->dataEvent(res);
+    for (auto &jt : Link<itype, otype>::next()) {
+      jt.second->dataEvent(res);
     }
   }
 private:
@@ -167,6 +169,7 @@ private:
   // const when UDF return by value so that non-const ref. argument
   // is a compile time error.
   std::conditional_t<TypeInfo::isRefRes, FO, const FO> _initVal;
+  bool _scan{false};
   const bool _ordered{false};
   maptype _index;
   HashScheme _hash;

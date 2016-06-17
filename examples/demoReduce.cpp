@@ -104,6 +104,12 @@ void demoReduce() {
       }, vector<float> {})
       .build();
 
+  // running sum with scan property of reduce
+  // the result at every input element is also passed to the next unit
+  ezl::flow(pipe1)
+    .reduce<ezl::key<>, ezl::val<1>>(std::plus<int>(), 0).scan().dump()
+    .build();
+ 
   // UDF params can be key, value, result column types, or their const-refs
   // tuple of key, tuple of value, tuple of result column types or const-refs,
   // const-ref of tuple of const-ref of key, value, result types.

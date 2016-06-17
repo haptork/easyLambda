@@ -43,9 +43,10 @@ struct ReduceBuilder : public RSUPER {
 public:
   ReduceBuilder() = default;
 
-  ReduceBuilder(F&& f, FO&& initVal,
-                std::shared_ptr<Source<I>> prev)
-      : ReduceExpr<ReduceBuilder, I, P, S, F, FO, O, H>{std::forward<F>(f), prev, std::forward<FO>(initVal)} {
+  ReduceBuilder(F &&f, FO &&initVal, std::shared_ptr<Source<I>> prev,
+                bool scan)
+      : ReduceExpr<ReduceBuilder, I, P, S, F, FO, O, H>{
+            std::forward<F>(f), prev, std::forward<FO>(initVal), scan} {
     this->prll(Karta::prllRatio); 
   }
 
@@ -54,7 +55,8 @@ public:
   template <class NO>
   auto reReduceExpr(NO) {
     auto temp = ReduceBuilder<I, S, F, FO, NO, P, H>{
-      std::forward<F>(this->_func), std::forward<FO>(this->_initVal), std::move(this->_prev)}; 
+        std::forward<F>(this->_func), std::forward<FO>(this->_initVal),
+        std::move(this->_prev), this->_scan};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
     return temp;
@@ -63,7 +65,8 @@ public:
   template <class NH>
   auto reHashExpr(NH) {
     auto temp = ReduceBuilder<I, S, F, FO, O, P, NH>{
-      std::forward<F>(this->_func), std::forward<FO>(this->_initVal), std::move(this->_prev)}; 
+        std::forward<F>(this->_func), std::forward<FO>(this->_initVal),
+        std::move(this->_prev), this->_scan};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
     return temp;
