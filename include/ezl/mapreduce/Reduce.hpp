@@ -73,26 +73,19 @@ public:
     auto it = _index.find(curKey, _hash, _eq);
 
     if(TypeInfo::isRefRes) {
-      if (it != std::end(_index)) {
-        decltype(auto) x = meta::invokeReduce(_func, curKey, curVal, it->second);
-        if (&x != &it->second) {
-          it->second = x;
-        }
-      } else {
+      if (it == std::end(_index)) {
         it = _index.emplace_hint(it, ktype(curKey), _initVal);
-        decltype(auto) x = meta::invokeReduce(_func, curKey, curVal, it->second);
-        if (&x != &it->second) {
-          it->second = x;
-        }
+      } 
+      decltype(auto) x = meta::invokeReduce(_func, it->second, curKey, curVal);
+      if (&x != &it->second) {
+        it->second = x;
       }
     } else {
       if (it != std::end(_index)) {
-        it->second = meta::invokeReduce(_func, curKey, curVal, it->second);
+        it->second = meta::invokeReduce(_func, it->second, curKey, curVal);
       } else {
-        it = _index.emplace_hint(
-            it, ktype(curKey),
-            meta::invokeReduce(_func, curKey, curVal, 
-              (_initVal) ));
+        it = _index.emplace_hint(it, ktype(curKey),
+                meta::invokeReduce(_func, _initVal, curKey, curVal));
       }
     }
     if (_scan) {

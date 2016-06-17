@@ -220,10 +220,10 @@ struct ReduceTypes {
   using vtype = typename SlctTupleRefType<I, Vslct>::type;
   constexpr static bool isRefRes = std::is_lvalue_reference<decltype(invokeReduce(
           std::declval<typename std::add_lvalue_reference<F>::type>(),
+          std::declval<typename std::add_lvalue_reference<fout>::type>(),
           std::declval<typename std::add_lvalue_reference<ktype>::type>(),
-          std::declval<typename std::add_lvalue_reference<vtype>::type>(),
-          std::declval<
-              typename std::add_lvalue_reference<fout>::type>()))>::value;
+          std::declval<typename std::add_lvalue_reference<vtype>::type>()
+          ))>::value;
 };
 
 template <class F, class P> struct LoadTypesImpl {

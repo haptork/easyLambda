@@ -79,8 +79,8 @@ void logreg(int argc, char* argv[]) {
   }
 
   auto sumArray = [](auto &a, auto &b) -> auto & {
-    transform(begin(a), end(a), begin(b), begin(b), plus<double>());
-    return b;
+    transform(begin(b), end(b), begin(a), begin(a), plus<double>());
+    return a;
   };
 
   array<double, dim> w{};  // weights initialised to zero;

@@ -21,7 +21,7 @@
 #include <ezl/algorithms/reduces.hpp>
 #include <ezl/algorithms/filters.hpp>
 
-auto f(char ch, int n, float f, long res) {
+auto f(long res, char ch, int n, float f) {
   return res + 1;
 }
 
@@ -52,7 +52,7 @@ void demoReduce() {
       return true; 
     })
     .build();
-    
+
   // With ordered(), the reduction do not wait till end of data to flush the
   // results of a key. It can be used if we know that data coming to a
   // reduce is ordered. The reduction is essentially done for one key at a
@@ -97,7 +97,7 @@ void demoReduce() {
   // is good to have them as const-ref. If not returning reference then result
   // also can only be const-ref not ref.
   ezl::flow(pipe1).reduce<ezl::key<2>, ezl::val<3, 3>>(
-      [](char c, float x, float y, vector<float>& res) -> vector<float>& {
+      [](vector<float>& res, char c, float x, float y) -> vector<float>& {
         res.push_back(x);
         res.push_back(y);
         return res;
@@ -109,7 +109,7 @@ void demoReduce() {
   ezl::flow(pipe1)
     .reduce<ezl::key<>, ezl::val<1>>(std::plus<int>(), 0).scan().dump()
     .build();
- 
+
   // UDF params can be key, value, result column types, or their const-refs
   // tuple of key, tuple of value, tuple of result column types or const-refs,
   // const-ref of tuple of const-ref of key, value, result types.

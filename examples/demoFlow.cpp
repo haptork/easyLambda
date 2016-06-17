@@ -52,10 +52,10 @@ void demoFlow() {
     .run();
 
   // when recieving result as ref and returning a ref don't forget to put
-  // auto& as explicit return type of your lambda (I just saw the compile
+  // auto& as explicit return type of your lambda (p.s. I just saw the compile
   // error for that)
   auto joiner = ezl::flow<int, double>().reduce<1>(
-      [](int key, double val, tuple<vector<double>> &ret) -> auto& {
+      [](tuple<vector<double>> &ret, int key, double val) -> auto& {
       std::get<0>(ret).emplace_back(val); 
         return ret;
       }, tuple<vector<double>>{}).ordered() // w/o ordered output rets reversed

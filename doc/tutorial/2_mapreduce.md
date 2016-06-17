@@ -167,7 +167,7 @@ A count of rows can be done by simply incrementing the result each time.
 
 ```cpp
 ezl::flow(oneCol)
-  .reduce([](int x, int res) { return res + 1; }, 0) // count of total rows
+  .reduce([](int res, int x) { return res + 1; }, 0) // count of total rows
   .build();
 ```
 
@@ -190,7 +190,7 @@ we want to calculate count of rows in each group with key column 3.
 
 ```cpp
 ezl::flow(threeCols)
-  .reduce<3>([](int key, int x, int y, int res) { return res+ 1; }, 0)
+  .reduce<3>([](int res, int key, int x, int y) { return res+ 1; }, 0)
   .build();
 ```
 
@@ -214,7 +214,7 @@ value for column three.
 ```cpp
 ezl::flow(threeCols)
   .reduce<3>(
-    [](int key, int x, int y, int sumx, int sumy) { 
+    [](int sumx, int sumy, int key, int x, int y) { 
       return make_tuple(x + sumx, y + sumy); 
     }
     , 0, 0)

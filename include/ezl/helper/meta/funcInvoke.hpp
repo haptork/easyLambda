@@ -82,8 +82,8 @@ template <typename Func, typename Tup, std::size_t... index, typename Tup2,
 decltype(auto) invokeHelperTwoTup(Func &&func, Tup &&tup,
                              std::index_sequence<index...>, Tup2 &&tup2,
                              std::index_sequence<index2...>, Args&&... args) {
-  return func(std::get<index>(std::forward<Tup>(tup))...,
-              std::get<index2>(std::forward<Tup2>(tup2))..., std::forward<Args>(args)...);
+  return func(std::forward<Args>(args)..., std::get<index>(std::forward<Tup>(tup))...,
+              std::get<index2>(std::forward<Tup2>(tup2))...);
 }
 
 template <typename Func, typename Tup, std::size_t... index, typename Tup2,
@@ -193,58 +193,59 @@ inline decltype(auto) invokeReduceAll(F &&f, const std::tuple<Ks...> &, const st
 // sizeof is necessary because a function with param having a tuple with
 // single element can be called expanded by compiler itself which creates
 // ambigous call i.e. both expanded and unexpanded can_call return true.
-template <class F, class... Ks, class... Vs, class O>
+template <class F, class O, class... Ks, class... Vs>
 inline decltype(auto) invokeReduce(
-    F &&f, const std::tuple<Ks...>& k, const std::tuple<Vs...>& v, O& o,
-    typename std::enable_if<can_call<F &&, std::tuple<Ks...>, std::tuple<Vs...>,
-                                     O&>{}>::type *dummy = 0) {
-  return f(k, v, o);
+    F &&f, O& o, const std::tuple<Ks...>& k, const std::tuple<Vs...>& v,
+    typename std::enable_if<can_call<F &&, O&, std::tuple<Ks...>, 
+                                       std::tuple<Vs...>>{}>::type *dummy = 0) {
+  return f(o, k, v);
 }
 
 // reduce with all expanded
-template <class F, class... Ks, class... Vs, class... Os>
-inline decltype(auto) invokeReduce(F &&f, const std::tuple<Ks&&...>& key, const std::tuple<Vs&&...>& val,
-            std::tuple<Os&&...>& out,
+template <class F, class... Os, class... Ks, class... Vs>
+inline decltype(auto) invokeReduce(F &&f, std::tuple<Os&&...>& out, 
+            const std::tuple<Ks&&...>& key, const std::tuple<Vs&&...>& val,
             typename std::enable_if<
-                !can_call<F &&, std::tuple<Ks&&...>, std::tuple<Vs&&...>,
-                                     std::tuple<Os&&...>>{} &&
-                !can_call<F &&, Ks&&..., Vs&&..., std::tuple<Os&&...> >{} &&
-                can_call<F &&, Ks&&..., Vs&&..., Os&&...>{}>::type *dummy = 0) {
-  return invokeHelperThreeTup(std::forward<F>(f), key,
+                !can_call<F &&, std::tuple<Os&&...>, std::tuple<Ks&&...>,
+                                     std::tuple<Vs&&...>>{} &&
+                !can_call<F &&, Os&&..., Ks&&..., std::tuple<Vs&&...>>{} &&
+                can_call<F &&, Os&&..., Ks&&..., Vs&&...>{}>::type *dummy = 0) {
+  return invokeHelperThreeTup(std::forward<F>(f), out,
+                       std::make_index_sequence<sizeof...(Os)>{}, key,
                        std::make_index_sequence<sizeof...(Ks)>{}, val,
-                       std::make_index_sequence<sizeof...(Vs)>{}, out,
-                       std::make_index_sequence<sizeof...(Os)>{});
+                       std::make_index_sequence<sizeof...(Vs)>{});
 }
 
 // reduce with all expanded, output result as is
-template <class F, class... Ks, class... Vs, class O>
-inline decltype(auto) invokeReduce(F &&f, const std::tuple<Ks...>& key, const std::tuple<Vs...>& val,
-            O& o,
+template <class F, class O, class... Ks, class... Vs>
+inline decltype(auto) invokeReduce(F &&f, O& o, const std::tuple<Ks...>& key,
+            const std::tuple<Vs...>& val,
             typename std::enable_if< 
-                !can_call<F &&, std::tuple<Ks...>, std::tuple<Vs...>, O&>{} &&
-                can_call<F &&, Ks..., Vs..., O&>{}>::type *dummy = 0) {
+                !can_call<F &&, O&, std::tuple<Ks...>, std::tuple<Vs...>>{} &&
+                can_call<F &&, O&, Ks..., Vs...>{}>::type *dummy = 0) {
   return invokeHelperTwoTup(std::forward<F>(f), key,
                        std::make_index_sequence<sizeof...(Ks)>{}, val,
                        std::make_index_sequence<sizeof...(Vs)>{}, o);
 }
 
 // reduce is not well formed
-template <class F, class... Ks, class... Vs, class O>
-inline decltype(auto) invokeReduce(F &&reduceUDF, const std::tuple<Ks...>& key, const std::tuple<Vs...>& val, O& res,
+template <class F, class O, class... Ks, class... Vs>
+inline decltype(auto) invokeReduce(F &&reduceUDF, O& res, 
+            const std::tuple<Ks...>& key, const std::tuple<Vs...>& val,
             typename std::enable_if<
-                !can_call<F &&, std::tuple<Ks...>, std::tuple<Vs...>,
-                          O&>{} && !can_call<F &&, Ks..., Vs..., O&>{}>::type *dummy = 0) {
-  return reduceUDF(key, val, res); // reduceUDF is ill formed.
+                !can_call<F &&, O&, std::tuple<Ks...>, std::tuple<Vs...>
+                          >{} && !can_call<F &&, O&, Ks..., Vs...>{}>::type *dummy = 0) {
+  return reduceUDF(res, key, val); // reduceUDF is ill formed.
 }
 
 // reduce is not well formed
-template <class F, class... Ks, class... Vs, class... Os>
-inline decltype(auto) invokeReduce(F &&reduceUDF, const std::tuple<Ks...>& key, const std::tuple<Vs...>& val, const std::tuple<Os...>& res,
+template <class F, class... Os, class... Ks, class... Vs>
+inline decltype(auto) invokeReduce(F &&reduceUDF, const std::tuple<Os...>& res, const std::tuple<Ks...>& key, const std::tuple<Vs...>& val,
             typename std::enable_if<
-                !can_call<F &&, std::tuple<Ks...>, std::tuple<Vs...>,
-                          std::tuple<Os...>>{} &&
-                !can_call<F &&, Ks..., Vs..., Os...>{}>::type *dummy = 0) {
-  return reduceUDF(key, val, res); // reduceUDF is ill formed.
+                !can_call<F &&, std::tuple<Os...>, std::tuple<Ks...>, 
+                          std::tuple<Vs...>>{} &&
+                !can_call<F &&, Os..., Ks..., Vs...>{}>::type *dummy = 0) {
+  return reduceUDF(res, key, val); // reduceUDF is ill formed.
 }
 
 }
