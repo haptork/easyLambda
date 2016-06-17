@@ -68,7 +68,7 @@ again passes it to the two filters.
 {% highlight cpp %}
 
 auto joiner = ezl::flow<int, double>().reduce<1>(
-      [](int key, double val, tuple<vector<double>> &ret) -> auto& {
+      [](tuple<vector<double>> &ret, int key, double val) -> auto& {
       std::get<0>(ret).emplace_back(val); 
         return ret;
       }, tuple<vector<double>>{}).ordered()

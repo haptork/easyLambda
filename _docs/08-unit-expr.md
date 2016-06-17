@@ -94,12 +94,12 @@ and runs inprocess by default that can be changed with prll property.
 
 ## reduce
 
-A reduce is used for operations that take multiple rows as input such as
-common aggregation operations like count, sum, correlation etc. It takes
-function and initial value for the result columns as the parameters. The value
-of results is initially set using parameters given to reduce and are updated
-for each row with the returned value of the function. The final value of the
-result is passed to the next unit.
+A reduce is used for operations that take multiple rows as input to find the
+result such as common aggregation operations like count, sum, correlation etc.
+It takes function and initial value for the result columns as the parameters.
+The value of results is initially set using parameters given to reduce and are
+updated for each row with the returned value of the function. The final value
+of the result is passed to the next unit.
 
 The reduce result can be calculated for each sub-list or group separately such
 as finding the count of atoms rather for each time-step separately than the
@@ -108,17 +108,16 @@ reduce. This is similar to groupby queries of SQL. The key columns to group
 the rows can be selected by indices e.g. reduce<3, 1> selects third and first
 column as the key. All the non-key columns are value columns by default. However
 with key and value both can be selected e.g. reduce<ezl::key<3,1>, ezl::val<4>>.
-The input parameters of the function are key and value columns followed by
-result columns, that can be types, const refs or the tuple of
-key, tuple of value followed by tuple of result or tuple of const refs e.g.
-if 1st, 2nd and 3rd columns are char, int and float and result is of type
-bool, the function for reduce<3,1> can be any of the following:
+The input parameters of the function are result columns, followed by key and
+value columns that can be types, const refs or the tuple of key, tuple of value
+followed by tuple of result or tuple of const refs e.g. if 1st, 2nd and 3rd
+columns are char, int and float and result is of type bool, the function for
+reduce<3,1> can be any of the following:
 
-- fn(float, char, int, bool),
-- fn(const float&, const char&, const int&, const bool&), 
-- fn(tuple<float, char>, tuple<int>, tuple<bool>)
-- fn(const tuple<const float&, const char&>&, const tuple<const int&>&, 
-     const tuple<const bool&>&)
+- fn(bool, float, char, int),
+- fn(const bool&, const float&, const char&, const int&), 
+- fn(tuple<bool>, tuple<float, char>, tuple<int>)
+- fn(const tuple<const bool&>&, const tuple<const float&, const char&>&, const tuple<const int&>&)
 
 Since, the result is updated for every row and the cost of constructing a new
 result and returning it can be higher for some return types, the result
@@ -128,12 +127,17 @@ a compile time error, since a single row may stream to multiple units, so ezl
 doesn't allow mutating the input rows. The reduce operation minimizes the copy
 operations to least.
 
+The scan property that is similar to functional scan operation can be used to find
+results like running sum etc. For each input row reduce updates the result as well
+as passes the output row(s) from the result to the next destination units.
+
   - Properties:
     1. [prll]({{ base_path }}/docs/prll-expr/)
     2. [dump]({{ base_path }}/docs/dump-expr/)
     3. cols
     4. colsDrop
     5. ordered
+    6. scan
 
 The result is updated by calling the user function as the rows stream from the
 parent unit(s). The final result is passed to the next unit(s) only when the
@@ -171,8 +175,8 @@ for reduceAll<3,1> can be any of the following:
     3. cols
     4. colsDrop
     5. ordered
-    5. adjacent
-    5. bunch
+    6. adjacent
+    7. bunch
 
   The **adjacent(n)** property keeps only n number of rows in the buffer for
   each key. Every time a new row arrives for a key, the oldest row is removed,

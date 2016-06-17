@@ -246,7 +246,7 @@ If we were to write count function specific to our case ourselves then it
 can be written as:
 
 {% highlight ruby %}
-  .reduce<3>([](int key, int val1, int val2, int res) { 
+  .reduce<3>([](int res, int key, int val1, int val2) { 
     return res + 1; 
   }, 0)
 {% endhighlight %}
@@ -258,7 +258,7 @@ rows are of type key cols, resulting cols.
 We can select value colums as well and the data-flow can be rephrased as follows.
 
 {% highlight ruby %}
-  .reduce<key<3>, val<>>([](int key, int res) { 
+  .reduce<key<3>, val<>>([](int res, int key) { 
     return res + 1; 
   }, 0)
 {% endhighlight %}
