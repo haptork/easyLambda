@@ -500,6 +500,7 @@ row types are different.");
       if (!st.first) { return st; }
     }
     if (!_props.drop.empty()) {
+      std::sort(_props.drop.begin(), _props.drop.end(), std::greater<int>());
       for (auto it : _props.drop) {
         if (it <= int(vstr.size())) vstr.erase(std::begin(vstr)+it-1);
       } 
