@@ -16,24 +16,19 @@
 
 #include <boost/functional/hash.hpp>
 
-#include <ezl/helper/meta/slctTuple.hpp>
-#include <ezl/helper/ProcReq.hpp>
+#include <ezl/mapreduce/Filter.hpp>
 
-#define FSUPER                                                                \
-  DataFlowExpr<                                                               \
-      FilterBuilder<I, S, F, O, P, H>>,                                       \
-      ParExpr<FilterBuilder<I, S, F, O, P, H>, P, H>,                         \
-      DumpExpr<FilterBuilder<I, S, F, O, P, H>>,                              \
-      FilterExpr<FilterBuilder<I, S, F, O, P, H>, I, S, F, O>
+#define FSUPER DataFlowExpr<FilterBuilder<I, S, F, O, P, H>>,                 \
+               PrllExpr<FilterBuilder<I, S, F, O, P, H>>,                      \
+               DumpExpr<FilterBuilder<I, S, F, O, P, H>, O>
 
 namespace ezl {
 namespace detail {
 
 template <class T> class Source;
 template <class T> struct DataFlowExpr;
-template <class T, class O, class H> struct ParExpr;
-template <class T> struct DumpExpr;
-template <class T, class I, class S, class F, class O> struct FilterExpr;
+template <class T> struct PrllExpr;
+template <class T, class O> struct DumpExpr;
 /*!
  * @ingroup builder
  * Builder for `Filter class`
@@ -46,15 +41,15 @@ struct FilterBuilder : public FSUPER {
 public:
   FilterBuilder() = default;
 
-  FilterBuilder(F&& f, std::shared_ptr<Source<I>> prev)
-      : FilterExpr<FilterBuilder, I, S, F, O>{std::forward<F>(f), prev} {
+  FilterBuilder(F &&f, std::shared_ptr<Source<I>> prev)
+      : _func{std::forward<F>(f)}, _prev{prev} {
     this->mode(llmode::shard);
   }
 
   auto& self() { return *this; }
 
   template <class NO>
-  auto reFilterExpr(NO) {  // NOTE: while calling with T cast arg. is req
+  auto reOutputExpr(NO) {  // NOTE: while calling with T cast arg. is req
     auto temp = FilterBuilder<I, S, F, NO, P, H>{std::forward<F>(this->_func),
                                                  std::move(this->_prev)};
     temp.props(this->props());
@@ -63,7 +58,7 @@ public:
   }
 
   template <class NOP>
-  auto reParExpr(NOP) {
+  auto rePrllExpr(NOP) {
     constexpr auto size = std::tuple_size<I>::value;
     using NP = typename meta::saneSlctImpl<size, NOP>::type; 
     using HN = boost::hash<typename meta::SlctTupleRefType<I, NP>::type>;
@@ -84,12 +79,18 @@ public:
   }
 
   auto build() {
-    ParExpr<FilterBuilder, P, H>::build();
-    auto obj = FilterExpr<FilterBuilder, I, S, F, O>::build();
-    DumpExpr<FilterBuilder>::buildAdd(obj);
+    _prev = PrllExpr<FilterBuilder>::build(_prev, P{}, H{});
+    auto obj = std::make_shared<Filter<I, S, F, O>>(std::forward<F>(_func));
+    obj->prev(_prev, obj);
+    DumpExpr<FilterBuilder, O>::build(obj);
     return obj;
   }
 
+  auto prev() { return _prev; }
+
+private:
+  F _func;
+  std::shared_ptr<Source<I>> _prev;
 };
 
 }} // namespace ezl namespace ezl::detail

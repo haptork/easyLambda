@@ -16,23 +16,20 @@
 
 #include <boost/functional/hash.hpp>
 
-#include <ezl/helper/meta/slctTuple.hpp>
-#include <ezl/helper/ProcReq.hpp>
+#include <ezl/mapreduce/Map.hpp>
 
 
 #define MSUPER DataFlowExpr<MapBuilder<I, S, F, O, P, H>>,                   \
-               ParExpr<MapBuilder<I, S, F, O, P, H>, P, H>,                  \
-               DumpExpr<MapBuilder<I, S, F, O, P, H>>,                       \
-               MapExpr<MapBuilder<I, S, F, O, P, H>, I, S, F, O>
+               PrllExpr<MapBuilder<I, S, F, O, P, H>>,                  \
+               DumpExpr<MapBuilder<I, S, F, O, P, H>, O>
 
 namespace ezl {
 namespace detail {
 
 template <class T> class Source;
 template <class T> struct DataFlowExpr;
-template <class T, class O, class H> struct ParExpr;
-template <class T> struct DumpExpr;
-template <class T, class I, class S, class F, class O> struct MapExpr;
+template <class T> struct PrllExpr;
+template <class T, class O> struct DumpExpr;
 
 /*!
  * @ingroup builder
@@ -46,15 +43,14 @@ public:
 
   MapBuilder() = default;
 
-  MapBuilder(F&& f, std::shared_ptr<Source<I>> prev)
-      : MapExpr<MapBuilder, I, S, F, O>{std::forward<F>(f), prev} {
+  MapBuilder(F&& f, std::shared_ptr<Source<I>> prev) : _func{std::forward<F>(f)}, _prev{prev} {
     this->mode(llmode::shard); 
   }
 
   auto& self() { return *this; }
 
   template <class NO>
-  auto reMapExpr(NO) {  // NOTE: while calling with T cast arg. is req 
+  auto reOutputExpr(NO) {  // NOTE: while calling with T cast arg. is req 
     auto temp = MapBuilder<I, S, F, NO, P, H>{std::forward<F>(this->_func), std::move(this->_prev)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
@@ -62,7 +58,7 @@ public:
   }
 
   template <class NOP>
-  auto reParExpr(NOP) {
+  auto rePrllExpr(NOP) {
     constexpr auto size = std::tuple_size<I>::value;
     using NP = typename meta::saneSlctImpl<size, NOP>::type; 
     using HN = boost::hash<typename meta::SlctTupleRefType<I, NP>::type>;
@@ -80,13 +76,42 @@ public:
     return temp;
   }
 
+  auto colsTransform() {
+    using finptype = typename meta::SlctTupleRefType<I, S>::type;
+    using fouttype = typename meta::GetTupleType<decltype(meta::invokeMap(
+      std::declval<typename std::add_lvalue_reference<F>::type>(),
+      std::declval<typename std::add_lvalue_reference<finptype>::type>()))>::
+      type;
+    using NO = typename meta::inPlace<std::tuple_size<I>::value, 
+          std::tuple_size<fouttype>::value, S>::type;
+    return reOutputExpr(NO{});
+  }
+
+  auto colsResult() {
+    using finptype = typename meta::SlctTupleRefType<I, S>::type;
+    constexpr auto foutsize =
+        std::tuple_size<typename meta::GetTupleType<decltype(meta::invokeMap(
+            std::declval<typename std::add_lvalue_reference<F>::type>(),
+            std::declval<typename std::add_lvalue_reference<
+                finptype>::type>()))>::type>::value;
+    constexpr auto isize = std::tuple_size<I>::value;
+    using NO = typename meta::fillSlct<isize, isize + foutsize>::type;
+    return reOutputExpr(NO{});
+  }
+
   auto build() {
-    ParExpr<MapBuilder, P, H>::build();
-    auto obj = MapExpr<MapBuilder, I, S, F, O>::build();
-    DumpExpr<MapBuilder>::buildAdd(obj);
+    _prev = PrllExpr<MapBuilder>::build(_prev, P{}, H{});
+    auto obj = std::make_shared<Map<meta::MapTypes<I, S, F, O>>>(std::forward<F>(_func));
+    obj->prev(_prev, obj);
+    DumpExpr<MapBuilder, O>::build(obj);
     return obj;
   }
 
+  auto prev() { return _prev; }
+
+private:
+  F _func;
+  std::shared_ptr<Source<I>> _prev;
 };
 }
 } // namespace ezl namespace ezl::detail

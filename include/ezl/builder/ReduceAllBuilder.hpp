@@ -14,13 +14,11 @@
 
 #include <memory>
 
-#include <ezl/helper/ProcReq.hpp>
+#include <ezl/mapreduce/ReduceAll.hpp>
 
-
-#define RASUPER DataFlowExpr<ReduceAllBuilder<I, S, F, O, P, H>>,                   \
-               ParExpr<ReduceAllBuilder<I, S, F, O, P, H>, P, H>,                  \
-               DumpExpr<ReduceAllBuilder<I, S, F, O, P, H>>,                       \
-               ReduceAllExpr<ReduceAllBuilder<I, S, F, O, P, H>, I, P, S, F, O, H>\
+#define RASUPER DataFlowExpr<ReduceAllBuilder<I, S, F, O, P, H>>,             \
+                PrllExpr<ReduceAllBuilder<I, S, F, O, P, H>>,                  \
+                DumpExpr<ReduceAllBuilder<I, S, F, O, P, H>, O>
 
 
 namespace ezl {
@@ -28,9 +26,8 @@ namespace detail {
 
 template <class T> class Source;
 template <class T> struct DataFlowExpr;
-template <class T, class P, class H> struct ParExpr;
-template <class T> struct DumpExpr;
-template <class T, class I, class P, class S, class F, class O, class H> struct ReduceAllExpr;
+template <class T> struct PrllExpr;
+template <class T, class O> struct DumpExpr;
 /*!
  * @ingroup builder
  * Builder for `ReduceAll` unit.
@@ -42,15 +39,17 @@ struct ReduceAllBuilder : public RASUPER {
 public:
   ReduceAllBuilder() = default;
 
-  ReduceAllBuilder(F&& f, std::shared_ptr<Source<I>> prev, bool adj, int bunch)
-      : ReduceAllExpr<ReduceAllBuilder, I, P, S, F, O, H>{std::forward<F>(f), prev, adj, bunch} {
+  ReduceAllBuilder(F &&f, std::shared_ptr<Source<I>> prev, bool adjacent,
+                   int bunchsize)
+      : _func{std::forward<F>(f)}, _prev{prev}, _adjacent{adjacent},
+        _bunchSize{bunchsize} {
     this->prll(Karta::prllRatio);
   }
 
   auto& self() { return *this; }
 
   template <class NO>
-  auto reReduceAllExpr(NO) {
+  auto reOutputExpr(NO) {
     auto temp = ReduceAllBuilder<I, S, F, NO, P, H>{
       std::forward<F>(this->_func), std::move(this->_prev), this->_adjacent, this->_bunchSize};
     temp.props(this->props());
@@ -67,13 +66,35 @@ public:
     return temp;
   }
 
+  auto& bunch(int bunchSize = 2) {
+    _bunchSize = bunchSize;
+    _adjacent = false;
+    return *this;
+  }
+
+  auto& adjacent(int size = 2) {
+    _bunchSize = size;
+    _adjacent = true;
+    return *this;
+  }
+
   auto build() {
-    ParExpr<ReduceAllBuilder, P, H>::build();
-    auto obj = ReduceAllExpr<ReduceAllBuilder, I, P, S, F, O, H>::build();
-    DumpExpr<ReduceAllBuilder>::buildAdd(obj);
+    _prev = PrllExpr<ReduceAllBuilder>::build(_prev, P{}, H{});
+    auto ordered = this->getOrdered();
+    auto obj = std::make_shared<ReduceAll<meta::ReduceAllTypes<I, P, S, F, O>, H>>(
+        std::forward<F>(_func), ordered, _adjacent, _bunchSize);
+    obj->prev(_prev, obj);
+    DumpExpr<ReduceAllBuilder, O>::build(obj);
     return obj;
   }
 
+  auto prev() { return _prev; }
+
+private:
+  F _func;
+  std::shared_ptr<Source<I>> _prev;
+  bool _adjacent;
+  int _bunchSize;
 };
 }
 } // namespace ezl namespace ezl::detail

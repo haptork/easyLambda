@@ -16,10 +16,8 @@
 #include <tuple>
 
 #include <ezl/builder/DataFlowExpr.hpp>
-#include <ezl/builder/LoadBuilder.hpp>
-#include <ezl/builder/LoadExpr.hpp>
+#include <ezl/builder/RiseBuilder.hpp>
 #include <ezl/builder/LoadUnitBuilder.hpp>
-#include <ezl/builder/LoadUnitExpr.hpp>
 #include <ezl/helper/meta/slct.hpp>
 #include <ezl/helper/meta/slctTuple.hpp>
 
@@ -34,8 +32,7 @@ template <int... I>
 using key = ezl::detail::meta::slct<I...>;
 
 template <class I> inline auto flow(std::shared_ptr<I> pr) {
-  detail::LoadUnitBuilder<I> obj;
-  return obj.prev(pr);
+  return detail::LoadUnitBuilder<I> {pr};
 }
 
 template <class I> auto flow(detail::LoadUnitBuilder<I> pr) { return pr; }
@@ -46,7 +43,7 @@ template <class... Is> inline auto flow() {
 }
 
 template <class F> inline auto rise(F&& sourceFunc) {
-  return detail::LoadBuilder<F>{std::forward<F>(sourceFunc)};
+  return detail::RiseBuilder<F>{std::forward<F>(sourceFunc)};
 }
 
 } // namespace ezl

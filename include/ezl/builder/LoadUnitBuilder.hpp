@@ -12,15 +12,13 @@
 #ifndef LOADUNITBUILDER_EZL_H
 #define LOADUNITBUILDER_EZL_H
 
-#define LSUPER DataFlowExpr<LoadUnitBuilder<I>>,    \
-               LoadUnitExpr<LoadUnitBuilder<I>, I>
+#define LSUPER DataFlowExpr<LoadUnitBuilder<I>>
 
 namespace ezl {
 namespace detail {
 
 
 template <class T> struct DataFlowExpr;
-template <class T, class I> struct LoadUnitExpr;
 /*!
  * @ingroup builder
  * Builder for `LoadUnit`
@@ -29,12 +27,19 @@ template <class T, class I> struct LoadUnitExpr;
  *
  * */
 template <class I> struct LoadUnitBuilder : public LSUPER {
-
 public:
   LoadUnitBuilder() = default;
 
+  LoadUnitBuilder(std::shared_ptr<I> pr) : _prev{pr} {}
+
   auto self() { return *this; }
 
+  auto build() { return _prev; }
+
+  auto prev() { return _prev; }
+
+private:
+  std::shared_ptr<I> _prev{nullptr};
 };
 }
 } // namespace ezl namespace ezl::detail

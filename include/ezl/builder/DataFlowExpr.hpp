@@ -19,16 +19,11 @@
 #include <ezl/algorithms/io.hpp>
 
 #include <ezl/builder/FilterBuilder.hpp>
-#include <ezl/builder/FilterExpr.hpp>
 #include <ezl/builder/LoadUnitBuilder.hpp>
-#include <ezl/builder/LoadUnitExpr.hpp>
 #include <ezl/builder/MapBuilder.hpp>
-#include <ezl/builder/MapExpr.hpp>
 #include <ezl/builder/ReduceAllBuilder.hpp>
-#include <ezl/builder/ReduceAllExpr.hpp>
 #include <ezl/builder/ReduceBuilder.hpp>
-#include <ezl/builder/ReduceExpr.hpp>
-#include <ezl/builder/ParExpr.hpp>
+#include <ezl/builder/PrllExpr.hpp>
 #include <ezl/builder/DumpExpr.hpp>
 
 #include <ezl/helper/Karta.hpp>
@@ -178,8 +173,7 @@ template <class T> struct DataFlowExpr {
     auto curUnit = ((T *)this)->build();
     if (curUnit) Karta::inst().run(curUnit.get(), ProcReq{procs});
     using I = typename decltype(curUnit)::element_type;
-    LoadUnitBuilder<I> obj;
-    return obj.prev(curUnit);
+    return LoadUnitBuilder<I> {curUnit};
   }
 
   auto run(std::initializer_list<int> lprocs = {}, bool refresh = true) {
@@ -191,8 +185,7 @@ template <class T> struct DataFlowExpr {
       if (curUnit) Karta::inst().run(curUnit.get(), ProcReq{procs});
     }
     using I = typename decltype(curUnit)::element_type;
-    LoadUnitBuilder<I> obj;
-    return obj.prev(curUnit);
+    return LoadUnitBuilder<I> {curUnit};
   }
 
   template <class Ptype> auto runResult(Ptype procs, bool refresh = true) {
@@ -234,24 +227,21 @@ template <class T> struct DataFlowExpr {
     auto pre = ((T *)this)->prev();
     auto curUnit = ((T *)this)->build();
     using I = typename decltype(pre)::element_type;
-    LoadUnitBuilder<I> obj;
-    return obj.prev(pre);
+    return LoadUnitBuilder<I> {pre};
   }
 
   template <class I>
   auto branchFlow(I nx) {
     auto curUnit = ((T *)this)->build();
     if (curUnit) curUnit->next(nx, curUnit);
-    LoadUnitBuilder<typename decltype(curUnit)::element_type> obj;
-    return obj.prev(curUnit);
+    return LoadUnitBuilder<typename decltype(curUnit)::element_type> {curUnit};
   }
 
   template <class I>
   auto addFlow(I nx) {
     auto curUnit = ((T *)this)->build();
     if (curUnit) curUnit->next(nx, curUnit);
-    LoadUnitBuilder<typename I::element_type> obj;
-    return obj.prev(nx);
+    return LoadUnitBuilder<typename I::element_type> {nx};
   }
 
 };

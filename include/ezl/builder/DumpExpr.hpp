@@ -12,6 +12,7 @@
 #ifndef DUMPEXPR_EZL_H
 #define DUMPEXPR_EZL_H
 
+#include <ezl/helper/meta/slctTuple.hpp>
 #include <ezl/mapreduce/DumpFile.hpp>
 
 namespace ezl {
@@ -26,7 +27,7 @@ namespace detail {
  *
  * T is CRTP parent type.
  * */
-template <class T> struct DumpExpr {
+template <class T, class O> struct DumpExpr {
 
   DumpExpr() = default;
 
@@ -37,12 +38,22 @@ template <class T> struct DumpExpr {
   }
 
   template <class I>
-  auto buildAdd(I& obj) {
+  auto build(I& obj) {
     if (_name != defStr) {
       auto dObj = std::make_shared<
           DumpFile<typename std::decay_t<decltype(obj)>::element_type::otype>>(_name, _header);
       obj->next(dObj, obj);
     }
+  }
+
+  template <int... Os> auto cols() {
+    return ((T *)this)->reOutputExpr(meta::slct<Os...>{});
+  }
+
+  template <int... Ns>
+  auto colsDrop() {
+    using NO = typename meta::setDiff<O, meta::slct<Ns...>>::type;
+    return ((T *)this)->reOutputExpr(NO{});
   }
 
   auto dumpProps() { return std::tie(_name, _header); }

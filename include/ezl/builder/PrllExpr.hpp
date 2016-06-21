@@ -1,6 +1,6 @@
 /*!
  * @file
- * class ParExpr
+ * class PrllExpr
  *
  * This file is a part of easyLambda(ezl) project for parallel data
  * processing with modern C++ and MPI.
@@ -23,6 +23,8 @@
 namespace ezl {
 namespace detail {
 
+template <class T> class Source;
+
 /*!
  * @ingroup builder
  * For adding a `MPIBridge` unit in between prev and newly built unit.
@@ -37,11 +39,11 @@ struct ParProps {
   bool ordered{false};
 };
 
-template <class T, class P, class H> struct ParExpr {
+template <class T> struct PrllExpr {
 public:
-  ParExpr() = default;
+  PrllExpr() = default;
 
-  ParExpr(bool isP, llmode md, ProcReq pr, bool ordered)
+  PrllExpr(bool isP, llmode md, ProcReq pr, bool ordered)
       : _props{isP, md, pr, ordered} {}
 
   auto& props() { return _props; }
@@ -61,14 +63,14 @@ public:
     _props.procReq = ProcReq{n};
     _props.isPrll = true;
     _props.mode = mode;
-    return ((T *)this)->reParExpr(meta::slct<I, Is...>{});
+    return ((T *)this)->rePrllExpr(meta::slct<I, Is...>{});
   }
 
   template <int I, int... Is> auto prll(llmode mode = llmode::none) {
     _props.procReq = ProcReq{};
     _props.isPrll = true;
     _props.mode = mode;
-    return ((T *)this)->reParExpr(meta::slct<I, Is...>{});
+    return ((T *)this)->rePrllExpr(meta::slct<I, Is...>{});
   }
 
   template <class Ptype> auto& prll(Ptype n, llmode mode = llmode::none) {
@@ -96,7 +98,7 @@ public:
     _props.procReq = ProcReq{procs};
     _props.isPrll = true;
     _props.mode = mode;
-    return ((T *)this)->reParExpr(meta::slct<I, Is...>{});
+    return ((T *)this)->rePrllExpr(meta::slct<I, Is...>{});
   }
 
   auto& prll(std::initializer_list<int> lprocs, llmode mode = llmode::none) {
@@ -121,20 +123,22 @@ public:
     return ((T *)this)->self();
   }
 
-  auto build() {
+  template <class I, class P, class H>
+  auto build(std::shared_ptr<Source<I>> pre, P, H) -> std::shared_ptr<Source<I>> {
     if (_props.isPrll) {
       if (P::size == 0 && !(_props.mode & llmode::shard || _props.mode & llmode::all)) {
         _props.procReq.resize(1);
+        return pre;
       }
       bool all = false;
       if (P::size == 0 && (_props.mode & llmode::all)) all = true;
       if (_props.mode & llmode::task) _props.procReq.setTask();
-      auto bobj = std::make_shared<
-          MPIBridge<typename decltype(((T *)this)->prev())::element_type::otype, P, H>>(
+      auto bobj = std::make_shared<MPIBridge<I, P, H>>(
           _props.procReq, all, _props.ordered);
-      bobj->prev(((T *)this)->prev(), bobj);
-      ((T *)this)->prev(bobj);
+      bobj->prev(pre, bobj);
+      return bobj;
     }
+    return pre;
   }
 
 private:

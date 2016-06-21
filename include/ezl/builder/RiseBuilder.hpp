@@ -1,6 +1,6 @@
 /*!
  * @file
- * Interface for client apps
+ * class RiseBuilder
  *
  * This file is a part of easyLambda(ezl) project for parallel data
  * processing with modern C++ and MPI.
@@ -9,8 +9,8 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef LOADEXPR__EZL__H
-#define LOADEXPR__EZL__H
+#ifndef LOADBUILDER_EZL_H
+#define LOADBUILDER_EZL_H
 
 #include <initializer_list>
 #include <map>
@@ -20,50 +20,60 @@
 #include <ezl/helper/ProcReq.hpp>
 #include <ezl/mapreduce/Load.hpp>
 
+#define SUPERLA DataFlowExpr<RiseBuilder<F>>,     \
+                DumpExpr<RiseBuilder<F>, meta::slct<>>
+
 namespace ezl {
 namespace detail {
 
+template <class T> struct DataFlowExpr;
+template <class T, class O> struct DumpExpr;
+
 /*!
  * @ingroup builder
- * Expression terminator for `LoadBuilder`.
- * Provides expressions for building `Load` unit.
+ * Builder for Load
  *
  * */
-template <class T, class F> struct LoadExpr {
+template <class F> struct RiseBuilder : public SUPERLA {
+public:
+  RiseBuilder(F&& sourceFunc) : _sourceFunc{std::forward<F>(sourceFunc)}, _procReq{} {}
 
-  LoadExpr(F&& sourceFunc) : _sourceFunc{std::forward<F>(sourceFunc)}, _procReq{} {}
+  auto& self() { return *this; }
 
   auto build() {
-    //decltype(_sourceFunc) a = 5;
-    return std::make_shared<Load<F>>(_procReq, std::forward<F>(_sourceFunc), _procSink);
+    auto obj = std::make_shared<Load<F>>(_procReq, std::forward<F>(_sourceFunc), _procSink);
+    DumpExpr<RiseBuilder, meta::slct<>>::build(obj);
+    return obj;
   }
 
   auto& procDump(std::pair<int, std::vector<int>> &procSink) {
     _procSink = &procSink;
-    return ((T *)this)->self();
+    return *this;
   }
 
   template <class Ptype> auto& prll(Ptype p) {
     _procReq = ProcReq(p);
-    return ((T *)this)->self();
+    return *this;
   }
 
   auto& prll() {
     _procReq = ProcReq{};
-    return ((T *)this)->self();
+    return *this;
   }
 
   auto& prll(std::initializer_list<int> l) {
     auto procs = std::vector<int>(std::begin(l), std::end(l));
     _procReq = ProcReq{procs};
-    return ((T *)this)->self();
+    return *this;
   }
 
   auto& noprll() {
     _procReq = ProcReq(1);
-    return ((T *)this)->self();
+    return *this;
   }
 
+  // auto prev() { return nullptr; } // TODO: check
+private:
   F _sourceFunc;
   ProcReq _procReq;
   std::pair<int, std::vector<int>> *_procSink{nullptr};
@@ -71,4 +81,4 @@ template <class T, class F> struct LoadExpr {
 }
 } // namespace ezl namespace ezl::detail
 
-#endif
+#endif //LOADBUILDER_EZL_H
