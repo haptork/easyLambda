@@ -15,7 +15,7 @@
 #include <unitTest/ReduceAllTest.cpp>
 #include <unitTest/fromFileTest.cpp>
 #include <unitTest/MPIBridgeTest.cpp>
-#include <unitTest/LoadTest.cpp>
+#include <unitTest/RiseTest.cpp>
 
 
 void slctTest();
@@ -28,7 +28,7 @@ void ReduceAllTest(int, char*[]);
 void FilterTest(int, char*[]);
 void fromFileTest(int, char*[]);
 void MPIBridgeTest(int, char*[]);
-void LoadTest(int, char*[]);
+void RiseTest(int, char*[]);
 
 int ctorTeller::_ctor = 0;
 int ctorTeller::_copyCtor = 0;
@@ -44,12 +44,14 @@ int main(int argc, char* argv[]) {
   slctTupleTest();
   funcInvokeTest();
   MapTest(argc, argv);
+
   //ReduceTest(argc, argv);
   ReduceAllTest(argc, argv);
+
   FilterTest(argc, argv);
   fromFileTest(argc, argv);
   MPIBridgeTest(argc, argv);
-  LoadTest(argc, argv);
+  RiseTest(argc, argv);
 
   std::cout<<"All tests passed successfully"<<std::endl;
   return 0;

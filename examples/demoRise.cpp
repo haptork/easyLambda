@@ -1,4 +1,4 @@
-/*! 
+/*!
  * @file
  * demo for reduceAll.
  *
@@ -15,7 +15,6 @@
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
-#include <ezl/algorithms/io.hpp>
 
 class Op {
 public:
@@ -29,7 +28,7 @@ public:
   // from (0, procInfo.second.size() - 1) which is different for every proc.
   // The rank of current process is at index pos in the ranks vector.
   void operator () (std::pair<int, std::vector<int>> procInfo) {
-    pos = procInfo.second[procInfo.first];  
+    pos = procInfo.second[procInfo.first];
   }
 private:
   int pos;
@@ -80,10 +79,10 @@ int main(int argc, char *argv[]) {
     demoRise();
   } catch (const std::exception& ex) {
     std::cerr<<"error: "<<ex.what()<<'\n';
-    env.abort(1);  
+    env.abort(1);
   } catch (...) {
     std::cerr<<"unknown exception\n";
-    env.abort(2);  
+    env.abort(2);
   }
   return 0;
 }

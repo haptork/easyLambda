@@ -19,15 +19,15 @@
 #include <ezl/mapreduce/Map.hpp>
 
 
-#define MSUPER DataFlowExpr<MapBuilder<I, S, F, O, P, H>>,                   \
-               PrllExpr<MapBuilder<I, S, F, O, P, H>>,                  \
-               DumpExpr<MapBuilder<I, S, F, O, P, H>, O>
+#define MSUPER DataFlowExpr<MapBuilder<I, S, F, O, P, H, A>, A>,       \
+               PrllExpr<MapBuilder<I, S, F, O, P, H, A>>,              \
+               DumpExpr<MapBuilder<I, S, F, O, P, H, A>, O>
 
 namespace ezl {
+template <class T> class Source;
 namespace detail {
 
-template <class T> class Source;
-template <class T> struct DataFlowExpr;
+template <class T, class A> struct DataFlowExpr;
 template <class T> struct PrllExpr;
 template <class T, class O> struct DumpExpr;
 
@@ -37,40 +37,39 @@ template <class T, class O> struct DumpExpr;
  * Employs crtp
  *
  * */
-template <class I, class S, class F, class O, class P, class H>
-struct MapBuilder : public MSUPER {
+template <class I, class S, class F, class O, class P, class H, class A>
+struct MapBuilder : MSUPER {
 public:
-
-  MapBuilder() = default;
-
-  MapBuilder(F&& f, std::shared_ptr<Source<I>> prev) : _func{std::forward<F>(f)}, _prev{prev} {
+  MapBuilder(F &&f, std::shared_ptr<Source<I>> prev, std::shared_ptr<A> a)
+      : _func{std::forward<F>(f)}, _prev{prev} {
     this->mode(llmode::shard); 
+    this->_fl = a;
   }
 
   auto& self() { return *this; }
 
   template <class NO>
-  auto reOutputExpr(NO) {  // NOTE: while calling with T cast arg. is req 
-    auto temp = MapBuilder<I, S, F, NO, P, H>{std::forward<F>(this->_func), std::move(this->_prev)};
+  auto colsSlct(NO = NO{}) {  // NOTE: while calling with T cast arg. is req 
+    auto temp = MapBuilder<I, S, F, NO, P, H, A>{std::forward<F>(this->_func), std::move(this->_prev), std::move(this->_fl)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
   template <class NOP>
-  auto rePrllExpr(NOP) {
+  auto prllSlct(NOP = NOP{}) {
     constexpr auto size = std::tuple_size<I>::value;
     using NP = typename meta::saneSlctImpl<size, NOP>::type; 
     using HN = boost::hash<typename meta::SlctTupleRefType<I, NP>::type>;
-    auto temp = MapBuilder<I, S, F, O, NP, HN>{std::forward<F>(this->_func), std::move(this->_prev)};
+    auto temp = MapBuilder<I, S, F, O, NP, HN, A>{std::forward<F>(this->_func), std::move(this->_prev), std::move(this->_fl)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
   template <class NH>
-  auto reHashExpr(NH) {
-    auto temp = MapBuilder<I, S, F, O, P, NH>{std::forward<F>(this->_func), std::move(this->_prev)};
+  auto hash() {
+    auto temp = MapBuilder<I, S, F, O, P, NH, A>{std::forward<F>(this->_func), std::move(this->_prev), std::move(this->_fl)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
     return temp;
@@ -84,7 +83,7 @@ public:
       type;
     using NO = typename meta::inPlace<std::tuple_size<I>::value, 
           std::tuple_size<fouttype>::value, S>::type;
-    return reOutputExpr(NO{});
+    return colsSlct(NO{});
   }
 
   auto colsResult() {
@@ -96,19 +95,20 @@ public:
                 finptype>::type>()))>::type>::value;
     constexpr auto isize = std::tuple_size<I>::value;
     using NO = typename meta::fillSlct<isize, isize + foutsize>::type;
-    return reOutputExpr(NO{});
+    return colsSlct(NO{});
   }
 
-  auto build() {
-    _prev = PrllExpr<MapBuilder>::build(_prev, P{}, H{});
+  auto buildUnit() {
+    _prev = PrllExpr<MapBuilder>::preBuild(_prev, P{}, H{});
     auto obj = std::make_shared<Map<meta::MapTypes<I, S, F, O>>>(std::forward<F>(_func));
     obj->prev(_prev, obj);
-    DumpExpr<MapBuilder, O>::build(obj);
+    DumpExpr<MapBuilder, O>::postBuild(obj);
     return obj;
   }
 
   auto prev() { return _prev; }
 
+  std::false_type isAddFirst;
 private:
   F _func;
   std::shared_ptr<Source<I>> _prev;

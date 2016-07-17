@@ -44,6 +44,7 @@ void demoFromMem(std::string outFile) {
 
   ezl::flow(ld).run();
 
+  // from rvalue
   buf.buffer(vector<tuple<int, char>>{make_tuple(6,'e')}).split(false);
   ezl::flow(ld).run();
 

@@ -226,7 +226,7 @@ struct ReduceTypes {
           ))>::value;
 };
 
-template <class F, class P> struct LoadTypesImpl {
+template <class F, class P> struct RiseTypesImpl {
   using type = typename meta::SlctTupleRefType<
                   typename GetTupleType<
                     std::decay_t<decltype((std::get<0>(std::declval<P>())))>
@@ -234,22 +234,13 @@ template <class F, class P> struct LoadTypesImpl {
                >::type;
 };
 
-template <class F, class T, class A> struct LoadTypesImpl<F, std::vector<T, A>> {
+template <class F, class T, class A> struct RiseTypesImpl<F, std::vector<T, A>> {
   using type = typename meta::SlctTupleRefType<typename GetTupleType<T>::type>::type;
 };
 
-// types for Load
+// types for Rise
 template <class F> 
-struct LoadTypes : LoadTypesImpl<F, decltype(std::declval<F>()())> {};
-
-template<typename T> struct isVector : public std::false_type {};
-template<typename T, typename A>
-struct isVector<std::vector<T, A>> : public std::true_type {};
-
-template<typename... T> struct isTuple : public std::false_type {};
-template<typename... T>
-struct isTuple<std::tuple<T...>> : public std::true_type {};
-
+struct RiseTypes : RiseTypesImpl<F, decltype(std::declval<F>()())> {};
 }
 }} // namespace ezl detail meta
 #endif //!TYPEINFO_EZL_H

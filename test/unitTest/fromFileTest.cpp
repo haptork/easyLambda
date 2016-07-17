@@ -19,7 +19,7 @@
 #include <boost/mpi.hpp>
 #include <boost/functional/hash.hpp>
 
-#include <ezl/mapreduce/Load.hpp>
+#include <ezl/mapreduce/Rise.hpp>
 #include <ezl/mapreduce/Filter.hpp>
 #include <ezl/helper/ProcReq.hpp>
 #include <ezl/algorithms/fromFile.hpp>
@@ -54,16 +54,18 @@ void fromFileFileNameTest() {
   using std::string;
   using std::vector;
   using std::array;
-  
+  using ezl::ProcReq;
+  using ezl::Par;
+
   // r1 declaration and setting properties be in different statements different
   auto r1 = ezl::fromFile<string, array<float, 2>, string>(
           "data/fromFileTests/test?.txt");
   r1 = r1.addFileName();
-  auto t1 = std::make_shared<Load<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
+  auto t1 = std::make_shared<Rise<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
   auto count = 0;
-  auto f1 = [&count](string f){ 
-    if(f.size()>=9 && f.substr(f.size()-9, 9) == "test1.txt") 
-      count++; 
+  auto f1 = [&count](string f){
+    if(f.size()>=9 && f.substr(f.size()-9, 9) == "test1.txt")
+      count++;
     return true;
   };
   auto ret = std::make_shared<Filter<decltype(t1)::element_type::otype, slct<3>, decltype(f1), slct<>>>(f1);
@@ -79,11 +81,13 @@ void fromFileRowMaxTest() {
   using std::string;
   using std::vector;
   using std::array;
+  using ezl::ProcReq;
+  using ezl::Par;
 
   auto r1 = ezl::fromFile<string, int, float, string>("data/fromFileTests/test?.txt");
   r1 = r1.addFileName().top(2);
   auto t1 =
-      std::make_shared<Load<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
+      std::make_shared<Rise<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
   auto count = 0;
   auto f1 = [&count](){ count++; return true; };
   auto ret = std::make_shared<Filter<decltype(t1)::element_type::otype, slct<>, decltype(f1), slct<>>>(f1);
@@ -99,10 +103,12 @@ void fromFileStrictSchemaTest() {
   using std::string;
   using std::vector;
   using std::array;
+  using ezl::ProcReq;
+  using ezl::Par;
 
   auto r1 = ezl::fromFile<string, int, float>("data/fromFileTests/test?.txt");
   auto t1 =
-      std::make_shared<Load<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
+      std::make_shared<Rise<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
 
   auto count = 0;
   auto f1 = [&count](){ count++; return true; };
@@ -115,7 +121,7 @@ void fromFileStrictSchemaTest() {
   auto r2 = ezl::fromFile<string, int, float>("data/fromFileTests/test?.txt");
   r2 = r2.noStrict();
   auto t2 =
-      std::make_shared<Load<decltype(r2)>>(ProcReq{}, std::move(r2), nullptr);
+      std::make_shared<Rise<decltype(r2)>>(ProcReq{}, std::move(r2), nullptr);
 
   count = 0;
   t2->next(ret, t2);
@@ -125,7 +131,7 @@ void fromFileStrictSchemaTest() {
 
   auto r3 = ezl::fromFile<string, int>("data/fromFileTests/test?.txt");
   auto t3 =
-      std::make_shared<Load<decltype(r3)>>(ProcReq{}, std::move(r3), nullptr);
+      std::make_shared<Rise<decltype(r3)>>(ProcReq{}, std::move(r3), nullptr);
 
   count = 0;
   auto ret2 = std::make_shared<Filter<decltype(t3)::element_type::otype, slct<>, decltype(f1), slct<>>>(f1);
@@ -137,7 +143,7 @@ void fromFileStrictSchemaTest() {
   auto r4 = ezl::fromFile<string, int>("data/fromFileTests/test?.txt");
   r4 = r4.noStrict();
   auto t4 =
-      std::make_shared<Load<decltype(r4)>>(ProcReq{}, std::move(r4), nullptr);
+      std::make_shared<Rise<decltype(r4)>>(ProcReq{}, std::move(r4), nullptr);
 
   count = 0;
   t4->next(ret2, t4);

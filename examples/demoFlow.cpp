@@ -58,7 +58,7 @@ void demoFlow() {
       [](tuple<vector<double>> &ret, int key, double val) -> auto& {
       std::get<0>(ret).emplace_back(val); 
         return ret;
-      }, tuple<vector<double>>{}).ordered() // w/o ordered output rets reversed
+      }, tuple<vector<double>>{})
       .build();
 
   // a pipeline with a splitter followed by a joiner
@@ -78,9 +78,11 @@ void demoFlow() {
                 .run();
 
   // running again
+  
   source = source.buffer({6 ,9 ,8 ,7});
 
   ezl::flow(flow1).run();
+
 }
 
 int main(int argc, char *argv[]) {

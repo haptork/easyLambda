@@ -18,7 +18,6 @@
 #include <ezl/helper/Par.hpp>
 
 namespace ezl {
-namespace detail {
 
 /*!
  * @ingroup base
@@ -72,7 +71,7 @@ public:
     if (_visited) return;
     _visited = true;
     _parHandle = pr;
-    _dataBegin();
+    if (this->incSig() == 1) _dataBegin();
     if (!Source<IO>::next().empty()) { // implies _par.inRange()
       for (auto &it : Source<IO>::next()) {
         it.second->forwardPar(&(Task::par()));
@@ -88,7 +87,7 @@ public:
   virtual void signalEvent(int i) override final {
     if (_visited) return;
     _visited = true;
-    _dataEnd(Task::par().nProc());
+    if (this->decSig() == 0) _dataEnd(Task::par().nProc());
     if (!this->next().empty()) {
       for (auto &it : this->next()) {
         it.second->signalEvent(i);
@@ -110,7 +109,6 @@ private:
   bool _traversingTasks{false};
   bool _visited{false};
 };
-}
-} // namespace ezl ezl::detail
+} // namespace ezl
 
 #endif // !BRIDGE_EZL_H

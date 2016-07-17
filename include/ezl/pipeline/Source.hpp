@@ -20,7 +20,6 @@
 #include <ezl/helper/Karta.hpp>
 
 namespace ezl {
-namespace detail {
 
 template <typename T> class Dest;
 class Task;
@@ -47,17 +46,33 @@ public:
    * @precondition: should be called with a shared_ptr object and
    *                that shapred_ptr should be passed as self.
    * */
-  virtual void next(std::shared_ptr<Dest<Type>> nx,
+  virtual bool next(std::shared_ptr<Dest<Type>> nx,
                     std::shared_ptr<Source<Type>> self) {
-    if (!nx) return;
+    if (!nx) return false;
     assert(self.get() == this && "the self shared object needs to be passed");
     auto id = nx->id();
     if (_next.find(id) == std::end(_next)) {
-      _next[id] = nx;
-      nx->prev(self, nx);
+      auto it = _next.emplace(id, nx);
+      if (nx->prev(self, nx) == false) {
+        _next.erase(it.first);
+        return false;
+      }
     }
+    return true;
   }
 
+  /*!
+   * Remove a unit from next if present.
+   * */
+  virtual void unNext(Dest<Type>* nx) {
+    if (!nx) return;
+    auto id = nx->id();
+    if (_next.find(id) != std::end(_next)) {
+      _next.erase(id); 
+      nx->unPrev(this); 
+    }
+  }
+                      
   /*!
    * traverse back from any unit to all the connected root sources.
    *
@@ -67,13 +82,12 @@ public:
 
   const int id() { return _id; }
 
-  inline auto &next() const { return _next; }
+  inline const auto &next() const { return _next; }
 
 private:
   std::map<int, std::shared_ptr<Dest<Type>>> _next;
   int _id;
 };
-}
-} // namespace ezl ezl::detail
+} // namespace ezl
 
 #endif // !SOURCE__EZL_H

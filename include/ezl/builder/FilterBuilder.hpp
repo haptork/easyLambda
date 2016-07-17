@@ -18,15 +18,15 @@
 
 #include <ezl/mapreduce/Filter.hpp>
 
-#define FSUPER DataFlowExpr<FilterBuilder<I, S, F, O, P, H>>,                 \
-               PrllExpr<FilterBuilder<I, S, F, O, P, H>>,                      \
-               DumpExpr<FilterBuilder<I, S, F, O, P, H>, O>
+#define FSUPER DataFlowExpr<FilterBuilder<I, S, F, O, P, H, A>, A>,    \
+               PrllExpr<FilterBuilder<I, S, F, O, P, H, A>>,           \
+               DumpExpr<FilterBuilder<I, S, F, O, P, H, A>, O>
 
 namespace ezl {
+template <class T> class Source;
 namespace detail {
 
-template <class T> class Source;
-template <class T> struct DataFlowExpr;
+template <class T, class A> struct DataFlowExpr;
 template <class T> struct PrllExpr;
 template <class T, class O> struct DumpExpr;
 /*!
@@ -36,58 +36,58 @@ template <class T, class O> struct DumpExpr;
  * Employs CRTP.
  *
  * */
-template <class I, class S, class F, class O, class P, class H>
-struct FilterBuilder : public FSUPER {
+template <class I, class S, class F, class O, class P, class H, class A>
+struct FilterBuilder : FSUPER {
 public:
-  FilterBuilder() = default;
-
-  FilterBuilder(F &&f, std::shared_ptr<Source<I>> prev)
+  FilterBuilder(F &&f, std::shared_ptr<Source<I>> prev, std::shared_ptr<A> fl)
       : _func{std::forward<F>(f)}, _prev{prev} {
     this->mode(llmode::shard);
+    this->_fl = fl;
   }
 
   auto& self() { return *this; }
 
   template <class NO>
-  auto reOutputExpr(NO) {  // NOTE: while calling with T cast arg. is req
-    auto temp = FilterBuilder<I, S, F, NO, P, H>{std::forward<F>(this->_func),
-                                                 std::move(this->_prev)};
+  auto colsSlct(NO = NO{}) {  // NOTE: while calling with T cast arg. is req
+    auto temp = FilterBuilder<I, S, F, NO, P, H, A>{std::forward<F>(this->_func),
+                                                 std::move(this->_prev), std::move(this->_fl)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
   template <class NOP>
-  auto rePrllExpr(NOP) {
+  auto prllSlct(NOP = NOP{}) {
     constexpr auto size = std::tuple_size<I>::value;
     using NP = typename meta::saneSlctImpl<size, NOP>::type; 
     using HN = boost::hash<typename meta::SlctTupleRefType<I, NP>::type>;
-    auto temp = FilterBuilder<I, S, F, O, NP, HN>{std::move(this->_func),
-                                                  std::move(this->_prev)};
+    auto temp = FilterBuilder<I, S, F, O, NP, HN, A>{std::move(this->_func),
+                                                  std::move(this->_prev), std::move(this->_fl)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
   template <class NH>
-  auto reHashExpr(NH) {
-    auto temp = FilterBuilder<I, S, F, O, P, NH>{std::move(this->_func),
-                                                 std::move(this->_prev)};
+  auto hash() {
+    auto temp = FilterBuilder<I, S, F, O, P, NH, A>{std::move(this->_func),
+                                                 std::move(this->_prev), std::move(this->_fl)};
     temp.props(this->props());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
-  auto build() {
-    _prev = PrllExpr<FilterBuilder>::build(_prev, P{}, H{});
+  auto buildUnit() {
+    _prev = PrllExpr<FilterBuilder>::preBuild(_prev, P{}, H{});
     auto obj = std::make_shared<Filter<I, S, F, O>>(std::forward<F>(_func));
     obj->prev(_prev, obj);
-    DumpExpr<FilterBuilder, O>::build(obj);
+    DumpExpr<FilterBuilder, O>::postBuild(obj);
     return obj;
   }
 
   auto prev() { return _prev; }
 
+  std::false_type isAddFirst;
 private:
   F _func;
   std::shared_ptr<Source<I>> _prev;

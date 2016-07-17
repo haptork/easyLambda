@@ -21,9 +21,8 @@
 #include <ezl/mapreduce/MPIBridge.hpp>
 
 namespace ezl {
-namespace detail {
-
 template <class T> class Source;
+namespace detail {
 
 /*!
  * @ingroup builder
@@ -63,14 +62,14 @@ public:
     _props.procReq = ProcReq{n};
     _props.isPrll = true;
     _props.mode = mode;
-    return ((T *)this)->rePrllExpr(meta::slct<I, Is...>{});
+    return ((T *)this)->prllSlct(meta::slct<I, Is...>{});
   }
 
   template <int I, int... Is> auto prll(llmode mode = llmode::none) {
     _props.procReq = ProcReq{};
     _props.isPrll = true;
     _props.mode = mode;
-    return ((T *)this)->rePrllExpr(meta::slct<I, Is...>{});
+    return ((T *)this)->prllSlct(meta::slct<I, Is...>{});
   }
 
   template <class Ptype> auto& prll(Ptype n, llmode mode = llmode::none) {
@@ -87,18 +86,13 @@ public:
     return ((T *)this)->self();
   }
 
-  template <class HNew>
-  auto hash() {
-    return ((T *)this)->reHashExpr(HNew{});
-  }
-
   template <int I, int... Is>
   auto prll(std::initializer_list<int> lprocs, llmode mode = llmode::none) {
     auto procs = std::vector<int>(std::begin(lprocs), std::end(lprocs));
     _props.procReq = ProcReq{procs};
     _props.isPrll = true;
     _props.mode = mode;
-    return ((T *)this)->rePrllExpr(meta::slct<I, Is...>{});
+    return ((T *)this)->prllSlct(meta::slct<I, Is...>{});
   }
 
   auto& prll(std::initializer_list<int> lprocs, llmode mode = llmode::none) {
@@ -123,12 +117,12 @@ public:
     return ((T *)this)->self();
   }
 
+protected:
   template <class I, class P, class H>
-  auto build(std::shared_ptr<Source<I>> pre, P, H) -> std::shared_ptr<Source<I>> {
+  auto preBuild(std::shared_ptr<Source<I>> pre, P, H) {
     if (_props.isPrll) {
       if (P::size == 0 && !(_props.mode & llmode::shard || _props.mode & llmode::all)) {
         _props.procReq.resize(1);
-        return pre;
       }
       bool all = false;
       if (P::size == 0 && (_props.mode & llmode::all)) all = true;
@@ -136,7 +130,8 @@ public:
       auto bobj = std::make_shared<MPIBridge<I, P, H>>(
           _props.procReq, all, _props.ordered);
       bobj->prev(pre, bobj);
-      return bobj;
+      pre = bobj;
+      return pre;
     }
     return pre;
   }

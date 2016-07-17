@@ -81,7 +81,7 @@ private:
       it.second->dataEvent(otemp);
     }
   }
-    
+
   Func _func;
 };
 }

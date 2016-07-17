@@ -19,7 +19,6 @@
 #include <ezl/pipeline/Source.hpp>
 
 namespace ezl {
-namespace detail {
 
 /*!
  * @ingroup base
@@ -33,17 +32,32 @@ class Link : public Dest<DestType>, public Source<SourceType> {
 
 public:
   /*!
+   * implementation for passing parallel information forward before pipeline
+   * execution.
+   * _visited helps to only signal once in cyclic pipelines.
+   * */
+  virtual void forwardPar(const Par *pr) override final {
+    if (_visited) return;
+    _visited = true;
+    this->incSig();
+    if (pr && !this->next().empty()) {
+      for (auto &it : this->next()) {
+        it.second->forwardPar(pr);
+      }
+    }
+    _visited = false;
+  }
+
+  /*!
    * Defining default behaviour for passing signal forward.
    * _visited helps to only signal once cyclic pipelines.
    * */
   virtual void signalEvent(int i) override final {
-    if (_visited) return;
+    if(_visited) return;
     _visited = true;
-    _dataEnd(i);
-    if (!this->next().empty()) {
-      for (auto &it : this->next()) {
-        it.second->signalEvent(i);
-      }
+    if (this->decSig() == 0) _dataEnd(i);
+    for (auto &it : this->next()) {
+      it.second->signalEvent(i);
     }
     _visited = false;
   }
@@ -78,29 +92,12 @@ public:
     return tasks;
   }
 
-  /*!
-   * implementation for passing parallel information forward before pipeline
-   * execution.
-   * _visited helps to only signal once in cyclic pipelines.
-   * */
-  virtual void forwardPar(const Par *pr) override final {
-    if (_visited) return;
-    _visited = true;
-    if (pr && !this->next().empty()) {
-      for (auto &it : this->next()) {
-        it.second->forwardPar(pr);
-      }
-    }
-    _visited = false;
-  }
-
 private:
   virtual void _dataEnd(int) {} ;
   bool _traversingRoots{false};
   bool _traversingTasks{false};
   bool _visited{false};
 };
-}
 } // namespace ezl ezl::detail
 
 #endif // !LINK_EZL_H

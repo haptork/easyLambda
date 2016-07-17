@@ -1,6 +1,6 @@
 /*!
  * @file
- * class DumpFile, unit for dumping to a file.
+ * class Dump, unit for dumping to a file.
  *
  * This file is a part of easyLambda(ezl) project for parallel data
  * processing with modern C++ and MPI.
@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef DUMPFILE_EZL_H
-#define DUMPFILE_EZL_H
+#ifndef DUMP_EZL_H
+#define DUMP_EZL_H
 
 #include <fstream>
 #include <iostream>
@@ -38,24 +38,25 @@ namespace detail {
  *
  * */
 template <class I>
-struct DumpFile : public Dest<I> {
+struct Dump : public Dest<I> {
 public:
   using itype = I;
   static constexpr int isize = std::tuple_size<I>::value;
 
-  DumpFile(std::string fname, std::string head) : _fname{fname}, _header{head} {
+  Dump(std::string fname, std::string head) : _fname{fname}, _header{head} {
     _os = &std::cout;
     _fb = nullptr;
   }
 
-  ~DumpFile() {
+  ~Dump() {
     if (_os != &std::cout) {
       delete _os;
     }
   }
 
+  // unlike links there can be no cycle hence visited flag isn't needed.
   virtual void forwardPar(const Par *par) override final {
-    if (!par->inRange()) return;
+    if (this->incSig() != 1 || !par->inRange()) return;
     if (par && _fname.length() > 0) {
       auto prefname = _fname;
       if (par->nProc() > 1) {
@@ -74,10 +75,9 @@ public:
         _os = new std::ostream(_fb.get());
       }
     }
-    if (_sigged && (par->pos() == 0 || !_fname.empty()) && !_header.empty()) {
+    if ((par->pos() == 0 || !_fname.empty()) && !_header.empty()) {
       (*_os)<<_header<<std::endl;
     }
-    _sigged = false;
   }
 
   virtual std::vector<Task *> forwardTasks() override final { return std::vector<Task *>{}; }
@@ -87,12 +87,12 @@ public:
   }
 
   virtual void signalEvent(int j) override final {
+    if (this->decSig() != 0) return;
     (*_os)<<std::flush;
     if (_fb) _fb->close();
     // resetting
     _os = &std::cout;
     _fb = nullptr;
-    _sigged = true;
   }
 
 private:
@@ -100,9 +100,8 @@ private:
   std::string _header;
   std::unique_ptr<std::filebuf> _fb;
   std::ostream *_os;
-  bool _sigged = true;
 };
 }
 } // namespace ezl ezl::detail
 
-#endif // !DUMPFILE_EZL_H
+#endif // !DUMP_EZL_H

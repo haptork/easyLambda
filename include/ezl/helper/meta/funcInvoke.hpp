@@ -24,6 +24,15 @@ namespace ezl {
 namespace detail {
 namespace meta {
 
+
+template<typename... T> struct isTuple : public std::false_type {};
+template<typename... T>
+struct isTuple<std::tuple<T...>> : public std::true_type {};
+
+template<typename T> struct isVector : public std::false_type {};
+template<typename T, typename A>
+struct isVector<std::vector<T, A>> : public std::true_type {};
+
 // to test if a function type can be called with the given argument types
 // @source
 // http://stackoverflow.com/questions/22882170/c-compile-time-predicate-to-test-if-a-callable-object-of-type-f-can-be-called
@@ -203,13 +212,13 @@ inline decltype(auto) invokeReduce(
 
 // reduce with all expanded
 template <class F, class... Os, class... Ks, class... Vs>
-inline decltype(auto) invokeReduce(F &&f, std::tuple<Os&&...>& out, 
-            const std::tuple<Ks&&...>& key, const std::tuple<Vs&&...>& val,
+inline decltype(auto) invokeReduce(F &&f, const std::tuple<Os...>& out, 
+            const std::tuple<Ks...>& key, const std::tuple<Vs...>& val,
             typename std::enable_if<
-                !can_call<F &&, std::tuple<Os&&...>, std::tuple<Ks&&...>,
-                                     std::tuple<Vs&&...>>{} &&
-                !can_call<F &&, Os&&..., Ks&&..., std::tuple<Vs&&...>>{} &&
-                can_call<F &&, Os&&..., Ks&&..., Vs&&...>{}>::type *dummy = 0) {
+                !can_call<F &&, std::tuple<Os...>, std::tuple<Ks...>,
+                                     std::tuple<Vs...>>{} &&
+                !can_call<F &&, Os..., Ks..., std::tuple<Vs...>>{} &&
+                can_call<F &&, Os..., Ks..., Vs...>{}>::type *dummy = 0) {
   return invokeHelperThreeTup(std::forward<F>(f), out,
                        std::make_index_sequence<sizeof...(Os)>{}, key,
                        std::make_index_sequence<sizeof...(Ks)>{}, val,
@@ -233,11 +242,12 @@ template <class F, class O, class... Ks, class... Vs>
 inline decltype(auto) invokeReduce(F &&reduceUDF, O& res, 
             const std::tuple<Ks...>& key, const std::tuple<Vs...>& val,
             typename std::enable_if<
-                !can_call<F &&, O&, std::tuple<Ks...>, std::tuple<Vs...>
-                          >{} && !can_call<F &&, O&, Ks..., Vs...>{}>::type *dummy = 0) {
+                !isTuple<O>{} &&
+                !can_call<F &&, O&, std::tuple<Ks...>, std::tuple<Vs...>>{} &&
+                          !can_call<F &&, O&, Ks..., Vs...>{}>::type *dummy = 0) {
   return reduceUDF(res, key, val); // reduceUDF is ill formed.
 }
-
+/*
 // reduce is not well formed
 template <class F, class... Os, class... Ks, class... Vs>
 inline decltype(auto) invokeReduce(F &&reduceUDF, const std::tuple<Os...>& res, const std::tuple<Ks...>& key, const std::tuple<Vs...>& val,
@@ -247,7 +257,7 @@ inline decltype(auto) invokeReduce(F &&reduceUDF, const std::tuple<Os...>& res, 
                 !can_call<F &&, Os..., Ks..., Vs...>{}>::type *dummy = 0) {
   return reduceUDF(res, key, val); // reduceUDF is ill formed.
 }
-
+*/
 }
 }
 } // namespace ezl detail meta

@@ -44,6 +44,22 @@ private:
   Ref _ref;
 };
 
+// not equals
+template <class Ref>
+class _neq {
+public:
+  _neq(Ref r) { _ref = r; }
+
+  template <class T>
+  bool operator () (const T& row) {
+    return row != _ref;
+  }
+
+private:
+  Ref _ref;
+};
+
+
 /*!
  * @ingroup algorithms
  * callable for equals to a reference number and an index in the array
@@ -72,6 +88,21 @@ public:
 private:
   Ref _ref;
 };
+
+template <size_t N, class Ref>
+class _neqAr{
+public:
+  _neqAr(Ref r) { _ref = r; }
+
+  template <class T>
+  bool operator () (const T& row) {
+    return std::get<N>(std::get<0>(row)) != _ref;
+  }
+
+private:
+  Ref _ref;
+};
+
 
 /*!
  * @ingroup algorithms
@@ -165,6 +196,16 @@ inline auto eq(Ts... ts) {
 template <size_t N, class T>
 inline auto eqAr(T t) {
   return detail::_eqAr<N-1, T>{t};
+}
+
+template <class... Ts>
+inline auto neq(Ts... ts) {
+  return detail::_neq<std::tuple<Ts...>>{std::make_tuple(ts...)};
+}
+
+template <size_t N, class T>
+inline auto neqAr(T t) {
+  return detail::_neqAr<N-1, T>{t};
 }
 
 template <class... Ts>

@@ -62,10 +62,7 @@ inline FwdIterator stableUnique(FwdIterator first, FwdIterator last) {
 
 } // namespace internal
 
-namespace detail {
 template <class T> class Source;
-}
-
 /*!
  * @ingroup helper
  * Singleton manager for managing ids, tags and other global properties. It
@@ -102,7 +99,19 @@ public:
 
   // A rudimentary log to be extended later.
   void log(std::string msg, LogMode mode = LogMode::info) {
-    if (mode & _logMode) std::cerr<<_comm.rank()<<": "<<msg<<std::endl;
+    if (mode & _logMode) std::cerr<<_rank<<": "<<msg<<std::endl;
+  }
+
+  void log0(std::string msg, LogMode mode = LogMode::info) {
+    if ((mode & _logMode) && _rank == 0) std::cerr<<msg<<std::endl;
+  }
+
+  void print(std::string str) {
+    std::cout<<_rank<<": "<<str<<std::endl;
+  }
+
+  void print0(std::string str) {
+    if (_rank == 0) std::cout<<str<<std::endl;
   }
 
   void logMode(LogMode mode) {
@@ -110,14 +119,17 @@ public:
   }
 
   template <class T>
-  void run(detail::Source<T> *obj, detail::ProcReq p = detail::ProcReq{}) {
-    using detail::ProcReq;
-    using detail::Task;
+  void run(Source<T> *obj, ProcReq p = ProcReq{}) {
+    auto roots = obj->root();
+    if (roots.empty()) return;
     std::vector<int> curRun;
     std::vector<int> all;
-    for (auto it : _procs) {
-      all.push_back(it.second);
+    if (_isRunning && p.type() == ProcReq::Type::none) {
+      all.push_back(_rank);
+    } else {
+      for (auto it : _procs) all.push_back(it.second);
     }
+    ++_isRunning;
     switch (p.type()) {
     case ProcReq::Type::count:
       curRun = _giveProcs(p.count(), all);
@@ -133,9 +145,6 @@ public:
       break;
       // log err.
     }
-    // std::cout<<"total proc size: "<<curRun.size()<<std::endl;
-    auto roots = obj->root();
-    if (roots.empty()) return;
     auto toDel = internal::stableUnique(std::begin(roots), std::end(roots));
     roots.erase(toDel, std::end(roots));
     std::vector<std::vector<Task *>> bridges(roots.size());
@@ -164,6 +173,7 @@ public:
       it.first[0] = 0;
     }
     std::sort(std::begin(_procs), std::end(_procs));
+    --_isRunning;
   }
 
   const int rank() const { return _rank; }
@@ -237,10 +247,8 @@ private:
    * call for task parallelism in which case the priority is solely on the basis
    * of how much free a process is.
    */
-  std::vector<std::vector<int>> _assign(std::vector<std::vector<detail::Task *>> prods, std::vector<int> curRun,
+  std::vector<std::vector<int>> _assign(std::vector<std::vector<Task *>> prods, std::vector<int> curRun,
               std::vector<std::vector<int>> priority) {
-    using detail::ProcReq;
-    using detail::Par;
     assert(priority.size() == prods.size());
     std::vector<int> all;
     std::vector<std::vector<int>> assigned;
@@ -312,9 +320,10 @@ private:
   int _rank;
   std::vector<std::pair<std::array<int, 2>, int>> _procs;
   int _counter{1};
-  std::vector<detail::Task *> _curRoots;
-  std::vector<std::vector<detail::Task *>> _curOthers;
+  std::vector<Task *> _curRoots;
+  std::vector<std::vector<Task *>> _curOthers;
   LogMode _logMode{LogMode::error | LogMode::warning};
+  int _isRunning {0};
   //int _curRootIndex;
 };
 } // namespace ezl 

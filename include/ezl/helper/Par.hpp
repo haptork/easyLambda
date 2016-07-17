@@ -16,7 +16,6 @@
 #include <vector>
 
 namespace ezl {
-namespace detail {
 
 /*!
  * @ingroup helper
@@ -65,7 +64,6 @@ private:
   bool _inRange;
   int _rank;
 };
-}
-} // namespace ezl ezl::detail
+} // namespace ezl
 
 #endif // !PAR_EZL_H

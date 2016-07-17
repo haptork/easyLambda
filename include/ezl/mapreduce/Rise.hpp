@@ -1,6 +1,6 @@
 /*!
  * @file
- * class Load, root unit for loading data.
+ * class Rise, root unit for loading data.
  *
  * This file is a part of easyLambda(ezl) project for parallel data
  * processing with modern C++ and MPI.
@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef LOAD_EZL_H
-#define LOAD_EZL_H
+#ifndef RISE_EZL_H
+#define RISE_EZL_H
 
 #include <vector>
 #include <functional>
@@ -49,14 +49,14 @@ namespace detail {
  * See `kick`, `FromMem`... examples in `io.hpp` for generic UDFs.
  *
  * */
-template <class F, class I = typename meta::LoadTypes<F>::type> 
-class Load: public Root<I> {
+template <class F, class I = typename meta::RiseTypes<F>::type> 
+class Rise: public Root<I> {
     
 public:
   using otype = I;
   static constexpr int osize = std::tuple_size<I>::value;
 
-  Load(ProcReq r, F&& f, std::pair<int, std::vector<int>>* procSink)
+  Rise(ProcReq r, F&& f, std::pair<int, std::vector<int>>* procSink)
       : Root<otype>{r}, _func{std::forward<F>(f)}, _procSink{procSink} {}
 
 private:
@@ -66,7 +66,7 @@ private:
       _procSink->second = this->par().procAll();
     }
     meta::invokeFallBack(_func, this->par().pos(), this->par().procAll());
-    while(callEm<decltype(_func())>()) {}
+    while(callEm<decltype(_func())>());
   }
 
   template <class T>
@@ -104,4 +104,4 @@ private:
 }
 } // namespace ezl ezl::detail
 
-#endif // !LOAD_EZL_H
+#endif // !RISE_EZL_H

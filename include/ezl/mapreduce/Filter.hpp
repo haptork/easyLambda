@@ -49,7 +49,8 @@ public:
   }
 
 private:
-  Func _func;
+
+ Func _func;
 };
 }
 } // namespace ezl ezl::detail

@@ -19,7 +19,6 @@
 #include <ezl/helper/Par.hpp>
 
 namespace ezl {
-namespace detail {
 
 /*!
  * @ingroup base
@@ -72,7 +71,6 @@ private:
   virtual void _pullData() = 0;
   bool _traversingTasks{false};
 };
-}
-} // namespace ezl ezl::detail
+} // namespace ezl
 
 #endif // !ROOT_EZL_H

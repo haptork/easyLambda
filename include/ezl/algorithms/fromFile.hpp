@@ -1,6 +1,6 @@
 /*!
  * @file
- * class LoadFile, unit for loading data from a file.
+ * class FromFile, unit for loading data from a file.
  *
  * This file is a part of easyLambda(ezl) project for parallel data
  * processing with modern C++ and MPI.
@@ -10,8 +10,8 @@
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
 
-#ifndef LOADFILE_EZL_H
-#define LOADFILE_EZL_H
+#ifndef FROMFILE_EZL_H
+#define FROMFILE_EZL_H
 
 #include <fstream>
 #include <functional>
@@ -39,8 +39,8 @@ namespace ezl {
  * various rows), or keeping a group of rows in a single process for efficient
  * reduction later etc.
 
- * The enum is not in LoadFile since including in LoadFile would mean that to
- * access the enum, one would need to know the template parameters as LoadFile
+ * The enum is not in FromFile since including in FromFile would mean that to
+ * access the enum, one would need to know the template parameters as FromFile
  * is a template class.
  *
  * See examples for using with builders or unittests for direct use.
@@ -57,7 +57,7 @@ enum class rs {
 
 /*!
  * A function object to read lammps output files in parallel to be used with
- * LoadFile. Lammps output has time-step at the top. The function object puts the
+ * FromFile. Lammps output has time-step at the top. The function object puts the
  * time-step in every row and makes sure that even if multiple processes read
  * a single file with various time-steps, a single time-step is read
  * by the same process with time-step value appended to each row. In a way
@@ -106,7 +106,6 @@ private:
 };
 
 namespace detail {
-namespace internal {
 
 template <class C>
 inline void stripContainer(const C &inp, C &out, const std::vector<int> &mask) {
@@ -126,10 +125,10 @@ inline void stripContainerBool(const C &in, C &out,
     if (mask[i] != 0) { out.push_back(in[i]); }
   }
 }
-} // namespace ezl::detail::internal
+} // namespace ezl::detail
 
 
-struct LoadFileProps {
+struct FromFileProps {
   char rDelim{'\n'};
   std::string cDelims{" "};
   std::vector<int> cols;
@@ -144,6 +143,7 @@ struct LoadFileProps {
   bool share{true};
   int rowsMax{0};
   std::string fpat = "";
+  size_t filesMax{0};
 };
 
 /*!
@@ -152,7 +152,7 @@ struct LoadFileProps {
  *
  * */
 template <class I, class Kslct>
-class LoadFile {
+class FromFile {
 public:
 
   using otype = I;
@@ -182,13 +182,13 @@ public:
                 shared among them.
  * */
   template <class K>
-  LoadFile(const LoadFile<I, K>& obj) : _props(obj.props()) {}
+  FromFile(const FromFile<I, K>& obj) : _props(obj.props()) {}
  
-  LoadFile(std::string fpat) {
+  FromFile(std::string fpat) {
     _props.fpat = fpat;
   }
 
-  LoadFile(std::vector<std::string> fnames) {
+  FromFile(std::vector<std::string> fnames) {
     _props.fnames.insert(_props.fnames.begin(), fnames.begin(), fnames.end());
   }
 
@@ -234,7 +234,7 @@ public:
 
   template <int N, int... Ns>
   auto ordered() {
-    return LoadFile<I, detail::meta::slct<N, Ns...>>(*this); 
+    return FromFile<I, detail::meta::slct<N, Ns...>>(*this); 
   }
 
   auto parse(
@@ -250,6 +250,11 @@ public:
 
   auto tillEOF(bool eof = true) {
     _props.tilleof = eof;
+    return std::move(*this);
+  }
+
+  auto maxFilesToRead(size_t count) {
+    _props.filesMax = count;
     return std::move(*this);
   }
 
@@ -309,7 +314,7 @@ public:
     _sanityCheck();
     if(!_props.fpat.empty()) {
       _props.fnames.clear();
-      _props.fnames = vglob(_props.fpat);
+      _props.fnames = vglob(_props.fpat, _props.filesMax);
       if(_props.fnames.empty()) {
         Karta::inst().log("No file found for pattern: "+_props.fpat, LogMode::warning);
         return;
@@ -513,9 +518,9 @@ row types are different.");
       std::vector<std::string> temp;
       temp.reserve(osize);
       if (_isMask) {
-        internal::stripContainerBool(vstr, temp, _props.cols);
+        detail::stripContainerBool(vstr, temp, _props.cols);
       } else {
-        internal::stripContainer(vstr, temp, _props.cols);
+        detail::stripContainer(vstr, temp, _props.cols);
       }
       vstr = std::move(temp);
     }
@@ -624,7 +629,7 @@ row types are different.");
   bool loaded = false;
   bool accept = false;
 
-  LoadFileProps _props;
+  FromFileProps _props;
 
   std::string _line;
   bool in = false;
@@ -646,19 +651,17 @@ row types are different.");
   int _rowsRead{0};
   int _pos {-1};
 };
-} // namespace ezl::detail
 
 template <class... Is>
 auto fromFile(std::string fpat = "") {
-  return detail::LoadFile<std::tuple<Is...>, detail::meta::slct<>>{fpat};
+  return FromFile<std::tuple<Is...>, detail::meta::slct<>>{fpat};
 }
 
 template <class... Is>
 auto fromFile(std::vector<std::string> flist) {
-  return detail::LoadFile<std::tuple<Is...>, detail::meta::slct<>>{flist};
+  return FromFile<std::tuple<Is...>, detail::meta::slct<>>{flist};
 }
-
 
 } // namespace ezl
 
-#endif // !LOADFILE_EZL_H
+#endif // !FROMFILE_EZL_H

@@ -37,8 +37,6 @@ inline llmode& operator |= (llmode& lhs, llmode rhs) {
   return lhs;
 }
 
-namespace detail {
-
 /*!
  * @ingroup helper
  * Process request formed according to the user arguments for a task.
@@ -69,21 +67,30 @@ public:
   }
 
   ProcReq(int n) {
+    if (n <= 0) {
+      _type = Type::none;
+      return;
+    }
     _count = n;
     _type = Type::count;
   }
 
-  ProcReq(float n) {
+  ProcReq(double n) {
+    if (n < 0.00001) {
+      _type = Type::none;
+      return;
+    }
     _ratio = n;
     _type = Type::ratio;
   }
 
-  ProcReq(double n) {
-    _ratio = n;
-    _type = Type::ratio;
-  }
+  ProcReq(float n) : ProcReq{(double)n} {}
 
   ProcReq(std::vector<int> n) {
+    if (n.size() == 0) {
+      _type = Type::none;
+      return;
+    }
     _ranks = n;
     _type = Type::ranks;
   }
@@ -100,7 +107,6 @@ private:
   float _ratio{0.};
   std::vector<int> _ranks{};
 };
-}
-} // namespace ezl // namespace detail
+} // namespace ezl
 
 #endif // !PROCREQ_EZL_H

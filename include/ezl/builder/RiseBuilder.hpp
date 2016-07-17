@@ -18,32 +18,26 @@
 #include <vector>
 
 #include <ezl/helper/ProcReq.hpp>
-#include <ezl/mapreduce/Load.hpp>
+#include <ezl/mapreduce/Rise.hpp>
 
-#define SUPERLA DataFlowExpr<RiseBuilder<F>>,     \
-                DumpExpr<RiseBuilder<F>, meta::slct<>>
+#define SUPERLA DataFlowExpr<RiseBuilder<F, A>, A>,                    \
+                DumpExpr<RiseBuilder<F, A>, meta::slct<>>
 
 namespace ezl {
 namespace detail {
 
-template <class T> struct DataFlowExpr;
+template <class T, class A> struct DataFlowExpr;
 template <class T, class O> struct DumpExpr;
 
 /*!
  * @ingroup builder
- * Builder for Load
+ * Builder for Rise
  *
  * */
-template <class F> struct RiseBuilder : public SUPERLA {
+template <class F, class A> struct RiseBuilder : SUPERLA {
 public:
-  RiseBuilder(F&& sourceFunc) : _sourceFunc{std::forward<F>(sourceFunc)}, _procReq{} {}
-
-  auto& self() { return *this; }
-
-  auto build() {
-    auto obj = std::make_shared<Load<F>>(_procReq, std::forward<F>(_sourceFunc), _procSink);
-    DumpExpr<RiseBuilder, meta::slct<>>::build(obj);
-    return obj;
+  RiseBuilder(F&& sourceFunc) : _sourceFunc{std::forward<F>(sourceFunc)}, _procReq{} {
+    this->_fl = std::make_shared<A>();
   }
 
   auto& procDump(std::pair<int, std::vector<int>> &procSink) {
@@ -72,7 +66,16 @@ public:
     return *this;
   }
 
-  // auto prev() { return nullptr; } // TODO: check
+  auto& self() { return *this; }
+
+  auto buildUnit() {
+    auto obj = std::make_shared<Rise<F>>(_procReq, std::forward<F>(_sourceFunc), _procSink);
+    DumpExpr<RiseBuilder, meta::slct<>>::postBuild(obj);
+    return obj;
+  }
+
+  std::false_type isAddFirst;
+
 private:
   F _sourceFunc;
   ProcReq _procReq;

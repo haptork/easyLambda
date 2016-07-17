@@ -35,6 +35,8 @@ void MPIBridgeDataEventTest() {
   using std::array;
   using meta::slct;
   using std::tuple;
+  using ezl::ProcReq;
+  using ezl::Par;
 
   auto mb = make_shared<MPIBridge<std::tuple<int>, slct<>, boost::hash<std::tuple<>>>>(ProcReq{0}, false, false);
   auto count = 0;
@@ -43,7 +45,7 @@ void MPIBridgeDataEventTest() {
   auto pr = Par{vector<int>{0}, array<int, 3>{{1,2,3}}, 0};
   mb->forwardPar(&pr);
   mb->par(pr);
-  mb->next(ret, mb); 
+  mb->next(ret, mb);
   mb->dataEvent(make_tuple(3));
   assert(count == 1);
 }

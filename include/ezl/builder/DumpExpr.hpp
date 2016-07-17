@@ -13,14 +13,14 @@
 #define DUMPEXPR_EZL_H
 
 #include <ezl/helper/meta/slctTuple.hpp>
-#include <ezl/mapreduce/DumpFile.hpp>
+#include <ezl/mapreduce/Dump.hpp>
 
 namespace ezl {
 namespace detail {
 
 /*!
  * @ingroup builder
- * For adding a `DumpFile` unit as a branch to the current unit. This
+ * For adding a `Dump` unit as a branch to the current unit. This
  * can be specified with property `dump` without finalizing build of
  * the current uni. The expression can be used by any unit builder
  * like `MapBuilder` `ReduceBuilder` etc.
@@ -28,32 +28,33 @@ namespace detail {
  * T is CRTP parent type.
  * */
 template <class T, class O> struct DumpExpr {
-
+protected:
   DumpExpr() = default;
 
+  template <class I>
+  auto postBuild(I& obj) {
+    if (_name != defStr) {
+      auto dObj = std::make_shared<
+          Dump<typename std::decay_t<decltype(obj)>::element_type::otype>>(_name, _header);
+      obj->next(dObj, obj);
+    }
+  }
+
+public:
   auto& dump(std::string name = "", std::string header = "") {
     _name = name;
     _header = header;
     return ((T *)this)->self();
   }
-
-  template <class I>
-  auto build(I& obj) {
-    if (_name != defStr) {
-      auto dObj = std::make_shared<
-          DumpFile<typename std::decay_t<decltype(obj)>::element_type::otype>>(_name, _header);
-      obj->next(dObj, obj);
-    }
-  }
-
+  
   template <int... Os> auto cols() {
-    return ((T *)this)->reOutputExpr(meta::slct<Os...>{});
+    return ((T *)this)->colsSlct(meta::slct<Os...>{});
   }
 
   template <int... Ns>
   auto colsDrop() {
     using NO = typename meta::setDiff<O, meta::slct<Ns...>>::type;
-    return ((T *)this)->reOutputExpr(NO{});
+    return ((T *)this)->colsSlct(NO{});
   }
 
   auto dumpProps() { return std::tie(_name, _header); }
@@ -62,8 +63,8 @@ template <class T, class O> struct DumpExpr {
     std::tie(_name, _header) = props;
   }
 
+private:
   const std::string defStr{"__none__"};
-
   std::string _name{defStr};
   std::string _header{""};
 };

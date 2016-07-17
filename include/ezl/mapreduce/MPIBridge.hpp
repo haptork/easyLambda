@@ -98,7 +98,8 @@ private:
   };
 
 public:
-  MPIBridge(ProcReq r, bool toAll, bool ordered) : Bridge<IO>{r}, _toAll{toAll}, _ordered{ordered} {}
+  MPIBridge(ProcReq r, bool toAll, bool ordered)
+      : Bridge<IO>{r}, _toAll{toAll}, _ordered{ordered} {}
 
   // expects  this->parHandle() != nullptr &&
   //          this->parHandle()->inRange() && this->par().nProc()>0

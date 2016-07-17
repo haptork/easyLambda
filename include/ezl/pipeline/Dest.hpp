@@ -20,11 +20,10 @@
 #include <ezl/helper/Karta.hpp>
 
 namespace ezl {
-namespace detail {
 
 template <typename T> class Source;
 class Par;
-
+class Task;
 /*!
  * @ingroup base
  * Defines basic functionality and data flow for the recieving end of a
@@ -74,26 +73,48 @@ public:
    * @precondition: should be called with a shared_ptr object and
    *                that shapred_ptr should be passed as self.
    * */
-  void prev(std::shared_ptr<Source<Type>> pr,
+  virtual bool prev(std::shared_ptr<Source<Type>> pr,
             std::shared_ptr<Dest<Type>> self) {
-    if (!pr) return;
+    if (!pr) return false;
     assert(self.get() == this && "the self shared object needs to be passed");
     auto id = pr->id();
     if (_prev.find(id) == std::end(_prev)) {
-      _prev[id] = pr;
-      pr->next(self, pr);
+      auto it = _prev.emplace(id, pr);
+      if (!pr->next(self, pr)) {
+        _prev.erase(it.first);
+        return false;
+      }
     }
+    return true;
   }
 
+  /*!
+   * Remove a unit from prev if present.
+   * */
+  virtual void unPrev(Source<Type>* pr) {
+    if (!pr) return;
+    auto id = pr->id();
+    if (_prev.find(id) != std::end(_prev)) {
+      _prev.erase(id); 
+      pr->unNext(this); 
+    }
+  }
+ 
   const int id() { return _id; }
 
   inline const auto &prev() const { return _prev; }
 
+protected:
+  const auto& sigCount() const { return _sigCount; }
+  auto& decSig() { return _sigCount > 0 ? --_sigCount : _sigCount;}
+  auto& incSig() { return ++_sigCount; }
+  auto sig(int sigCount) { _sigCount = sigCount >= 0 ? sigCount : 0; }
+  auto& sig() { return _sigCount; }
 private:
   std::map<int, std::shared_ptr<Source<Type>>> _prev;
   int _id;
+  int _sigCount {0};
 };
-}
-} // namespace ezl ezl::detail
+} // namespace ezl
 
 #endif // !DEST_EZL_H

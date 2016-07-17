@@ -19,7 +19,6 @@
 #include <ezl/helper/ProcReq.hpp>
 
 namespace ezl {
-namespace detail {
 
 /*!
  * @ingroup base
@@ -41,7 +40,6 @@ private:
   ProcReq _procReq;
 
 };
-}
-} // namespace ezl ezl::detail
+} // namespace ezl
 
 #endif // !TASK_EZL_H
