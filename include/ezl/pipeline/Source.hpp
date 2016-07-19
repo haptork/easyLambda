@@ -72,7 +72,14 @@ public:
       nx->unPrev(this); 
     }
   }
-                      
+    
+  virtual void unNext() {
+    for (auto it : _next) {
+      it.second->unPrev(this);
+    }
+  }
+                   
+
   /*!
    * traverse back from any unit to all the connected root sources.
    *

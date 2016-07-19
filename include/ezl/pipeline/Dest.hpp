@@ -100,6 +100,12 @@ public:
     }
   }
  
+  virtual void unPrev() {
+    for (auto it : _prev) {
+      it.second->unNext(this);
+    }
+  }
+
   const int id() { return _id; }
 
   inline const auto &prev() const { return _prev; }

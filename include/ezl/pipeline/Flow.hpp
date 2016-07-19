@@ -95,6 +95,13 @@ public:
     }
   }
 
+  virtual void unNext() final override {
+    for (auto& it : _flnext) {
+      for (auto &jt : _last) jt.second->unNext(it.second.get());
+    }
+    _flnext.clear();
+  }
+
   virtual bool prev(std::shared_ptr<Source<I>> pr,
                     std::shared_ptr<Dest<I>> self) final override {
     flprev(pr);
@@ -117,6 +124,18 @@ public:
     if (_flprev.find(id) != std::end(_flprev)) {
       _flprev.erase(id);
     }
+  }
+
+  virtual void unPrev() final override {
+    for (auto& it : _flprev) {
+      for (auto &jt : _first) jt.second->unPrev(it.second.get());
+    }
+    _flprev.clear();
+  }
+
+  void unlink() {
+    unPrev();
+    unNext();
   }
 
   virtual void dataEvent(const itype &data) final override {}

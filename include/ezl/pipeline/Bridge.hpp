@@ -99,6 +99,11 @@ public:
   virtual void pull() override final {}
   virtual std::vector<Task *> branchTasks() override final { return forwardTasks(); }
 
+  void unlink() {
+    this->unPrev();
+    this->unNext();
+  }
+
 protected:
   inline const auto& parHandle() const { return _parHandle; }
 private:

@@ -170,9 +170,19 @@ public:
     return Dest<I2>::prev(pr, self);
   }
  
-  void unPrev(Source<I1>* pr) override final { Dest<I1>::unPrev(pr); }
+  virtual void unPrev(Source<I1>* pr) override final { Dest<I1>::unPrev(pr); }
  
-  void unPrev(Source<I2>* pr) override final { Dest<I2>::unPrev(pr); }
+  virtual void unPrev(Source<I2>* pr) override final { Dest<I2>::unPrev(pr); }
+
+  virtual void unPrev() override final {
+    Dest<I1>::unPrev();
+    Dest<I2>::unPrev();
+  }
+
+  void unLink() {
+    unPrev();
+    Source<otype>::unNext();
+  }
 
 private:
   void _dataEnd(int) {

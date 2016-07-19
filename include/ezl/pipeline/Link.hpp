@@ -77,6 +77,10 @@ public:
     return roots;
   }
 
+  void unlink() {
+    this->unPrev();
+    this->unNext();
+  }
   /*!
    * implementation for returning all the tasks in the pipeline.
    * */
