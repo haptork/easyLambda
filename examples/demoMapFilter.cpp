@@ -30,23 +30,24 @@ private:
 
 // returning zero to multiple rows can be done by simply
 // returning a vector of values.
+// Valid for all units inclding reduce and reduceAll.
 auto f(int x) {
   return std::vector<int>{1, x};
 }
 
 // make_tuple to explicitly return a vector as a column
 // rather than multiple rows.
+// Valid for all units inclding reduce and reduceAll.
 auto fvec(int x) {
-  return make_tuple(std::vector<int>{1, x});
+  return std::make_tuple(std::vector<int>{1, x});
 }
 
 void demoMapFilter() {
-  using std::string;
   using std::tuple;
   using std::vector;
   using std::array;
   using std::make_tuple;
-  using namespace std::string_literals;
+  using std::to_string;
 
   // for more on rise with fromMem see `demoIO.cpp`
   // returns row(s) of type int, char and float
@@ -56,7 +57,7 @@ void demoMapFilter() {
   // filter at the end is to show columns at the end.
   ezl::flow(pipe1)
     .map<1, 2>([](auto num, auto ch) { // lambda with auto as UDF
-      return (std::to_string(num)); 
+      return (to_string(num)); 
     })                                 // result is appended to input cols
     .map<4>(Op()).colsTransform()      
     .filter([](int, char, float, size_t, long) {

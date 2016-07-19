@@ -12,14 +12,16 @@
 #include <stdexcept>
 #include <tuple>
 #include <vector>
+
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/reduceAlls.hpp>
-#include <ezl/algorithms/filters.hpp>
 
-using namespace std;
+using std::array;
+using std::tuple;
+using std::vector;
 
 // AOS params, vector of tuples value type.
 int f(char ch, int i, const vector<tuple<array<float,2>>>& v) {

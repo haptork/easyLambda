@@ -5,7 +5,7 @@
  * run with following cmd from project directory to check the results.
  * `mpirun -n 1 ./bin/demoIO`
  *
- * add dump to any unit to check rows coming out of it.
+ * add dump() to any unit to check rows coming out of it.
  * 
  * For more io see `demoFromFile` and `demoRise` as well.
  * */
@@ -27,25 +27,27 @@ void demoFromMem(std::string outFile) {
   using std::tuple;
   using std::make_tuple;
 
-  // loads every integer as a row.
-  // split() shares the rows among parallel processes
+  // loads every integer as a row.  split() shares the rows among processes.
+  // The default is not split and run the complete data in every process.
   ezl::rise(ezl::fromMem({1, 2, 3}).split())
     .dump(outFile, "fromMem with split")
     .run();
 
   vector<tuple<int, char>> a;
-  a.emplace_back(make_tuple(4, 'c'));
+  a.emplace_back(4, 'c');
   auto buf = ezl::fromMem(a).split();
   auto ld = ezl::rise(buf)
              .dump(outFile, "fromMem from lvalue vector")
              .run();
+
+  // run again
   a.clear(); 
-  a.emplace_back(make_tuple(5, 'd'));
+  a.emplace_back(5, 'd');
 
   ezl::flow(ld).run();
 
-  // from rvalue
-  buf.buffer(vector<tuple<int, char>>{make_tuple(6,'e')}).split(false);
+  // run again with rvalue
+  buf = buf.buffer(vector<tuple<int, char>>{make_tuple(6,'e')}).split(false);
   ezl::flow(ld).run();
 
   auto mem = ezl::fromMem(array<float, 5>{{4.1, 2.1, 3.1, 1.1, 0.1}});

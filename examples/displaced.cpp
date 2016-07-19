@@ -54,7 +54,7 @@ void displaced(int argc, char* argv[]) {
   }
 
   // loading first frame atoms in the memory partitioned on atoms-id.
-  auto buffer = ezl::rise(ezl::fromFile<int, std::array<float, 3>, int>(argv[1])
+  auto buffer = ezl::rise(ezl::fromFile<int, array<float, 3>, int>(argv[1])
                             .cols({1, 3, 4, 5, 6})  // id, coords
                             .lammps())
                     .filter(ezl::tautology()).prll<1>(1.0)

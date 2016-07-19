@@ -1,11 +1,12 @@
-/*
+/*!
  * @file
  * demo for the column selection.
  *
- * UDF term is used for functions used inside map, filter or other units.
+ * UDF (user defined function) is used for functions used inside map, filter
+ * or other units.
  * 
  * For demonstration the pipelines are just built.
- * Replace .build() with .run() and add .dump() in any unit to check the rows.
+ * Replace .build() with .run() & add .dump() in any unit to check output rows.
  * */
 #include <iostream>
 #include <stdexcept>
@@ -17,10 +18,13 @@
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
 
-// to see more on rise and fromMem, see `demoIO`
-// the integers in the angular brackets after map <1, 1, 0> is bool mask select
-// here first and two cols are selected, third is dropped. It is equivalent to
-// <1,2>. 
+/*!
+ * to see more on rise and fromMem, see `demoIO`
+ * the integers in the angular brackets after map <1, 1, 0> is bool mask select,
+ * 1 implies select, 0 implies drop. Here first and second cols are selected,
+ * third is dropped. It is equivalent to <1,2>. You can use either integer
+ * select of boolean select, ezl figures it out automatically.
+ * */
 auto mappy() {
   using std::make_tuple;
   using namespace std::string_literals;
@@ -30,12 +34,13 @@ auto mappy() {
            });
 }
 
-// In the following examples, filter is used just to show the types that
-// map is passing on.
+// In the following examples, filter is used just to show the output column 
+// types that map is passing ahead.
 void demoColumns() {
   using std::string;
-  // colsTransform replaces the input cols selected with UDF resulting cols
-  // here 1,2 cols are replaced with string type
+  // colsTransform replaces the selected input cols with UDF resulting cols
+  // here 1,2 cols selected in mappy are replaced with string type returned
+  // by UDF.
   mappy().colsTransform()
       .filter([](string, float) {
         return true;

@@ -29,26 +29,33 @@ void demoFromFile() {
   const std::string lammpsFile = "data/lammps/dump.txt";
   const std::string outFile = "data/output/demoFromFile.txt";
 
-  // all the rows that have column convertible to column types specified
-  // are read. File(s) data is equally divided among processes available.
-  // no properties are set to uses defaults such as '\n' for rowSeparator,
-  // " " for columnSeparator, strict schema (rows that are not of same size
-  // as columns are ignored), runs on all available processes etc.
-  // dump is for checking the results, when running on multiple processes
+  // all the rows in the files that have columns that can be converted to column
+  // types specified in template parameters, are read. By default, the data is
+  // equally divided among processes available.  If no properties are set the
+  // defaults are used such as '\n' for rowSeparator, " " for columnSeparator,
+  // strict schema (rows that are not of same size as columns are ignored, if
+  // set to noStrict() then either default ctor / nulls are added for missing
+  // columns and extra columns are simply ignored).
+  //
+  // dump is added for checking the results. When running on multiple processes
   // each process writes its own outFile with process rank prepended.
-  ezl::rise(ezl::fromFile<string, array<float, 2>>(inFiles)).dump(outFile, "\n -- one")
-    .run();
+  ezl::rise(ezl::fromFile<string, array<float, 2>>(inFiles))
+      .dump(outFile, "\n -- one")
+      .run();
 
-  // shows various properties like
+  // shows various properties
   ezl::rise(
       ezl::fromFile<float, int, string>(inFiles)
           .addFileName()        // file name at the end of each row.
           .colSeparator("\t, ") // either of '\t', ',' or ' ' as colSeparator
-          .tillEOF()            // A file is read till end by a process.
+          .tillEOF()            // Files are shared instead of data in parallel
+                                // so each file is fully read by a single process.
           .cols({3, 2, 4})      // column indices to pick from each row
           .top(5)               // limit to n rows from the top.
+          .maxFilesToRead(2)    // maximum files to read.
           .noStrict()           // select even if columns are less or more
                                 // filling with default value if cols are less.
+                                // ignoring cols if are more
       )
       .dump(outFile, "\n -- two")
       .run();

@@ -22,27 +22,29 @@
 
 void icount(int argc, char* argv[]) {
   using namespace ezl;
-  using std::vector;
+  using std::array;
+  using std::string;
   using std::tuple;
+  using std::vector;
 
   if (argc < 5) {
     std::cerr << "Please give arguments as fileIn, latConst, origin, bcc/fcc, "
                  "output file tag(optional), check source for defaults.\n";
     return;
   }
-  std::string ftag = "";
-  if (argc > 5) ftag = std::string{argv[5]};
+  string ftag = "";
+  if (argc > 5) ftag = string{argv[5]};
 
-  const std::string outFile = "data/output/icount" + ftag + ".txt";
+  const string outFile = "data/output/icount" + ftag + ".txt";
   const float toleranceRatio = 0.3;
 
   auto latConst = float(std::stof(argv[2]));
   auto o = std::stof(argv[3]);
-  auto origin = std::array<float, 3> {{o, 0, 0}};
+  auto origin = array<float, 3> {{o, 0, 0}};
   auto obj = AddOffset(latConst, argv[4], origin);
 
   // frame, coords
-  auto reader = fromFile<int, std::array<float, 3>>(argv[1])
+  auto reader = fromFile<int, array<float, 3>>(argv[1])
                   .lammps().cols({6, 3, 4, 5});
 
   rise(reader)

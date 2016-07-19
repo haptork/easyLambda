@@ -7,7 +7,6 @@
  * For demonstration the pipelines are just built.
  * Replace .build() with .run() and add .dump() in any unit to check the rows.
  * */
-#include <array>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -19,21 +18,17 @@
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/fromFile.hpp>
 #include <ezl/algorithms/reduces.hpp>
-#include <ezl/algorithms/filters.hpp>
 
 auto f(long res, char ch, int n, float f) {
   return res + 1;
 }
 
 void demoReduce() {
-  using std::vector;
-  using std::array;
+  using std::string;
   using std::tuple;
-  using std::make_tuple;
-  using std::tie;
-  using namespace std::string_literals;
+  using std::vector;
 
-  const std::string inFile = "data/fromFileTests/test1.txt";
+  const string inFile = "data/fromFileTests/test1.txt";
 
   vector<tuple<int, char, float>> inp;
   inp.emplace_back(2, 'c', 1.F);
@@ -64,13 +59,13 @@ void demoReduce() {
   // with same value of certain selected columns in a input file are read by
   // the same process in a multi-process run.  
   // see `demoFromFile` for more on this.
-  ezl::rise(ezl::fromFile<std::string, int, float>(inFile)
+  ezl::rise(ezl::fromFile<string, int, float>(inFile)
                           .cols({"name", "num", "score"})
                           .ordered<1>())
     .reduce<1>(ezl::sum(), 0, 0.F) // sums the value cols.
       .ordered()
       .inprocess()
-    .filter([](std::string, int, float) { return true; })
+    .filter([](string, int, float) { return true; })
     .build();
 
   // The example shows a useful idiom.
@@ -84,7 +79,6 @@ void demoReduce() {
                     .reduce<1>(ezl::count(), 0LL) // counts in process rows.
                       .inprocess()
                     .reduce<1>(ezl::sum(), 0LL) // sums the counts
-                    //.filter(ezl::tautology())
                       .prll(1., ezl::llmode::all | ezl::llmode::task)
                     .runResult();
 
