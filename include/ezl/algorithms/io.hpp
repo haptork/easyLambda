@@ -184,21 +184,22 @@ public:
     _vDataHandle = &_vDataVal;
   }
 
-  auto& buffer(const T &source) {
+  auto buffer(const T &source) {
     _isVal = false;
     _vDataHandle = &source;
+    return std::move(*this);
   }
 
-  auto& buffer(const T &&source) {
+  auto buffer(const T &&source) {
     _isVal = true;
     _vDataVal = std::move(source);
     _vDataHandle = &_vDataVal;
-    return *this;
+    return std::move(*this);
   }
 
-  auto& split(bool isShard = true) {
+  auto split(bool isShard = true) {
     _isSplit = isShard;
-    return *this;
+    return std::move(*this);
   }
 
   auto operator () (int pos, std::vector<int> procs) { 
@@ -216,7 +217,7 @@ public:
     _last = std::next(std::begin(*_vDataHandle), edges[1] - 1);
   }
 
-  // A variant will be much better
+  // A variant / optional will be much better than tie
   int i = 0;
   auto operator () () {
     auto res = std::tie((*_cur), _more); // no copies
