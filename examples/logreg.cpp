@@ -151,8 +151,46 @@ int main(int argc, char *argv[]) {
  *  ---      |---  |---  |---   |
  *  *time(s)*| 120 | 63  | 38   |
  * 
- * benchmark results: Linux(nfs-3); input: 2.9GBs; units: secs
+ * benchmark results: Linux(lustre); input: 48GBs; iterations: 10; units: secs
+ *  *nprocs* | 1x24      | 2x24      | 4x24      | 8x24      | 16x24    |
+ *  ---      |---        |---        |---        | ---       | ---      |
+ *  *time(s)*| 335       | 182       | 98        | 55        | 31       |
+ *
+ * benchmark results: Linux(lustre); input: weak; iterations: 10; units: secs
+ *  *nprocs* | 1x24      | 2x24      | 4x24      | 8x24      | 16x24    |
+ *  *input*  | 3GB       | 6GB       | 12GB      | 24GB      | 48GB     |
+ *  ---      |---        |---        |---        | ---       | ---      |
+ *  *time(s)*| 22        | 22        | 26        | 26        | 29       |
+ *  ---      |---        |---        |---        | ---       | ---      |
+ *  *nprocs* | 4x12      | 8x6       | 8x12      | 16x6      |
+ *  *input*  | 6GB       | 6GB       | 12GB      | 12GB      |
+ *  ---      |---        |---        |---        | ---       |
+ *  *time(s)*| 23        | 23        | 27        | 26        |
+ *
+ * benchmark results: Linux(nfs-3); input: 48GBs; iterations: 10; units: secs
+ *  *nprocs* | 2x12      | 4x12      | 8x12      | 16x12     |
+ *  ---      |---        |---        |---        | ---       |
+ *  *time(s)*| 520       | 260       | 140       | 75        |
+ *
+ * benchmark results: Linux(nfs-3); input: weak; iterations: 10; units: secs
+ *  *nprocs* | 2x12      | 4x12      | 8x12      | 16x12     |
+ *  *input*  | 3GB       | 6GB       | 12GB      | 24GB      |
+ *  ---      |---        |---        |---        | ---       |
+ *  *time(s)*| 31        | 31        | 34        | 32 / 90   | 
+ *  ---      |---        |---        |---        | ---       |
+ *  *nprocs* | 4x6       | 8x6       | 16x6      |
+ *  *input*  | 3GB       | 6GB       | 12GB      |
+ *  ---      |---        |---        |---        |
+ *  *time(s)*| 31        | 31        | 65 / 31   |
+ *
+ *  **Remark:** the value with 16 x 12 / 16 x 6 sometimes takes long time 
+ *              (~90secs / 65secs), usually when benchmark is run for the
+ *               first time.
+ *
+ * benchmark results: Linux(nfs-3); input: 2.9GBs; iterations: 100; units: secs
  *  *nprocs* | 1x12      | 2x12      | 4x12      | 8x12      |  12x12   |
  *  ---      |---        |---        |---        | ---       |          |
  *  *time(s)*| 190       | 91        | 50        | 36        |  34      |
+ *
+ *
  */
