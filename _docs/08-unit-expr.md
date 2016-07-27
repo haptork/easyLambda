@@ -186,3 +186,21 @@ for reduceAll<3,1> can be any of the following:
   etc. The **bunch(n)** property calls the function with n number of new rows each
   time that many rows arrive, the last call to the function is with whatever rows
   are left and may have lesser number of rows.
+
+  Reduction operations keep the results for each key in buffer till the end of
+  data. However, if we can guarantee about ordering of data on key columns then
+  the reduction operation can flush the results of a key to the next unit before
+  end of data. In other words if we know that data is arranged in such a way that
+  all the rows with the same keys are next to each other then the reduce only
+  holds data for the current key and as soon as a new key appears it sends the
+  results for the existing key to the next unit. It is very common to have
+  ordered data especially in simulations and experiments.
+
+## zip
+
+This is similar to functional programming zip (with key) or relational data-base join.
+It zips two streams together. It takes as argument the other flow object as returned
+from build or run argument. The default output is all the columns of first stream
+followed by all the columns of the second stream. However, column selection can be
+used as with other units to select columns to output. Key can be provided for both
+the strems together or separately as shown in the demoZip example.

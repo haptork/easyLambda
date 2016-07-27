@@ -5,10 +5,32 @@ author_profile: true
 
 {% include base_path %}
 
-<h3 class="archive__subtitle">Recent Posts</h3>
+<div>
+EasyLambda is a header only C++14 high-performance library for processing data 
+streams in parallel with functional list operations (map, filter, reduce, scan, zip)
+that are tied together in type-safe data-flow. It has declarative interface with 
+novel column selection for better composition of functions, provides
+MPI parallelism without any parallel details in user code, provides generic 
+algorithms for I/O and frequently used computations on data to make data-processing
+with C++ easy and fast.
+</div>
+<p>
+The parallelism is implicit by the semantics of data-flow and map-reduce
+and can be controlled as a declarative property of an operation. The
+interface of the library is minimal and non-redundant. The library scales well
+to hundreds of processes in a HPC cluster, on multiple cores on a single CPU,
+on cloud cluster and incurs little overhead on a serial run. The same program
+can be run in any of the architecture without any changes.
+</p>
+<p>
+Programming with pure functional data-flow is similar to the way we think in
+spreadsheet programs, SQL queries or declarative commands like gawk, 
+cut etc, without any restrictions (you can apply any C/C++ function to data columns). 
+</p>
+<p>
+The site aims to be a
+comprehensive guide for easyLambda such that a C / C++ programmer of any level
+of experience can follow the material and get started using easyLambda.
 
-{% for post in paginator.posts %}
-  {% include archive-single.html %}
-{% endfor %}
-
-{% include paginator.html %}
+Begin with getting started link at the top.
+</p>

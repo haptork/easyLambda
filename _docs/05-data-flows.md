@@ -1,7 +1,7 @@
 ---
 title: "Out of the World Examples"
-permalink: /docs/out-of-the-world/
-excerpt: "Some hairy examples"
+permalink: /docs/data-flow-eg/
+excerpt: "Some examples on data-flow"
 ---
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}

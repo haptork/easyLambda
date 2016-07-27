@@ -4,7 +4,7 @@ main:
     url: /docs/welcome/
 
   - title: "Reference"
-    url: /docs/starting-data-flow/
+    url: /docs/starting-dataflow/
 
   - title: "Source Repository"
     url: https://www.github.com/haptork/easyLambda/
@@ -36,11 +36,10 @@ docs:
         url: /docs/hello-world/
       - title: "Real world examples"
         url: /docs/real-world/
-      - title: "Out of the world examples"
-        url: /docs/out-of-the-world/
+      - title: "Data-flow examples"
+        url: /docs/data-flow-eg/
 
   - title: Reference
-    url: /docs/references/
     children:
       - title: "Starting a data-flow"
         url: /docs/starting-dataflow/

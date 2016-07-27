@@ -36,21 +36,32 @@ excerpt: "Refernce on ways to start a data-flow"
   data-types of its input parameters without any source. A data-flow that has no
   source does not do anything when run. 
 
-  - Properties (only if continuing from prior flow):
-    1. [dump]({{ base_path }}/docs/dump-expr/)
+  - Properties (only if continuing from prior flow): no properties.
 
   {% highlight cpp %}
   auto fl = ezl::flow<char, int>()
               .map<2>([](int i) { return i * i; })
               .build();
+  // fl is shared_ptr of type:
+  // ezl::Flow<tuple<char, int>, tuple<char, int, int>>
+  // The first tuple has cols of input stream and second has columns of output
+  // A flow can be built and returned from a function.
 
-  ezl::flow(fl).dump()
-  .filter([](char, int, int) { 
-    return true; 
-  })
-  .run(); // doesn't do anything as there isn't a rise yet
+  auto fl2 = ezl::flow(fl)
+               .filter([](char, int, int) { 
+                 return true; 
+               })
+              .run(); // doesn't do anything as there isn't a rise yet
+  // fl2 is shared_ptr of type:
+  // ezl::Flow<tuple<char, int, int>, tuple<char, int, int>>
   {% endhighlight %}
-
+  
+  An `ezl::Flow` object can be added to a flow with `addFlow` or `branchFlow`
+  given that the output columns match the input columns of the Flow object or
+  some other object can be added to recieve the output stream of the Flow object
+  with `ezl::flow(...)` as done in above example. Check the next section for
+  more on these.
+  
   Check the [code
   example](https://github.com/haptork/easyLambda/blob/e496a3e3070b806e8c48124d3454543c4cebc9b7/examples/demoFlow.cpp)
   for more.

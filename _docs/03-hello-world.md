@@ -6,8 +6,7 @@ excerpt: "basic examples with ezl"
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
 
-We discuss basic set of rules that ezl is based on with the help of
-simple examples.
+The section explains basic set of functionality with the help of simple examples.
 
 Let's look at a minimal Hello world data-flow with ezl.
 
@@ -18,24 +17,24 @@ rise(fromMem({"Hello world"})).dump()
   .run();
 {% endhighlight %}
 
-Every ezl library call is inside ezl namespace. In the above example we have
-namespace qualifier for each call at the beginning such as `using ezl::rise`.
-The other ways can be - qualifying each call separately such as
-`ezl::rise(...)` or declaring `using namespace ezl;` at the top. We will use
-either of the first two to make it clear which calls are ezl calls.
-
-Let's look at each of the step in the above program. We first have
+Let's look at each of the steps in the above program. We first have
 a rise which is a higher order function i.e. it takes another function as input. 
 Rise is the original data source in a data-flow. It produces the
 output with the help of a function which takes no input parameter.
 Here, we are passing `fromMem` library function to it. This function
-can take a list / container variable or an initialize list with values, it
+can take a list / container variable or an initializer list with values, it
 produces a row for each item in the container. A container can be a vector,
-array, map etc. We have added dump property to the rise unit. A
+array etc. We have added dump property to the rise unit. A
 dump can be added to any unit in the dataflow and it displays the output of the
 unit on the console. The dump expression takes two optional string parameters,
 first for output file name and other for header message at the top of the file.
 At the end we call run which executes the data data-flow.
+
+Every ezl library call is inside ezl namespace. In the above example we have
+namespace qualifier at the beginning such as `using ezl::rise`.
+The other ways can be - qualifying each call separately such as
+`ezl::rise(...)` or declaring `using namespace ezl;` at the top. We will use
+either of the first two to make it clear which calls are ezl calls.
 
 Let's look at another example which does some calculation as well. Following is 
 an ezl program to find the summation of numbers with their square root.
