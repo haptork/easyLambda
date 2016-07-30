@@ -34,8 +34,8 @@ void demoFromFile() {
   // equally divided among processes available.  If no properties are set the
   // defaults are used such as '\n' for rowSeparator, " " for columnSeparator,
   // strict schema (rows that are not of same size as columns are ignored, if
-  // set to noStrict() then either default ctor / nulls are added for missing
-  // columns and extra columns are simply ignored).
+  // stictrSchema is set to false then either default ctor / nulls are added
+  // for missing columns and extra columns are simply ignored).
   //
   // dump is added for checking the results. When running on multiple processes
   // each process writes its own outFile with process rank prepended.
@@ -51,9 +51,9 @@ void demoFromFile() {
           .tillEOF()            // Files are shared instead of data in parallel
                                 // so each file is fully read by a single process.
           .cols({3, 2, 4})      // column indices to pick from each row
-          .top(5)               // limit to n rows from the top.
-          .maxFilesToRead(2)    // maximum files to read.
-          .noStrict()           // select even if columns are less or more
+          .limitRows(5)         // limit to n rows from the top.
+          .limitFiles(2)        // maximum files to read.
+          .strictSchema(false)  // select even if columns are less or more
                                 // filling with default value if cols are less.
                                 // ignoring cols if are more
       )
@@ -65,7 +65,7 @@ void demoFromFile() {
       ezl::fromFile<int>(inFile)
           .colSeparator("")  // empty string for whole row as single column.
           .rowSeparator('s') // whiteSpace(\t\n ) as row separator.
-          .noShare()         // each process reads all the file(s) data.
+          .share(false)      // each process reads all the file(s) data.
       )
       .prll(0.75) // all prll options are valid as with any rise
       .dump(outFile, "\n -- three")

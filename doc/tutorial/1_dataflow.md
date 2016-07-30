@@ -323,7 +323,7 @@ auto srcFlowFile = ezl::rise(ezl::fromFile<double>(fileName)).build();
 
 The rise function `fromFile` can work with multi-column files as well. It is
 quite comprehensive. It takes care of errors in reading, it has option to have
-strictSchema (reject rows that have different size of column) or noStrictSchema
+strictSchema (reject rows that have different size of column) or set it to false
 (fill in defaults if less cols, or ignore if more cols), parallel reading etc.
 Check [demoFromFile](../../examples/demoFromFile.cpp) for more on these options.
 

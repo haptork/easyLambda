@@ -78,12 +78,12 @@ template <class... Ts> auto dumpMem() {
  *
  * Example usage: 
  * @code
- * load(ezl::loadFileNames("*.jpg"))
+ * load(ezl::fromFileNames("*.jpg"))
  * .map([](string imageFile) [] { return cv::imread(imageFile); ).build()
  * @endcode
  *
  * */
-class loadFileNames {
+class fromFileNames {
 public:
   /*!
    * ctor
@@ -92,36 +92,41 @@ public:
    *                among the available processes, else all the processes
    *                work on full list.
    * */
-  loadFileNames(std::string fpat, bool isSplit = true)
+  fromFileNames(std::string fpat, bool isSplit = true)
       : _fpat{fpat}, _isSplit{isSplit} {}
 
   auto operator () (int pos, std::vector<int> procs) { 
-    _fnames = detail::vglob(_fpat);
-    if(_isSplit) _share(pos, procs.size());
+    _fnames = detail::vglob(_fpat, _limitFiles);
+    if(!_fnames.empty() && _isSplit) _share(pos, procs.size());
   }
 
   std::vector<std::string> operator () () {
     return std::move(_fnames);
   }
 
-  auto& split() {
-    _isSplit = true;
-    return *this;
+  auto split(bool isSplit = true) {
+    _isSplit = isSplit;
+    return std::move(*this);
   }
+
+  auto limitFiles(size_t count) {
+    _limitFiles = count;
+    return std::move(*this);
+  }
+
 private:
-  void _share(int pos, int total) {
+  void _share(int pos, size_t total) {
     auto len = _fnames.size();
-    auto share = int(len / total);
+    auto share = size_t(len / total);
     if (share == 0) share = 1;
-    auto rBeginFile = share * pos;
-    auto rEndFile = share * (pos + 1) - 1;
-    if (rEndFile > int(len - 1) || pos == total - 1) {
+    size_t rBeginFile = share * pos;
+    size_t rEndFile = (share * (pos + 1)) - 1;
+    if (rEndFile > (len - 1) || pos == total - 1) {
       rEndFile = len - 1;
     }
     // now removing not required _fnames from the list
-    if (rBeginFile > int(len - 1)) {
+    if (rBeginFile > (len - 1)) {
       _fnames.empty();
-      rBeginFile = -1;
     } else {
       rEndFile -= rBeginFile;
       for (auto i = 0; i <= rEndFile; i++) {
@@ -134,6 +139,7 @@ private:
 
   std::string _fpat;
   bool _isSplit;
+  size_t _limitFiles{0};
   std::vector<std::string> _fnames;
 };
 
@@ -197,8 +203,8 @@ public:
     return std::move(*this);
   }
 
-  auto split(bool isShard = true) {
-    _isSplit = isShard;
+  auto split(bool isSplit = true) {
+    _isSplit = isSplit;
     return std::move(*this);
   }
 
@@ -212,7 +218,7 @@ public:
       _last = std::end(*_vDataHandle);
       return;
     }
-    auto edges = share(pos, procs.size(), _vDataHandle->size());
+    auto edges = _share(pos, procs.size(), _vDataHandle->size());
     _cur = std::next(std::begin(*_vDataHandle), edges[0]);
     _last = std::next(std::begin(*_vDataHandle), edges[1] - 1);
   }
@@ -230,7 +236,7 @@ public:
   }
 
 private:
-  auto share(int pos, int total, size_t len) {
+  auto _share(int pos, int total, size_t len) {
     auto share = len / total;
     if (share == 0) share = 1;
     auto first = share * pos;
@@ -298,14 +304,14 @@ public:
     }
   }
 
-  auto& times(int64 t) {
+  auto times(int64 t) {
     _times = t;
-    return *this;
+    return std::move(*this);
   }
 
-  auto& split(bool isSplit = true) {
+  auto split(bool isSplit = true) {
     _isSplit = isSplit;
-    return *this;
+    return std::move(*this);
   }
 private:
   int64 _share(int pos, int total) {

@@ -85,7 +85,7 @@ void fromFileRowMaxTest() {
   using ezl::Par;
 
   auto r1 = ezl::fromFile<string, int, float, string>("data/fromFileTests/test?.txt");
-  r1 = r1.addFileName().top(2);
+  r1 = r1.addFileName().limitRows(2);
   auto t1 =
       std::make_shared<Rise<decltype(r1)>>(ProcReq{}, std::move(r1), nullptr);
   auto count = 0;
@@ -119,7 +119,7 @@ void fromFileStrictSchemaTest() {
   assert(count == 6);
 
   auto r2 = ezl::fromFile<string, int, float>("data/fromFileTests/test?.txt");
-  r2 = r2.noStrict();
+  r2 = r2.strictSchema(false);
   auto t2 =
       std::make_shared<Rise<decltype(r2)>>(ProcReq{}, std::move(r2), nullptr);
 
@@ -141,7 +141,7 @@ void fromFileStrictSchemaTest() {
   assert(count == 6);
 
   auto r4 = ezl::fromFile<string, int>("data/fromFileTests/test?.txt");
-  r4 = r4.noStrict();
+  r4 = r4.strictSchema(false);
   auto t4 =
       std::make_shared<Rise<decltype(r4)>>(ProcReq{}, std::move(r4), nullptr);
 

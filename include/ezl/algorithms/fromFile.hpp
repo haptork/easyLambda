@@ -141,7 +141,7 @@ struct FromFileProps {
   bool addFileName{false};
   std::vector<std::string> fnames;
   bool share{true};
-  int rowsMax{0};
+  size_t rowsMax{0};
   std::string fpat = "";
   size_t filesMax{0};
 };
@@ -243,8 +243,8 @@ public:
     return std::move(*this);
   }
 
-  auto noStrict(bool flag = true) {
-    _props.strict = !flag;
+  auto strictSchema(bool isStrict = true) {
+    _props.strict = isStrict;
     return std::move(*this);
   }
 
@@ -253,7 +253,7 @@ public:
     return std::move(*this);
   }
 
-  auto maxFilesToRead(size_t count) {
+  auto limitFiles(size_t count) {
     _props.filesMax = count;
     return std::move(*this);
   }
@@ -268,12 +268,12 @@ public:
     return std::move(*this);
   }
 
-  auto noShare(bool isShare = false) {
+  auto share(bool isShare = true) {
     _props.share = isShare;
     return std::move(*this);
   }
 
-  auto top(int nRows = 10) {
+  auto limitRows(size_t nRows = 10) {
     _props.rowsMax = nRows;
     return std::move(*this);
   }
@@ -337,7 +337,7 @@ public:
     cumSizes.reserve(_props.fnames.size() + 1);
     for (auto &it : _props.fnames) {
       std::ifstream in(it, std::ifstream::ate | std::ifstream::binary);
-      int len = in.tellg();
+      long long len = in.tellg();
       cumSizes.push_back(total);
       total += len;
     }
@@ -471,6 +471,7 @@ row types are different.");
       _props.fnames.resize(_rEndFile + 1);
     }
   }
+
   bool _sizeCheck(std::vector<std::string> &vstr) {
     if ((_isMask && int(vstr.size()) != _idealSize) ||
         (!_isMask && int(vstr.size()) < _idealSize)) {
@@ -639,16 +640,16 @@ row types are different.");
   ktype curKey, preKey;
 
   I _out;
-  int _cur{-1};
+  long long _cur{-1};
   std::unique_ptr<std::filebuf> _fb{nullptr};
   std::unique_ptr<std::istream> _is{nullptr};
   bool _isMask;
   int _idealSize;
-  int _rBeginFile;
-  int _rEndFile;
+  long long _rBeginFile;
+  long long _rEndFile;
   long long _rBeginByte{0};
   long long _rEndByte{0};
-  int _rowsRead{0};
+  size_t _rowsRead{0};
   int _pos {-1};
 };
 

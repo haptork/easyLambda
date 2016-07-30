@@ -287,7 +287,7 @@ ezl::rise(
 
 fromFile is quite comprehensive it takes care of errors in reading, it has
 option to have strictSchema (reject rows that have different size of column)
-or noStrictSchema (fill in defaults if less cols, or ignore if more cols),
+or set it to false (fill in defaults if less cols, or ignore if more cols),
 parallel read. It can even sort of denormalise or attach a header information
 to every row which is important for simulation dumps where timesteps are
 generally written at the top and rows follows it. Check

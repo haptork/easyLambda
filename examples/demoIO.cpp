@@ -1,6 +1,6 @@
 /*! 
  * @file
- * demo examples for fromMem, kick, loadFileNames, dump, dumpMem.
+ * demo examples for fromMem, kick, fromFileNames, dump, dumpMem.
  *
  * run with following cmd from project directory to check the results.
  * `mpirun -n 1 ./bin/demoIO`
@@ -88,17 +88,17 @@ void demoIO() {
   
   // dumpMem
   auto s = ezl::dumpMem<string>();
-  ezl::rise(ezl::loadFileNames(inFile).split())
+  ezl::rise(ezl::fromFileNames(inFile).split().limitFiles(10))
     .filter(s)
     .run();
 
   vector<tuple<string>> s2;
-  ezl::rise(ezl::loadFileNames(inFile).split())
+  ezl::rise(ezl::fromFileNames(inFile).split())
     .filter(ezl::dumpMem(s2))
     .run();
   
   // a better way to get the results is runResult()
-  auto rows = ezl::rise(ezl::loadFileNames(inFile).split())
+  auto rows = ezl::rise(ezl::fromFileNames(inFile).split())
                 .runResult();
 }
 
