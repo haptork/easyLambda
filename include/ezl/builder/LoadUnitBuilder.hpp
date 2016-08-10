@@ -12,12 +12,12 @@
 #ifndef LOADUNITBUILDER_EZL_H
 #define LOADUNITBUILDER_EZL_H
 
-#define LSUPER DataFlowExpr<LoadUnitBuilder<I, O, A>, A>
+#define LSUPER DataFlowExpr<LoadUnitBuilder<I, Fl>, Fl>
 
 namespace ezl {
 namespace detail {
 
-template <class T, class A> struct DataFlowExpr;
+template <class T, class Fl> struct DataFlowExpr;
 /*!
  * @ingroup builder
  * Builder for `LoadUnit`
@@ -25,23 +25,21 @@ template <class T, class A> struct DataFlowExpr;
  * nearly orthogonal functionality.
  *
  * */
-template <class I, class O, class A> struct LoadUnitBuilder : LSUPER {
+template <class I, class Fl> struct LoadUnitBuilder : LSUPER {
 public:
-  LoadUnitBuilder(std::shared_ptr<I> pr) : _prev{pr} {
-    this->_fl = std::make_shared<A>();
+  LoadUnitBuilder(std::shared_ptr<I> pr, Flow<Fl, std::nullptr_t> fl) : _prev{pr} {
+    this->_fl = fl;
   }
 
-  LoadUnitBuilder(std::shared_ptr<I> pr, std::shared_ptr<A> a) : _prev{pr} {
-    this->_fl = a;
-  }
+  auto _self() { return *this; }
 
-  auto self() { return *this; }
+  auto _buildUnit() { return _prev; }
 
-  auto buildUnit() { return _prev; }
-
+  /*!
+   * returns prev unit in the dataflow
+   * */
   auto prev() { return _prev; }
 
-  O isAddFirst;
 private:
   std::shared_ptr<I> _prev;
 };

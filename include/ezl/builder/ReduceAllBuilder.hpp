@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include <ezl/mapreduce/ReduceAll.hpp>
+#include <ezl/units/ReduceAll.hpp>
 
 #define RASUPER DataFlowExpr<ReduceAllBuilder<I, S, F, O, P, H, A>, A>,\
                 PrllExpr<ReduceAllBuilder<I, S, F, O, P, H, A>>,       \
@@ -31,31 +31,44 @@ template <class T, class O> struct DumpExpr;
 /*!
  * @ingroup builder
  * Builder for `ReduceAll` unit.
- * Employs crtp
  *
+ * Employs CRTP
  * */
 template <class I, class S, class F, class O, class P, class H, class A>
 struct ReduceAllBuilder : RASUPER {
 public:
-  ReduceAllBuilder(F &&f, std::shared_ptr<Source<I>> prev, std::shared_ptr<A> a,
-                   bool adjacent, int bunchsize)
+  ReduceAllBuilder(F &&f, std::shared_ptr<Source<I>> prev, Flow<A, std::nullptr_t> a,
+                   bool adjacent, int bunchsize, bool fix = false, H &&h = H{})
       : _func{std::forward<F>(f)}, _prev{prev}, _adjacent{adjacent},
-        _bunchSize{bunchsize} {
+        _bunchSize{bunchsize}, _fixed{fix}, _h{std::forward<H>(h)} {
     this->prll(Karta::prllRatio);
     this->_fl = a;
   }
 
-  auto& bunch(int bunchSize = 2) {
+  // if the rows need to be sent to the user function once they
+  // reach a certain number. Useful to group by ordering or viewing
+  // partial results before overall
+  // @param bunchSize number of rows to bunch together
+  // @param fixed does the rows in the end need to be passed to user function
+  //              even if they are not the same size as given in bunchSize
+  auto& bunch(int bunchSize = 2, bool fixed = false) {
     if (bunchSize <= 0) {
       _bunchSize = 0;
       return *this;
     }
     _bunchSize = bunchSize;
     _adjacent = false;
+    _fixed = fixed;
     return *this;
   }
 
-  auto& adjacent(int size = 2) {
+  // if the rows need to be sent to the user function in sliding window
+  // fashion once they reach a certain number. Useful for grouping adjacent rows
+  // by ordering such as in central difference, trajectory directions etc.
+  // @param bunchSize the size of the window or number of rows to bunch together
+  // @param fixed whether to call when rows are lesser than window size or not as
+  //              during the beginning or ending of the rows.
+  auto& adjacent(int size = 2, bool fixed = false) {
     if (size <= 0) {
       _bunchSize = 0;
       _adjacent = false;
@@ -63,47 +76,74 @@ public:
     }
     _bunchSize = size;
     _adjacent = true;
+    _fixed = fixed;
     return *this;
   }
 
-  auto& self() { return *this; }
-
+  /*!
+   * internally called by cols and colsDrop
+   * @param NO template param for selection columns 
+   * @return new type after setting the output columns
+   * */
   template <class NO>
   auto colsSlct(NO = NO{}) {
     auto temp = ReduceAllBuilder<I, S, F, NO, P, H, A>{
-      std::forward<F>(this->_func), std::move(this->_prev), std::move(this->_fl), this->_adjacent, this->_bunchSize};
-    temp.props(this->props());
+        std::forward<F>(_func), std::move(_prev), std::move(this->_fl),
+        _adjacent, _bunchSize, _fixed, std::forward<H>(_h)};
+    temp.prllProps(this->prllProps());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
+  /*!
+   * set partition function for partitioning on keys for parallelism.
+   * @param nh partition function that takes tuple of const ref of key column types
+   *           and returns an integer for the partitioning. The default is hash function.
+   * */
   template <class NH>
-  auto hash() {
+  auto partition(NH &&nh) {
     auto temp = ReduceAllBuilder<I, S, F, O, P, NH, A>{
-      std::forward<F>(this->_func), std::move(this->_prev), std::move(this->_fl), this->_adjacent, this->_bunchSize};
-    temp.props(this->props());
+        std::forward<F>(_func), std::move(_prev), std::move(this->_fl),
+        _adjacent, _bunchSize, _fixed, std::forward<NH>(nh)};
+    temp.prllProps(this->prllProps());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
-  auto buildUnit() {
-    _prev = PrllExpr<ReduceAllBuilder>::preBuild(_prev, P{}, H{});
+  /*!
+   * internally called by build
+   * @return shared_ptr of ReduceAll object.
+   * */
+  auto _buildUnit() {
+    _prev = PrllExpr<ReduceAllBuilder>::_preBuild(_prev, P{}, std::forward<H>(_h));
     auto ordered = this->getOrdered();
-    auto obj = std::make_shared<ReduceAll<meta::ReduceAllTypes<I, P, S, F, O>, H>>(
-        std::forward<F>(_func), ordered, _adjacent, _bunchSize);
+    auto obj = std::make_shared<ReduceAll<meta::ReduceAllTypes<I, P, S, F, O>>>(
+        std::forward<F>(_func), ordered, _adjacent, _fixed, _bunchSize);
     obj->prev(_prev, obj);
-    DumpExpr<ReduceAllBuilder, O>::postBuild(obj);
+    DumpExpr<ReduceAllBuilder, O>::_postBuild(obj);
     return obj;
   }
 
+  // returns self / *this
+  auto& _self() { return *this; }
+
+  /*!
+   * returns prev unit in the dataflow
+   * */
   auto prev() { return _prev; }
 
-  std::false_type isAddFirst;
+  /*!
+   * internally used to signal if the next unit will be the first unit in the
+   * dataflow. Usually of false_type.
+   * */
+  std::false_type _isAddFirst;
 private:
   F _func;
   std::shared_ptr<Source<I>> _prev;
   bool _adjacent;
   int _bunchSize;
+  bool _fixed;
+  H _h;
 };
 }
 } // namespace ezl namespace ezl::detail

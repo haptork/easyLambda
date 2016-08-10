@@ -26,7 +26,7 @@
 namespace ezl {
 namespace detail {
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * ReduceAll unit for reducing grouped rows vector into zero, one or many rows.
  * 
  * The UDF can have params of type: tuple of key columns followed by vector of
@@ -44,8 +44,7 @@ namespace detail {
  * See examples for using with builders or unittests for direct use.
  *
  * */
-template <class TypeInfo, class HashScheme>
-              //typename meta::ReduceAllTypes<I, Kslct, Vslct, Func, Oslct>>
+template <class TypeInfo>
 struct ReduceAll : public Link<typename TypeInfo::itype, typename TypeInfo::otype> {
 private:
   struct EqWrapper {
@@ -57,18 +56,20 @@ public:
   using itype = typename TypeInfo::itype;
   using Func = typename TypeInfo::Func;
   using ktype = typename TypeInfo::ktype;
+  using kref = typename TypeInfo::kreftype;
   using buftype = typename TypeInfo::buftype;
   using otype = typename TypeInfo::otype;
-  using maptype = boost::unordered_map<ktype, buftype, HashScheme>;
+  using HashScheme = boost::hash<kref>;
+  using maptype = boost::unordered_map<ktype, buftype>;
 
   static constexpr int osize = std::tuple_size<otype>::value;
 
-  ReduceAll(Func m, bool ordered, bool adjacent, int bunchSize)
+  ReduceAll(Func m, bool ordered, bool adjacent, int bunchSize, bool fixed)
       : _func(m), _ordered(ordered), _adjacent(adjacent),
-        _bunchSize(bunchSize) {}
+        _bunchSize(bunchSize), _fixed{fixed} {}
 
   virtual void dataEvent(const itype &data) final override {
-    auto curKey = meta::slctTupleRef(data, _kslct);
+    kref curKey = meta::slctTupleRef(data, _kslct);
     auto curVal = meta::slctTuple(data, _vslct);
     auto it = _index.find(curKey, _hash, _eq);
     if (it == std::end(_index)) {
@@ -84,8 +85,14 @@ public:
 
 private:
   virtual void _dataEnd(int ) final override {
-    for (auto &it : _index) {
-      if (!_adjacent || meta::coherentSize(it.second) < _bunchSize - 1) {
+    if (_fixed && _bunchSize > 0 && _adjacent) {
+      for (auto &it : _index) {
+        if (meta::coherentSize(it.second) < _bunchSize - 1) {
+          _processReduceAll(it.first, it.second);
+        }
+      }
+    } else if (!_fixed || _bunchSize <= 0 || _adjacent) {
+      for (auto &it : _index) {
         _processReduceAll(it.first, it.second);
       }
     }
@@ -152,6 +159,7 @@ private:
   bool _ordered{false};
   bool _adjacent{false};
   int _bunchSize{0};
+  bool _fixed{false};
   maptype _index;
   HashScheme _hash;
   EqWrapper _eq;

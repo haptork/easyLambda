@@ -20,42 +20,44 @@
 #include <ezl/builder/LoadUnitBuilder.hpp>
 #include <ezl/helper/meta/slct.hpp>
 #include <ezl/helper/meta/slctTuple.hpp>
+#include <ezl/units/NoOp.hpp>
 
 namespace ezl {
 
 template <class T> class Source;
-
 template <int... I>
-using val = ezl::detail::meta::slct<I...>;
-
+using val = detail::meta::slct<I...>;
 template <int... I>
-using key = ezl::detail::meta::slct<I...>;
-
+using key = detail::meta::slct<I...>;
+// start a dataflow from a vector of prior dataflow or units
 template <class I> inline auto flow(std::vector<std::shared_ptr<I>> vpr) {
-  using Fl = Flow<typename I::otype, std::false_type>;
-  auto fl = std::make_shared<Fl>();
-  for (auto& pr : vpr) fl->flprevSet(pr);
-  return detail::LoadUnitBuilder<I, std::true_type, Fl> {vpr[0], fl};
+  auto fl = Flow<typename I::otype, std::nullptr_t>{};
+  auto noop = std::make_shared<NoOp<typename I::otype>>();
+  fl.addFirst(noop);
+  for (auto& pr : vpr) if (pr) pr->next(noop, pr);
+  return detail::LoadUnitBuilder<I, typename I::otype> {noop, fl};
 }
-
+// start a dataflow from a list of prior dataflow or units
 template <class I> inline auto flow(std::initializer_list<std::shared_ptr<I>> vpr) {
   return flow(std::vector<std::shared_ptr<I>> (vpr.begin(), vpr.end()));
 }
-
+// start a dataflow from prior dataflow or units
 template <class I> inline auto flow(std::shared_ptr<I> pr) {
-  return detail::LoadUnitBuilder<I, std::true_type, Flow<typename I::otype, std::false_type>> {pr};
+  auto fl = Flow<typename I::otype, std::nullptr_t>{};
+  auto noop = std::make_shared<NoOp<typename I::otype>>();
+  if (pr) pr->next(noop, pr);
+  fl.addFirst(noop);
+  return detail::LoadUnitBuilder<NoOp<typename I::otype>, typename I::otype> {noop, fl};
 }
-
+// start a dataflow without rise by mentioning type of input stream
 template <class... Is> inline auto flow() {
   using I = typename detail::meta::SlctTupleRefType<std::tuple<Is...>>::type;
   return flow(std::shared_ptr<Source<I>>{nullptr});
 }
-
+// start a dataflow with a rise
 template <class F> inline auto rise(F&& sourceFunc) {
-  return detail::RiseBuilder<F, Flow<int, std::false_type>>{
-      std::forward<F>(sourceFunc)};
+  return detail::RiseBuilder<F>{std::forward<F>(sourceFunc)};
 }
-
 } // namespace ezl
 
 #endif // ! EZL_EZL_H

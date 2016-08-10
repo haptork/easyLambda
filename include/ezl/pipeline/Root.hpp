@@ -63,8 +63,14 @@ public:
       _pullData();
     }
     for (auto &it : this->next()) {
-      it.second->signalEvent(0);
+      it.second->signalEvent(1);
     }
+  }
+  // signalling for beginning
+  virtual void prePull() override final {
+    for (auto &it : this->next()) {
+      it.second->signalEvent(0);
+    }    
   }
 
 private:

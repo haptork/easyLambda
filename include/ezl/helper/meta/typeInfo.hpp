@@ -175,6 +175,7 @@ struct ReduceAllTypes {
   using Vslct = V;
   using Func = F;
   using ktype = typename SlctTupleType<I, K>::type;
+  using kreftype = typename SlctTupleRefType<I, K>::type;
   using vtype = typename SlctTupleType<I, V>::type;
   using buftype = typename BufType<F, ktype, vtype>::type;
   using fout = typename GetTupleType<decltype(invokeReduceAll(
@@ -210,6 +211,7 @@ struct ReduceTypes {
   using Func = F;
   using FO = fout;
   using ktype = typename SlctTupleType<I, Kslct>::type;
+  using kreftype = typename SlctTupleRefType<I, Kslct>::type;
   using ftuple = typename GetTupleType<fout>::type;
   constexpr static auto outsize =
       std::tuple_size<ktype>::value + std::tuple_size<ftuple>::value;
@@ -241,6 +243,10 @@ template <class F, class T, class A> struct RiseTypesImpl<F, std::vector<T, A>> 
 // types for Rise
 template <class F> 
 struct RiseTypes : RiseTypesImpl<F, decltype(std::declval<F>()())> {};
+
+template <class I, int... Ns>
+using HashType = boost::hash<
+    typename meta::SlctTupleRefType<I, meta::saneSlct<std::tuple_size<I>::value, Ns...>>::type>;
 }
 }} // namespace ezl detail meta
 #endif //!TYPEINFO_EZL_H

@@ -28,6 +28,7 @@ class Task {
 public:
   Task (ProcReq req) : _procReq{req} {}
   virtual void pull() = 0;
+  virtual void prePull() {};
   virtual std::vector<Task *> branchTasks() = 0;
   void par(const Par &obj) { _par = obj; }
   const ProcReq &procReq() const { return _procReq; }

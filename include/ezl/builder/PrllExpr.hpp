@@ -18,19 +18,13 @@
 
 #include <ezl/helper/meta/slct.hpp>
 #include <ezl/helper/ProcReq.hpp>
-#include <ezl/mapreduce/MPIBridge.hpp>
+#include <ezl/units/MPIBridge.hpp>
 
 namespace ezl {
 template <class T> class Source;
 namespace detail {
 
-/*!
- * @ingroup builder
- * For adding a `MPIBridge` unit in between prev and newly built unit.
- * The expression can be used by any unit builder like `MapBuilder`
- * `ReduceBuilder` etc.
- *
- * */
+// structure for parallel expression properties
 struct ParProps {
   bool isPrll{false};
   llmode mode {llmode::none};
@@ -38,6 +32,14 @@ struct ParProps {
   bool ordered{false};
 };
 
+
+/*!
+ * @ingroup builder
+ * For adding a `MPIBridge` unit in between prev and newly built unit.
+ * The expression can be used by any unit builder like `MapBuilder`
+ * `ReduceBuilder` etc. Internally used by builders.
+ *
+ * */
 template <class T> struct PrllExpr {
 public:
   PrllExpr() = default;
@@ -45,90 +47,84 @@ public:
   PrllExpr(bool isP, llmode md, ProcReq pr, bool ordered)
       : _props{isP, md, pr, ordered} {}
 
-  auto& props() { return _props; }
+  // get the parallel properties
+  auto& prllProps() { return _props; }
 
-  auto& props(ParProps p) { 
+  // set the parallel properties
+  auto& prllProps(ParProps p) { 
     _props = p;
-    return ((T *)this)->self();
+    return ((T *)this)->_self();
   }
 
+  // set unit as inprocess or non parallel
+  auto& inprocess() {
+    _props.isPrll = false;
+    return ((T *)this)->_self();
+  }
+
+  // changes the parallel mode, does not makes the unit parallel
   auto& mode(llmode md) {
     _props.mode = md;
-    return ((T *)this)->self();
+    return ((T *)this)->_self();
   }
 
-  template <int I, int... Is, class Ptype>
-  auto prll(Ptype n, llmode mode = llmode::none) {
-    _props.procReq = ProcReq{n};
+  // makes the unit parallel with a parallel request
+  // @param procReq Process request in terms of exact number of processes, ratio
+  //        of total processes wrt to parent or exact rank of processes in a 
+  //        vector<int>.
+  // @param mode optional can be task, onAll, shard or none (default).
+  template <class Ptype> auto& prll(Ptype procReq, llmode mode = llmode::none) {
+    _props.procReq = ProcReq{procReq};
     _props.isPrll = true;
-    _props.mode = mode;
-    return ((T *)this)->prllSlct(meta::slct<I, Is...>{});
+    if (mode != llmode::none) _props.mode = mode;
+    return ((T *)this)->_self();
   }
 
-  template <int I, int... Is> auto prll(llmode mode = llmode::none) {
-    _props.procReq = ProcReq{};
-    _props.isPrll = true;
-    _props.mode = mode;
-    return ((T *)this)->prllSlct(meta::slct<I, Is...>{});
-  }
-
-  template <class Ptype> auto& prll(Ptype n, llmode mode = llmode::none) {
-    _props.procReq = ProcReq(n);
-    _props.isPrll = true;
-    _props.mode = mode;
-    return ((T *)this)->self();
-  }
-
+  // makes the unit parallel with an optional mode parameter
+  // @param mode optional can be llmode::task, onAll, shard or none (default).
   auto& prll(llmode mode = llmode::none) {
     _props.procReq = ProcReq{};
     _props.isPrll = true;
-    _props.mode = mode;
-    return ((T *)this)->self();
+    if (mode != llmode::none) _props.mode = mode;
+    return ((T *)this)->_self();
   }
 
-  template <int I, int... Is>
-  auto prll(std::initializer_list<int> lprocs, llmode mode = llmode::none) {
-    auto procs = std::vector<int>(std::begin(lprocs), std::end(lprocs));
-    _props.procReq = ProcReq{procs};
-    _props.isPrll = true;
-    _props.mode = mode;
-    return ((T *)this)->prllSlct(meta::slct<I, Is...>{});
-  }
-
+  // makes the unit parallel with a parallel request
+  // @param lprocs process request as exact ranks in initializer_list<int>
+  // @param mode optional can be task, onAll, shard or none (default).
   auto& prll(std::initializer_list<int> lprocs, llmode mode = llmode::none) {
     auto procs = std::vector<int>(std::begin(lprocs), std::end(lprocs));
     _props.procReq = ProcReq{procs};
     _props.isPrll = true;
-    _props.mode = mode;
-    return ((T *)this)->self();
+    if (mode != llmode::none) _props.mode = mode;
+    return ((T *)this)->_self();
   }
 
+  // if the parallelism is by key partitioning then is the input rows ordered on
+  // keys. If set then tries to send the rows to the other process at once so as
+  // to keep the order intact in the unit.
   auto ordered(bool flag = true) {
     _props.ordered = flag;
-    return ((T *)this)->self();
+    return ((T *)this)->_self();
   }
 
+  // get if ordered is set
   auto& getOrdered(bool flag = true) {
     return _props.ordered;
   }
 
-  auto& inprocess() {
-    _props.isPrll = false;
-    return ((T *)this)->self();
-  }
-
 protected:
   template <class I, class P, class H>
-  auto preBuild(std::shared_ptr<Source<I>> pre, P, H) {
+  auto _preBuild(std::shared_ptr<Source<I>> pre, P, H&& h) {
     if (_props.isPrll) {
-      if (P::size == 0 && !(_props.mode & llmode::shard || _props.mode & llmode::all)) {
+      if (P::size == 0 && (_props.mode & llmode::none)) {
         _props.procReq.resize(1);
       }
       bool all = false;
       if (P::size == 0 && (_props.mode & llmode::all)) all = true;
       if (_props.mode & llmode::task) _props.procReq.setTask();
       auto bobj = std::make_shared<MPIBridge<I, P, H>>(
-          _props.procReq, all, _props.ordered);
+          _props.procReq, all, _props.ordered, std::forward<H>(h));
       bobj->prev(pre, bobj);
       pre = bobj;
       return pre;
@@ -136,7 +132,6 @@ protected:
     return pre;
   }
 
-private:
   ParProps _props;
 };
 }

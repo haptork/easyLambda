@@ -71,8 +71,9 @@ public:
     if (_visited) return;
     _visited = true;
     _parHandle = pr;
-    if (this->incSig() == 1) _dataBegin();
-    if (!Source<IO>::next().empty()) { // implies _par.inRange()
+    if (!_parred) _dataBegin();
+    _parred = true;
+    if (!Source<IO>::next().empty()) {
       for (auto &it : Source<IO>::next()) {
         it.second->forwardPar(&(Task::par()));
       }
@@ -87,11 +88,13 @@ public:
   virtual void signalEvent(int i) override final {
     if (_visited) return;
     _visited = true;
-    if (this->decSig() == 0) _dataEnd(Task::par().nProc());
-    if (!this->next().empty()) {
-      for (auto &it : this->next()) {
-        it.second->signalEvent(i);
-      }
+    if (i == 0) this->incSig();
+    else if (this->decSig() == 0) {
+      _dataEnd(i);
+      _parred = false;
+    }
+    for (auto &it : this->next()) {
+      it.second->signalEvent(i);
     }
     _visited = false;
   }
@@ -110,6 +113,7 @@ private:
   virtual void _dataBegin() = 0;  // Implementation for dataBegin.
   virtual void _dataEnd(int j) = 0;  // Implementation for dataEnd.
   const Par* _parHandle;  // parallel info for prior task
+  bool _parred{false};
   bool _traversingRoots{false};
   bool _traversingTasks{false};
   bool _visited{false};

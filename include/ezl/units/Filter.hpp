@@ -23,7 +23,7 @@ namespace ezl {
 namespace detail {
 
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * Pipeline unit for filtering rows based on a UDF predicate on selected columns
  * of the row.
  *

@@ -12,6 +12,8 @@
 #ifndef PAR_EZL_H
 #define PAR_EZL_H
 
+#include <boost/mpi.hpp>
+
 #include <array>
 #include <vector>
 
@@ -26,7 +28,7 @@ namespace ezl {
 class Par {
 public:
   Par(std::vector<int> procs, std::array<int, 3> t, int rank)
-      : _ranks(procs), _tags{{t[0], t[1], t[2]}}, _rank{rank} {
+      : _rank{rank}, _ranks(procs), _tags{{t[0], t[1], t[2]}}, _isLocal{false} {
     _nProc = procs.size();
     auto it = std::find(std::begin(procs), std::end(procs), _rank);
     if (it == std::end(procs)) {
@@ -38,7 +40,7 @@ public:
     }
   }
 
-  Par() : _nProc{0}, _pos{-1}, _inRange{false}, _rank{-1} {}
+  Par() : _rank{_comm.rank()}, _ranks {_rank}, _isLocal{true} {}
 
   const bool &inRange() const { return _inRange; }
 
@@ -57,12 +59,14 @@ public:
   const auto &operator[](int index) const { return _ranks[index]; }
 
 private:
-  std::vector<int> _ranks;
-  int _nProc;
-  std::array<int, 3> _tags;
-  int _pos;
-  bool _inRange;
+  boost::mpi::communicator _comm;
   int _rank;
+  std::vector<int> _ranks;
+  int _nProc{1};
+  std::array<int, 3> _tags{};
+  int _pos{0};
+  bool _inRange{true};
+  bool _isLocal;
 };
 } // namespace ezl
 

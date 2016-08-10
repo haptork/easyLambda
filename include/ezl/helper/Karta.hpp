@@ -87,7 +87,9 @@ public:
     return inst;
   };
 
-  const int getId() { return _counter++; }
+  auto getId() { return _counter++; }
+
+  const int nProc() { return _nProc; }
 
   void refresh() { 
     _procs.clear();
@@ -118,32 +120,47 @@ public:
     _logMode = mode;
   }
 
+  void runLocal(std::vector<Task*>& roots) {
+    std::vector<int> proc {_rank};
+    auto toDel = internal::stableUnique(std::begin(roots), std::end(roots));
+    roots.erase(toDel, std::end(roots));
+    std::vector<int> curProcs {_rank};
+    Par par{curProcs, std::array<int, 3>{}, _rank};
+    for (auto &it : roots) {
+      it->par(par);
+      auto temp = it->branchTasks();
+      for (auto &jt : temp) jt->par(par);
+    }
+    for (auto &it : roots) it->prePull();
+    for (auto &it : roots) it->pull();
+  }
+
   template <class T>
   void run(Source<T> *obj, ProcReq p = ProcReq{}) {
     auto roots = obj->root();
     if (roots.empty()) return;
+    if (p.type() == ProcReq::Type::local ||
+        (_isRunning && p.type() == ProcReq::Type::none)) {
+      runLocal(roots);
+      return;
+    }
     std::vector<int> curRun;
     std::vector<int> all;
-    if (_isRunning && p.type() == ProcReq::Type::none) {
-      all.push_back(_rank);
-    } else {
-      for (auto it : _procs) all.push_back(it.second);
-    }
+    for (auto it : _procs) all.push_back(it.second);
     ++_isRunning;
     switch (p.type()) {
-    case ProcReq::Type::count:
-      curRun = _giveProcs(p.count(), all);
-      break;
-    case ProcReq::Type::ratio:
-      curRun = _giveProcs(int(all.size() * p.ratio()), all);
-      break;
-    case ProcReq::Type::ranks:
-      curRun = _giveProcs(p.ranks(), all);
-      break;
-    default: // none too
-      curRun = all;
-      break;
-      // log err.
+      case ProcReq::Type::count:
+        curRun = _giveProcs(p.count(), all);
+        break;
+      case ProcReq::Type::ratio:
+        curRun = _giveProcs(int(all.size() * p.ratio()), all);
+        break;
+      case ProcReq::Type::ranks:
+        curRun = _giveProcs(p.ranks(), all);
+        break;
+      default: // none
+        curRun = all;
+        break;
     }
     auto toDel = internal::stableUnique(std::begin(roots), std::end(roots));
     roots.erase(toDel, std::end(roots));
@@ -163,11 +180,10 @@ public:
       }
     }
     auto assigned = _assign(std::vector<std::vector<Task *>>{{roots}}, curRun,
-                           std::vector<std::vector<int>>{{}});
+                            std::vector<std::vector<int>>{{}});
     auto temp = _assign(bridges, curRun, assigned);
-    for (auto &it : roots) {
-      it->pull();
-    }
+    for (auto &it : roots) it->prePull();
+    for (auto &it : roots) it->pull();
     for (auto &it : _procs) {
       it.first[1] += it.first[2];
       it.first[0] = 0;
@@ -197,9 +213,8 @@ private:
     if (updated) std::sort(std::begin(_procs), std::end(_procs));
   }
 
-  std::vector<int> _giveProcs(const int &n, const std::vector<int> &all) {
+  std::vector<int> _giveProcs(int count, const std::vector<int> &all) const {
     std::vector<int> cur;
-    auto count = n;
     if (count < 0) count = all.size() - count; 
     if (count <= 0) count = 1;
     for (auto &it : all) {
@@ -212,7 +227,7 @@ private:
   }
 
   template <typename C>
-  std::vector<int> _giveProcs(const C &n, const std::vector<int> &all) {
+  std::vector<int> _giveProcs(const C &n, const std::vector<int> &all) const {
     std::vector<int> cur;
     for (auto it : n) {
       if (std::find(std::begin(all), std::end(all), it) != std::end(all)) {
@@ -247,9 +262,10 @@ private:
    * call for task parallelism in which case the priority is solely on the basis
    * of how much free a process is.
    */
-  std::vector<std::vector<int>> _assign(std::vector<std::vector<Task *>> prods, std::vector<int> curRun,
-              std::vector<std::vector<int>> priority) {
-    assert(priority.size() == prods.size());
+  std::vector<std::vector<int>>
+  _assign(std::vector<std::vector<Task *>> prods, std::vector<int> curRun,
+          std::vector<std::vector<int>> priority) {
+    //assert(priority.size() == prods.size());
     std::vector<int> all;
     std::vector<std::vector<int>> assigned;
     for (auto i = 0; i < int(prods.size()); i++) {
@@ -294,8 +310,7 @@ private:
           }
           break;
         }
-
-        if (_comm.rank() == 0 && _logMode & LogMode::info) {
+        if (_comm.rank() == 0 && (_logMode & LogMode::info)) {
           std::string s = "assigned process count: " +
                      std::to_string(curProcs.size()) + " viz.- ";
           for (auto it : curProcs) {
@@ -307,6 +322,8 @@ private:
                     std::array<int, 3>{{_curTag, _curTag + 1, _curTag + 2}},
                     _comm.rank()});
         _curTag += 3;
+        // TODO: why resetting _curTag crashes some applications like displaced
+        //if (_curTag + 3 > boost::mpi::environment::max_tag()) _curTag = 1;
         assigned.push_back(curProcs);
         _markAlloc(curProcs);
       }
@@ -315,11 +332,11 @@ private:
   }
 
   boost::mpi::communicator _comm;
-  int _curTag{1};
+   int _curTag{1}; // Getting exhausted too quickly :(
   int _nProc;
   int _rank;
   std::vector<std::pair<std::array<int, 2>, int>> _procs;
-  int _counter{1};
+  size_t _counter{1};
   std::vector<Task *> _curRoots;
   std::vector<std::vector<Task *>> _curOthers;
   LogMode _logMode{LogMode::error | LogMode::warning};

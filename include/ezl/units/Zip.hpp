@@ -25,15 +25,14 @@ namespace ezl {
 namespace detail {
 
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * unit for zipping(functional zip) / joining rows from two sources of
  * different types based on key columns or order of rows. 
  *
  * See examples for using with builders or unittests for direct use.
  *
  * */
-template <class I1, class I2, class Kslct1, class Kslct2, class Oslct,
-         class HashScheme>
+template <class I1, class I2, class Kslct1, class Kslct2, class Oslct>
 struct Zip
     : public virtual Dest<I1>,
       public virtual Dest<I2>,
@@ -49,10 +48,12 @@ public:
   using otype =
       typename meta::SlctTupleRefType<meta::TupleTieType<I1, I2>, Oslct>::type;
   using ktype = typename meta::SlctTupleType<I1, Kslct1>::type;
+  using kref = typename meta::SlctTupleRefType<I1, Kslct1>::type;
   using v1type = std::deque<typename meta::SlctTupleType<I1>::type>;
   using v2type = std::deque<typename meta::SlctTupleType<I2>::type>;
-  using maptype1 =  boost::unordered_map<ktype, v1type, HashScheme>;
-  using maptype2 =  boost::unordered_map<ktype, v2type, HashScheme>;
+  using maptype1 =  boost::unordered_map<ktype, v1type>;
+  using maptype2 =  boost::unordered_map<ktype, v2type>;
+  using HashScheme = boost::hash<kref>;
 
   using Dest<I1>::dataEvent;
   using Dest<I2>::dataEvent;
@@ -62,7 +63,7 @@ public:
   Zip() = default;
 
   virtual void dataEvent(const I1 &data) final override {
-    auto curKey = meta::slctTupleRef(data, Kslct1{});
+    kref curKey = meta::slctTupleRef(data, Kslct1{});
     auto it = _index1.find(curKey, _hash, _eq);
     if (it != std::end(_index1)) {
       it->second.push_back(data); 
@@ -75,7 +76,7 @@ public:
   }
 
   virtual void dataEvent(const I2 &data) final override {
-    auto curKey = meta::slctTupleRef(data, Kslct2{});
+    kref curKey = meta::slctTupleRef(data, Kslct2{});
     auto it = _index2.find(curKey, _hash, _eq);
     if (it != std::end(_index2)) {
       it->second.push_back(data); 
@@ -85,12 +86,6 @@ public:
     } 
     auto it1 = _index1.find(curKey, _hash, _eq);
     if (it1 != std::end(_index1)) _flush(it1, it);
-    /*
-    std::cout<<"index2\n";
-    for (auto it = _index2.begin(); it != _index2.end(); ++it) {
-      std::cout<<it->first<<std::endl;
-    }
-    */
   }
 
   /*!
@@ -101,7 +96,6 @@ public:
   virtual void forwardPar(const Par *pr) override final {
     if (_visited) return;
     _visited = true;
-    Dest<I1>::incSig();
     if (pr && !this->next().empty()) {
       for (auto &it : this->next()) {
         it.second->forwardPar(pr);
@@ -117,11 +111,10 @@ public:
   virtual void signalEvent(int i) override final {
     if (_visited) return;
     _visited = true;
-    if (Dest<I1>::decSig() == 0) _dataEnd(i);
-    if (!this->next().empty()) {
-      for (auto &it : this->next()) {
-        it.second->signalEvent(i);
-      }
+    if (i == 0) Dest<I1>::incSig();
+    else if (Dest<I1>::decSig() == 0) _dataEnd(i);
+    for (auto &it : this->next()) {
+      it.second->signalEvent(i);
     }
     _visited = false;
   }

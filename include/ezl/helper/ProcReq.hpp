@@ -45,7 +45,7 @@ inline llmode& operator |= (llmode& lhs, llmode rhs) {
 class ProcReq {
 
 public:
-  enum class Type { none, count, ratio, ranks };
+  enum class Type { none, count, ratio, ranks, local };
 
   ProcReq() {}
 
@@ -67,8 +67,8 @@ public:
   }
 
   ProcReq(int n) {
-    if (n <= 0) {
-      _type = Type::none;
+    if (n == 0) {
+      _type = Type::local;
       return;
     }
     _count = n;

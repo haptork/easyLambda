@@ -45,7 +45,7 @@ public:
   Flow() = default;
 
   template <class _>
-  Flow(std::shared_ptr<Flow<I, _>> obj) : _first(obj->first()), _flprev(obj->flprev()) { }
+  Flow(Flow<I, _>& obj) : _first(obj.first()), _flprev(obj.flprev()) { }
 
   auto addFirst(const std::shared_ptr<Dest<I>>& dest) { 
     if (!dest) return;
@@ -53,7 +53,11 @@ public:
     if (_first.find(id) != std::end(_first)) return;
     _first[id] = dest;
     for (auto &it : _flprev) it.second->next(dest, it.second);  
- }
+  }
+
+  auto first(const std::map<int, std::shared_ptr<Dest<I>>>& f) {
+    _first.insert(begin(f), end(f));
+  } 
 
   auto addLast(const std::shared_ptr<Source<O>>& src) { 
     if (!src) return;
@@ -63,13 +67,17 @@ public:
     for (auto &it : _flnext) it.second->prev(src, it.second);  
   }
 
-  const auto& first() { return _first; }
+  auto last(const std::map<int, std::shared_ptr<Source<O>>>& l) {
+    _last.insert(begin(l), end(l));
+  } 
 
-  const auto& last() { return _last; }
+  const auto& first() const { return _first; }
 
-  const auto& flprev() { return _flprev; }
+  const auto& last() const { return _last; }
 
-  auto isEmpty() { return (_first.size() == 0 && _last.size() == 0); }
+  const auto& flprev() const { return _flprev; }
+
+  auto isEmpty() const { return (_first.size() == 0 && _last.size() == 0); }
 
   virtual bool next(std::shared_ptr<Dest<O>> nx,
                     std::shared_ptr<Source<O>> self) final override {
@@ -84,6 +92,10 @@ public:
     if (_flnext.find(id) == std::end(_flnext)) {
       _flnext.emplace(id, nx);
     }
+  }
+
+  void flnext(const std::map<int, std::shared_ptr<Dest<O>>>& nx) {
+    _flnext.insert(begin(nx), end(nx));
   }
 
   virtual void unNext(Dest<O>* nx) final override {
@@ -117,6 +129,10 @@ public:
     }
   }
 
+  void flprev(const std::map<int, std::shared_ptr<Source<I>>>& pr) {
+    _flprev.insert(begin(pr), end(pr));
+  }
+
   virtual void unPrev(Source<I>* pr) final override {
     if (!pr) return;
     for (auto &it : _first) it.second->unPrev(pr);
@@ -132,6 +148,46 @@ public:
     }
     _flprev.clear();
   }
+
+  template <class ON>
+  auto operator >> (std::shared_ptr<Flow<O, ON>> nx) {
+    auto nfl = std::make_shared<Flow<I, ON>>();
+    nfl->first(_first);
+    nfl->flprev(_flprev);
+    if (nx) {
+      nfl->addLast(nx);
+      flnext(nx);
+    }
+    return nfl;
+  }
+
+  template <class IN>
+  auto operator << (std::shared_ptr<Flow<IN, I>> nx) {
+    auto nfl = std::make_shared<Flow<IN, O>>();
+    nfl->last(_last);
+    nfl->flnext(_flnext);
+    if (nx) {
+      nfl->addFirst(nx);
+      flprev(nx);
+    }
+    return nfl;
+  }
+
+  auto operator + (const std::shared_ptr<Flow<I, O>>& nx) const {
+    auto nfl = std::make_shared<Flow<I, O>>();
+    nfl->last(_last);
+    nfl->first(_first);
+    nfl->flnext(_flnext);
+    nfl->flprev(_flprev);
+    if (nx) {
+      nfl->last(nx->_last);
+      nfl->first(nx->_first);
+      nfl->flnext(nx->_flnext);
+      nfl->flprev(nx->_flprev);
+    }
+    return nfl;
+  }
+
 
   void unlink() {
     unPrev();

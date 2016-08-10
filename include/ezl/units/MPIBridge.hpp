@@ -24,6 +24,7 @@
 #include <ezl/pipeline/Bridge.hpp>
 #include <ezl/helper/Karta.hpp>
 #include <ezl/helper/meta/slctTuple.hpp>
+#include <ezl/helper/meta/funcInvoke.hpp>
 #include <ezl/helper/meta/serializeTuple.hpp>
 #include <ezl/helper/Par.hpp>
 
@@ -31,7 +32,7 @@ namespace ezl {
 namespace detail {
 
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * A pipeline link for task and data parallelism using MPI.
  * Dest receives the data that is then sent to diffrent processes using parallel
  * information `Par` of the task.
@@ -61,8 +62,12 @@ namespace detail {
  * `ParExpr` has the builder expression for adding it before the current unit
  * in the pipeline. For direct use see unittests.
  *
+ * There might be assumptions that it is connected to only one destination as
+ * the current builder interface does not allow connecting to multiple dests.
+ * Might be a problem in a circular dataflow.  
+ *
  * */
-template <class IO, class Kslct, class HashScheme>
+template <class IO, class Kslct, class Partitioner>
 struct MPIBridge : public Bridge<IO> {
 public:
   using itype = IO;
@@ -98,14 +103,12 @@ private:
   };
 
 public:
-  MPIBridge(ProcReq r, bool toAll, bool ordered)
-      : Bridge<IO>{r}, _toAll{toAll}, _ordered{ordered} {}
+  MPIBridge(ProcReq r, bool toAll, bool ordered, Partitioner p)
+      : Bridge<IO>{r}, _toAll{toAll}, _ordered{ordered}, _partitioner{p} {}
 
   // expects  this->parHandle() != nullptr &&
   //          this->parHandle()->inRange() && this->par().nProc()>0
   virtual void dataEvent(const itype &data) final override {
-    //buftype a = std::make_tuple("hi", 4);
-    //IO a = 4;
     const auto &par = this->par();
     if (!this->parHandle() || !this->parHandle()->inRange()) return;
     if (_toAll) {
@@ -118,13 +121,17 @@ public:
     }
     auto target = par.rank();
     if (par.nProc() == 1) {
+      if (this->parHandle()->nProc() == 1 && this->par().inRange()) {
+        for (auto &it : this->next()) it.second->dataEvent(data);
+        return;
+      }
       target = par[0];
     } else if (std::tuple_size<ktype>::value == 0) {
       target = par[_curRoll];
       _curRoll = (_curRoll + 1) % par.nProc();
     } else {
       auto key = meta::slctTupleRef(data, Kslct{});
-      target = par[(_hash(key)) % par.nProc()];
+      target = par[(_partitioner(key)) % par.nProc()];
       if (_ordered) _recvrs[target].curKey = std::move(key);
     }
     _recvrs[target].buffer.push_back(std::move(data));
@@ -146,6 +153,10 @@ public:
       return;
     }
     if (par.nProc() == 1) {
+      if (this->parHandle()->nProc() == 1 && this->par().inRange()) {
+        for (auto &it : this->next()) it.second->dataEvent(vdata);
+        return;
+      }
       std::move(std::begin(vdata), std::end(vdata),
                 std::back_inserter(_recvrs[par[0]].buffer));
       if (_ordered && !_orderedPass(par[0])) return;
@@ -159,7 +170,7 @@ public:
           _curRoll = (_curRoll + 1) % par.nProc();
         } else {
           auto key = meta::slctTupleRef(it, Kslct{});
-          target = par[(_hash(key)) % par.nProc()];
+          target = par[(_partitioner(key)) % par.nProc()];
         }
         _recvrs[target].buffer.push_back(std::move(it));
         if (_ordered) {
@@ -175,6 +186,7 @@ public:
 
 private:
   virtual void _dataBegin() override final {
+    meta::invokeFallBack(_partitioner, this->par().pos(), this->par().procAll());
     _recvrsInit();
     _sendrsInit();
     std::vector<buftype> temp;
@@ -196,7 +208,6 @@ private:
       if (toSend) toSend = _sendAll(); // sends signals as well
       if (!_sendrs.empty()) _recvAll();
     }
-
     _curRoll = 0;
     _recvrs.clear(); // on right, to which data is to be sent
     _sendrs.clear();   // on left, from which data is received
@@ -468,9 +479,9 @@ private:
   }
 
 private:
-  const HashScheme _hash{};
   const bool _toAll;
   const bool _ordered;
+  Partitioner _partitioner;
 
   static constexpr auto _maxCounter = 1<<16;
   static constexpr auto _decSendCounter = 4; // divide sendCounter by on success

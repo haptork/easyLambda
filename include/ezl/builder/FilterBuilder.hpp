@@ -14,9 +14,8 @@
 
 #include <memory>
 
-#include <boost/functional/hash.hpp>
-
-#include <ezl/mapreduce/Filter.hpp>
+#include <ezl/helper/meta/typeInfo.hpp>
+#include <ezl/units/Filter.hpp>
 
 #define FSUPER DataFlowExpr<FilterBuilder<I, S, F, O, P, H, A>, A>,    \
                PrllExpr<FilterBuilder<I, S, F, O, P, H, A>>,           \
@@ -25,6 +24,7 @@
 namespace ezl {
 template <class T> class Source;
 namespace detail {
+
 
 template <class T, class A> struct DataFlowExpr;
 template <class T> struct PrllExpr;
@@ -39,58 +39,69 @@ template <class T, class O> struct DumpExpr;
 template <class I, class S, class F, class O, class P, class H, class A>
 struct FilterBuilder : FSUPER {
 public:
-  FilterBuilder(F &&f, std::shared_ptr<Source<I>> prev, std::shared_ptr<A> fl)
-      : _func{std::forward<F>(f)}, _prev{prev} {
+  FilterBuilder(F &&f, std::shared_ptr<Source<I>> prev,
+                Flow<A, std::nullptr_t> fl, H &&h = H{})
+      : _func{std::forward<F>(f)}, _prev{prev}, _h{std::forward<H>(h)} {
     this->mode(llmode::shard);
     this->_fl = fl;
   }
 
-  auto& self() { return *this; }
+  /*!
+   * set partition with key for parallelism.
+   * @param i, is... template ints e.g. partition<3,1>() sets third and first column
+   *        as key for partition.
+   * @param nh optional partition function that takes tuple of const ref of column types
+   *           and returns an integer for the partitioning. The default is hash function.
+   * */
+  template <int i, int... is, class NH = meta::HashType<I, i, is...>>
+  auto partition(NH &&nh = NH{}) {
+    using NP = meta::saneSlct<std::tuple_size<I>::value, i, is...>;
+    auto temp = FilterBuilder<I, S, F, O, NP, NH, A>{std::forward<F>(_func), 
+        std::move(_prev), std::move(this->_fl), std::forward<NH>(nh)};
+    this->_props.isPrll = true;
+    temp.prllProps(this->prllProps());
+    temp.dumpProps(this->dumpProps());
+    return temp;
+  }
 
+  // returns self / *this
+  auto& _self() { return *this; }
+
+  /*!
+   * internally called by cols and colsDrop
+   * @param NO template param for selection columns 
+   * @return new type after setting the output columns
+   * */
   template <class NO>
   auto colsSlct(NO = NO{}) {  // NOTE: while calling with T cast arg. is req
-    auto temp = FilterBuilder<I, S, F, NO, P, H, A>{std::forward<F>(this->_func),
-                                                 std::move(this->_prev), std::move(this->_fl)};
-    temp.props(this->props());
+    auto temp = FilterBuilder<I, S, F, NO, P, H, A>{std::forward<F>(_func), 
+        std::move(_prev), std::move(this->_fl), std::forward<H>(_h)};
+    temp.prllProps(this->prllProps());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
-  template <class NOP>
-  auto prllSlct(NOP = NOP{}) {
-    constexpr auto size = std::tuple_size<I>::value;
-    using NP = typename meta::saneSlctImpl<size, NOP>::type; 
-    using HN = boost::hash<typename meta::SlctTupleRefType<I, NP>::type>;
-    auto temp = FilterBuilder<I, S, F, O, NP, HN, A>{std::move(this->_func),
-                                                  std::move(this->_prev), std::move(this->_fl)};
-    temp.props(this->props());
-    temp.dumpProps(this->dumpProps());
-    return temp;
-  }
-
-  template <class NH>
-  auto hash() {
-    auto temp = FilterBuilder<I, S, F, O, P, NH, A>{std::move(this->_func),
-                                                 std::move(this->_prev), std::move(this->_fl)};
-    temp.props(this->props());
-    temp.dumpProps(this->dumpProps());
-    return temp;
-  }
-
-  auto buildUnit() {
-    _prev = PrllExpr<FilterBuilder>::preBuild(_prev, P{}, H{});
+  /*!
+   * internally called by build
+   * @return shared_ptr of Filter object.
+   * */
+  auto _buildUnit() {
+    _prev = PrllExpr<FilterBuilder>::_preBuild(_prev, P{}, std::forward<H>(_h));
     auto obj = std::make_shared<Filter<I, S, F, O>>(std::forward<F>(_func));
     obj->prev(_prev, obj);
-    DumpExpr<FilterBuilder, O>::postBuild(obj);
+    DumpExpr<FilterBuilder, O>::_postBuild(obj);
     return obj;
   }
 
+  /*!
+   * returns prev unit in the dataflow
+   * */
   auto prev() { return _prev; }
 
-  std::false_type isAddFirst;
 private:
   F _func;
   std::shared_ptr<Source<I>> _prev;
+  H _h;
 };
 
 }} // namespace ezl namespace ezl::detail

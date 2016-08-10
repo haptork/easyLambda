@@ -23,7 +23,7 @@ namespace ezl {
 namespace detail {
 
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * A root unit in a pipeline, which produces data using a UDF.
  *
  * The UDF may return a single value for a column or tuple for multiple

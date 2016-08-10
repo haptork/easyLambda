@@ -24,7 +24,7 @@ namespace ezl {
 namespace detail {
 
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * Map unit for transforming a row into zero, one or many new rows.
  * The UDF can be a tuple or free params for columns. The columns
  * to pass to UDF can be selected. The output from the unit can be

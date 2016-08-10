@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include <ezl/mapreduce/Reduce.hpp>
+#include <ezl/units/Reduce.hpp>
 
 #define RSUPER DataFlowExpr<ReduceBuilder<I, S, F, FO, O, P, H, A>, A>,\
                PrllExpr<ReduceBuilder<I, S, F, FO, O, P, H, A>>,       \
@@ -31,67 +31,94 @@ template <class T, class O> struct DumpExpr;
 /*!
  * @ingroup builder
  * Builder for `Reduce` unit.
- * Employs crtp
- * 
- * TODO: typelist
+ *
+ * Employs CRTP
  * */
 template <class I, class S, class F, class FO, class O, class P, class H, class A>
 struct ReduceBuilder : RSUPER {
 public:
-  ReduceBuilder(F &&f, FO &&initVal,
-                std::shared_ptr<Source<I>> prev, std::shared_ptr<A> a, bool scan)
-      : _func{std::forward<F>(f)}, _prev{prev},
-        _initVal{std::forward<FO>(initVal)}, _scan{scan} {
+  ReduceBuilder(F &&f, FO &&initVal, std::shared_ptr<Source<I>> prev,
+                Flow<A, std::nullptr_t> a, bool scan, H &&h = H{})
+      : _func{std::forward<F>(f)}, _prev{prev}, _scan{scan},
+        _initVal{std::forward<FO>(initVal)}, _h{std::forward<H>(h)} {
     this->prll(Karta::prllRatio); 
     this->_fl = a;
   }
 
+  /*!
+   * makes a reduce into a scan i.e. every updated result is also sent to the
+   * next units in the dataflow. Useful in running sum, running mean etc.
+   * @param isScan optional boolean
+   * */
   auto scan(bool isScan = true) {
     _scan = isScan;
     return *this;
   }
 
-  auto& self() { return *this; }
-
+  /*!
+   * internally called by cols and colsDrop
+   * @param NO template param for selection columns 
+   * @return new type after setting the output columns
+   * */
   template <class NO>
   auto colsSlct(NO = NO{}) {
     auto temp = ReduceBuilder<I, S, F, FO, NO, P, H, A>{
-        std::forward<F>(_func), std::forward<FO>(_initVal),
-        std::move(_prev), std::move(this->_fl), _scan};
-    temp.props(this->props());
+        std::forward<F>(_func), std::forward<FO>(_initVal), std::move(_prev),
+        std::move(this->_fl), _scan, std::forward<H>(_h)};
+    temp.prllProps(this->prllProps());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
+  /*!
+   * set partition function for partitioning on keys for parallelism.
+   * @param nh partition function that takes tuple of const ref of key column types
+   *           and returns an integer for the partitioning. The default is hash function.
+   * */
   template <class NH>
-  auto hash() {
+  auto partition(NH &&nh) {
     auto temp = ReduceBuilder<I, S, F, FO, O, P, NH, A>{
-        std::forward<F>(_func), std::forward<FO>(_initVal),
-        std::move(_prev), std::move(this->_fl), _scan};
-    temp.props(this->props());
+        std::forward<F>(_func), std::forward<FO>(_initVal), std::move(_prev),
+        std::move(this->_fl), _scan, std::forward<NH>(nh)};
+    temp.prllProps(this->prllProps());
     temp.dumpProps(this->dumpProps());
     return temp;
   }
 
-  auto buildUnit() {
-    _prev = PrllExpr<ReduceBuilder>::preBuild(_prev, P{}, H{});
+  /*!
+   * internally called by build
+   * @return shared_ptr of Reduce object.
+   * */
+  auto _buildUnit() {
+    _prev = PrllExpr<ReduceBuilder>::_preBuild(_prev, P{}, std::forward<H>(_h));
     auto ordered = this->getOrdered();
     auto obj =
-        std::make_shared<Reduce<meta::ReduceTypes<I, P, S, F, FO, O>, H>>(
+        std::make_shared<Reduce<meta::ReduceTypes<I, P, S, F, FO, O>>>(
             std::forward<F>(_func), std::forward<FO>(_initVal), _scan, ordered);
     obj->prev(_prev, obj);
-    DumpExpr<ReduceBuilder, O>::postBuild(obj);
+    DumpExpr<ReduceBuilder, O>::_postBuild(obj);
     return obj;
   }
 
+  // returns self / *this
+  auto& _self() { return *this; }
+
+  /*!
+   * returns prev unit in the dataflow
+   * */
   auto prev() { return _prev; }
 
-  std::false_type isAddFirst;
+  /*!
+   * internally used to signal if the next unit will be the first unit in the
+   * dataflow. Usually of false_type.
+   * */
+  std::false_type _isAddFirst;
 private:
   F _func;
   std::shared_ptr<Source<I>> _prev;
-  FO _initVal;
   bool _scan{false};
+  FO _initVal;
+  H _h;
 };
 }
 } // namespace ezl namespace ezl::detail

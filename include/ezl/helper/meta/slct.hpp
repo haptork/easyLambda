@@ -137,26 +137,26 @@ struct maskToSlct<slct<Ns...>, Is...> {
     std::conditional_t<(Is == 0), slct<>, slct<Ns>>...>::type;
 };
 
-template <size_t N, class S, class E = void> struct saneSlctImpl {};
+template <std::size_t N, class S, class E = void> struct saneSlctImpl {};
 
-template <size_t N, int... Is>
+template <std::size_t N, int... Is>
 struct saneSlctImpl<N, slct<Is...>, typename std::enable_if<isBool<Is...>{}>::type> {
   static_assert(N == sizeof...(Is), "Cols selection indices suggest a boolean selection mask but\
  mask size != number of cols. Please note indices start from 1 in a non-boolean selection.");
   using type = typename maskToSlct<typename fillSlct<0, N>::type, Is...>::type;
 };
 
-template <size_t N, int... Is>
+template <std::size_t N, int... Is>
 struct saneSlctImpl<N, slct<Is...>, typename std::enable_if<!isBool<Is...>{}>::type> {
   static_assert(std::is_same<filtered<1, N, Is...>, slct<>>::value, "Cols selection index out\
  of bounds. Please note indices start from 1 in a non-boolean selection.");
   using type = slct<Is...>;
 };
 
-template <size_t N, int... Ns>
+template <std::size_t N, int... Ns>
 using saneSlct = typename saneSlctImpl<N, slct<Ns...>>::type;
 
-template <size_t N, class S>
+template <std::size_t N, class S>
 using saneSlct_t = typename saneSlctImpl<N, S>::type;
 
 }

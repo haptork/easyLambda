@@ -87,13 +87,13 @@ public:
    * */
   virtual std::vector<Task *> root() = 0;
 
-  const int id() { return _id; }
+  const size_t& id() { return _id; }
 
   inline const auto &next() const { return _next; }
 
 private:
   std::map<int, std::shared_ptr<Dest<Type>>> _next;
-  int _id;
+  size_t _id;
 };
 } // namespace ezl
 

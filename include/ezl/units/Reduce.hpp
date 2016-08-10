@@ -26,7 +26,7 @@ namespace ezl {
 namespace detail {
 
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * Reduce unit for reducing grouped rows piecemeal as they stream, returning
  * zero, one or many new rows. 
  *
@@ -44,7 +44,7 @@ namespace detail {
  * See examples for using with builders or unittests for direct use.
  *
  * */
-template <class TypeInfo, class HashScheme>
+template <class TypeInfo>
 struct Reduce : public Link<typename TypeInfo::itype, typename TypeInfo::otype> {
 private:
   struct EqWrapper {
@@ -61,17 +61,18 @@ public:
   using Oslct = typename TypeInfo::Oslct;
   using ktype = typename TypeInfo::ktype;
   using otype = typename TypeInfo::otype;
-  using maptype =  boost::unordered_map<ktype, FO, HashScheme>;
+  using kref = typename TypeInfo::kreftype;
+  using HashScheme = boost::hash<kref>;
+  using maptype =  boost::unordered_map<ktype, FO>;
 
   static constexpr int osize = std::tuple_size<otype>::value;
 
   Reduce(F f, FO val, bool scan, bool order) : _func(f), _initVal(val), _scan(scan), _ordered(order) {}
 
   virtual void dataEvent(const itype &data) final override {
-    auto curKey = meta::slctTupleRef(data, Kslct{});
+    kref curKey = meta::slctTupleRef(data, Kslct{});
     auto curVal = meta::slctTupleRef(data, Vslct{});
     auto it = _index.find(curKey, _hash, _eq);
-
     if(TypeInfo::isRefRes) {
       if (it == std::end(_index)) {
         it = _index.emplace_hint(it, ktype(curKey), _initVal);
@@ -165,7 +166,7 @@ private:
   bool _scan{false};
   const bool _ordered{false};
   maptype _index;
-  HashScheme _hash;
+  HashScheme _hash{};
   EqWrapper _eq;
   bool _first{true};
   typename maptype::iterator _preIt;

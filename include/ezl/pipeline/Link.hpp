@@ -39,7 +39,6 @@ public:
   virtual void forwardPar(const Par *pr) override final {
     if (_visited) return;
     _visited = true;
-    this->incSig();
     if (pr && !this->next().empty()) {
       for (auto &it : this->next()) {
         it.second->forwardPar(pr);
@@ -55,7 +54,8 @@ public:
   virtual void signalEvent(int i) override final {
     if(_visited) return;
     _visited = true;
-    if (this->decSig() == 0) _dataEnd(i);
+    if (i == 0) this->incSig();
+    else if (this->decSig() == 0) _dataEnd(i);
     for (auto &it : this->next()) {
       it.second->signalEvent(i);
     }

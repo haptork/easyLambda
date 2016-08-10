@@ -106,7 +106,7 @@ public:
     }
   }
 
-  const int id() { return _id; }
+  const auto& id() { return _id; }
 
   inline const auto &prev() const { return _prev; }
 
@@ -118,7 +118,7 @@ protected:
   auto& sig() { return _sigCount; }
 private:
   std::map<int, std::shared_ptr<Source<Type>>> _prev;
-  int _id;
+  size_t _id;
   int _sigCount {0};
 };
 } // namespace ezl

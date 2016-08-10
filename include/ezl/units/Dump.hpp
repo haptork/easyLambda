@@ -26,7 +26,7 @@ namespace ezl {
 namespace detail {
 
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * A dead end for a pipeline branch dumps data to file(s) or output stream if
  * file name is not specified.
  *
@@ -56,21 +56,22 @@ public:
 
   // unlike links there can be no cycle hence visited flag isn't needed.
   virtual void forwardPar(const Par *par) override final {
-    if (this->incSig() != 1 || !par->inRange()) return;
+    if (_parred || !par->inRange()) return;
+    _parred = true;
     if (par && _fname.length() > 0) {
       auto prefname = _fname;
       if (par->nProc() > 1) {
-        auto dot = _fname.find_last_of(".");
-        if (dot == std::string::npos) dot = _fname.size();
-        _fname = _fname.substr(0, dot) + "_p" + std::to_string(par->rank()) +
-                 _fname.substr(dot);
+        auto dot = prefname.find_last_of(".");
+        if (dot == std::string::npos) dot = prefname.size();
+        prefname = prefname.substr(0, dot) + "_p" + std::to_string(par->rank()) +
+                 prefname.substr(dot);
       }
       if (!_fb) _fb = std::make_unique<std::filebuf>();
-      if ((_fb->is_open() && _fname != prefname) || !_fb->is_open()) {
+      if ((_fb->is_open() && prefname != _fname) || !_fb->is_open()) {
         _fb->close();
-        _fb->open(_fname, std::fstream::out|std::fstream::app);
+        _fb->open(prefname, std::fstream::out|std::fstream::app);
         if(!_fb->is_open()) {
-          Karta::inst().log("Can not write to file "+_fname, LogMode::warning);
+          Karta::inst().log("Can not write to file "+prefname, LogMode::warning);
         }
         _os = new std::ostream(_fb.get());
       }
@@ -86,8 +87,10 @@ public:
     (*_os)<<data<<'\n';
   }
 
-  virtual void signalEvent(int j) override final {
-    if (this->decSig() != 0) return;
+  virtual void signalEvent(int i) override final {
+    if (i == 0) this->incSig();
+    else if (this->decSig() != 0) return;
+    _parred = false;
     (*_os)<<std::flush;
     if (_fb) _fb->close();
     // resetting
@@ -100,6 +103,7 @@ private:
   std::string _header;
   std::unique_ptr<std::filebuf> _fb;
   std::ostream *_os;
+  bool _parred{false};
 };
 }
 } // namespace ezl ezl::detail
