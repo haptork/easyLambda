@@ -32,7 +32,7 @@
 
 namespace ezl {
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * Defines status messages for use with every row while multiple processes read
  * in parallel. Especially useful for reading normalized data in parallel(i.e.
  * where header to a group of rows contain information that is needed to process
@@ -147,7 +147,7 @@ struct FromFileProps {
 };
 
 /*!
- * @ingroup mapreduce
+ * @ingroup units
  * Root unit for loading data from file(s) in parallel with lots of options.
  *
  * */
@@ -314,7 +314,7 @@ public:
     _sanityCheck();
     if(!_props.fpat.empty()) {
       _props.fnames.clear();
-      _props.fnames = vglob(_props.fpat, _props.filesMax);
+      _props.fnames = detail::vglob(_props.fpat, _props.filesMax);
       if(_props.fnames.empty()) {
         Karta::inst().log("No file found for pattern: "+_props.fpat, LogMode::warning);
         return;
@@ -389,7 +389,7 @@ private:
     if (!_props.fnames.empty()) {
       fname = _props.fnames[0]; 
     } else {
-      auto fnames = vglob(_props.fpat, 1);
+      auto fnames = detail::vglob(_props.fpat, 1);
       if (!fnames.empty()) fname = fnames[0];
     }
     if (!fname.empty()) {

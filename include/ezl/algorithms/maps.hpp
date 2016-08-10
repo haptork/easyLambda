@@ -142,7 +142,8 @@ auto serialNumber(T init = 1) {
 
 /*!
  * @ingroup algorithms
- * function object for buffering before sending to next process.
+ * function object for buffering before sending to next unit 
+ * possibly in different process.
  * 
  * */
 namespace detail {

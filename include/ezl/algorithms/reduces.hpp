@@ -55,10 +55,9 @@ public:
         res, val, std::make_index_sequence<std::tuple_size<V>::value>{});
   };
 
-  template<class K, class V, class... Vs, class R>
+  template<class K, class V, class R>
   typename std::enable_if<!detail::meta::isTuple<R>{}, R>::type
-  operator () (const R& res, const K&, const std::tuple<const V&, 
-      const Vs&...>& val) {
+  operator () (const R& res, const K&, const std::tuple<const V& >& val) {
     return res + std::get<0>(val);
   };
 
