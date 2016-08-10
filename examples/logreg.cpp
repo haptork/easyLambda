@@ -56,25 +56,25 @@ auto calcGrad(const double &y, const array<double, dim> &x,
 
 void logreg(int argc, char* argv[]) {
   if (argc < 2) {
-    cerr << "Please provide arguments as glob pattern for train file(s), "
-            "followed by test file pattern(s). Check source for defaults or "
-            "for running on some other data-format.";
-    return;
+    ezl::Karta::inst().print0("Provide args as glob pattern for train file(s),"
+                  "followed by test file pattern(s). Continuing with defaults.");
   }
+  std::string inFile = "data/logreg/train.csv";
+  if (argc > 1) inFile = std::string(argv[1]);
 
   constexpr auto dim = 3;  // number of features
   constexpr auto maxIters = 1000;
 
   // specify columns and other read properties if required.
   auto reader =
-      ezl::fromFile<double, array<double, dim>>(argv[1]).colSeparator(",");
+      ezl::fromFile<double, array<double, dim>>(inFile).colSeparator(",");
 
   // load once in memory
   auto data = ezl::rise(reader)
                   .runResult();
 
   if (data.empty()) {
-    cout<<"no data";
+    cout<<"no data\n";
     return;
   }
 
@@ -107,10 +107,8 @@ void logreg(int argc, char* argv[]) {
     constexpr auto epsilon = 0.0001;
     if(norm < epsilon)  break;
   }
-  cout<<"iterations: "<<iters-1<<endl;  // TODO: message
-  cout<<"norm: "<<norm<<endl;
-  cout<<"final weights: "<<w<<endl;
-  
+  ezl::Karta::inst().print0("iters: " + to_string(iters-1));
+  ezl::Karta::inst().print0("norm: " + to_string(norm));
   // building testing flow
   auto testFlow = ezl::rise(reader)
                       .map<2>([&w](auto x) {
@@ -126,7 +124,7 @@ void logreg(int argc, char* argv[]) {
 
   for (int i = 1; i < argc; ++i) {
     reader = reader.filePattern(argv[i]);
-    cout<<"Testing for "<<argv[i]<<endl;
+    ezl::Karta::inst().print0("Testing file " + string(argv[i]));
     ezl::flow(testFlow).run();
   }
 }

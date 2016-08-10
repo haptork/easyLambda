@@ -1,6 +1,6 @@
 /*! 
  * @file
- * demo examples for fromMem, kick, fromFileNames, dump, dumpMem.
+ * demo examples for fromMem, kick, fromFileNames, dumpMem.
  *
  * run with following cmd from project directory to check the results.
  * `mpirun -n 1 ./bin/demoIO`
@@ -27,8 +27,8 @@ void demoFromMem(std::string outFile) {
   using std::tuple;
   using std::make_tuple;
 
-  // loads every integer as a row.  split() shares the rows among processes.
-  // The default is not split and run the complete data in every process.
+  // loads every integer as a row. split() shares the rows among processes.
+  // The default is not to split and run the complete data in every process.
   ezl::rise(ezl::fromMem({1, 2, 3}).split())
     .dump(outFile, "fromMem with split")
     .run();
@@ -61,10 +61,11 @@ void demoIO() {
   using std::vector;
   using std::tuple;
   using std::string;
+  using std::to_string;
 
   // If running multi-process it is better to dump in file rather than stdout
-  const string outFile = "";  // to stdout
-  const string inFile = "data/fromFilesTests/*.txt";
+  const std::string outFile = "data/output/demoIO.txt";
+  const string inFile = "data/fromFileTests/*.txt";
 
   demoFromMem(outFile); 
 
@@ -80,13 +81,22 @@ void demoIO() {
     .reduce(ezl::count(), 0).dump(outFile, "kick 1 each")
     .run();
 
+  // kick calls the next unit N times with nothing.
+  // with split N is split amont the various procs, so that total is N.
+  // without split every proc calls the next unit N times.
+  ezl::rise(ezl::iota(4).split())
+    .filter([] (int i) { return true; }).dump(outFile, "iota 4 total")
+    .run();
+
+  ezl::rise(ezl::iota(4,8).split(false))
+    .filter([] (int i) { return true; }).dump(outFile, "iota 4 each")
+    .run();
+
   // dump to a file or stdout can be done with `dump` expression which can be
   // added to any unit anywhere in the flow, including rise.
   // first argument to dump is filename, imlies stdout if left blank 
   // second argument is the header information.
   // both the arguments are optional, default to empty string.
-  
-  // dumpMem
   auto s = ezl::dumpMem<string>();
   ezl::rise(ezl::fromFileNames(inFile).split().limitFiles(10))
     .filter(s)
@@ -96,10 +106,13 @@ void demoIO() {
   ezl::rise(ezl::fromFileNames(inFile).split())
     .filter(ezl::dumpMem(s2))
     .run();
-  
+
   // a better way to get the results is runResult()
   auto rows = ezl::rise(ezl::fromFileNames(inFile).split())
                 .runResult();
+
+  assert((s.buffer().size() == s2.size()) && (s2.size() == rows.size()));
+  ezl::Karta::inst().print("number of files: "+to_string(rows.size()));
 }
 
 int main(int argc, char *argv[]) {

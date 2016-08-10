@@ -39,7 +39,7 @@
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/reduces.hpp>
-#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/predicates.hpp>
 
 struct hashfn {
   std::size_t operator() (const std::tuple<const int&>& x) const {
@@ -77,7 +77,7 @@ void demoPrll() {
   // parallelization on filter based on column 1 as key for partitioning the data
   auto flow3 = ezl::rise(source).prll(0.25)
                   .filter(ezl::tautology())
-                    .prll<1>(0.75, ezl::llmode::shard | ezl::llmode::task)
+                    .partition<1>().prll(0.75, ezl::llmode::shard | ezl::llmode::task)
                   .reduce<2>(ezl::count(), 0).prll(0.5)
                   .run(4, false);
 
@@ -87,7 +87,7 @@ void demoPrll() {
   // The reduce uses this and flushes the results as soon as the key changes
   // rather than waiting till the end of data.
   auto flowOrd = ezl::rise(source)
-                   .reduce<1>(ezl::count(), 0).hash<hashfn>().ordered()
+                   .reduce<1>(ezl::count(), 0).partition(hashfn{}).ordered()
                    .build();
 }
 

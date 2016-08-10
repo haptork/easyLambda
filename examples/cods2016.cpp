@@ -14,7 +14,7 @@
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
-#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/predicates.hpp>
 #include <ezl/algorithms/maps.hpp>
 #include <ezl/algorithms/fromFile.hpp>
 #include <ezl/algorithms/reduces.hpp>

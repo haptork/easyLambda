@@ -17,7 +17,7 @@
 
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
-#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/predicates.hpp>
 
 /*!
  * returns a map-flow that can be placed in a pipeline later.
@@ -88,28 +88,58 @@ void demoFlow() {
     }).colsTransform()
     .addFlow(pivot)  // adds the flow and continues adding to it
       .filter<2>(ezl::gt(100)).dump()
-      .oneUp()  // moves to adding to pivot again
+      .oneUp()  // moves to adding to pivot again      
     .filter<2>(ezl::lt(100))
     .addFlow(pivot)
     .run();
-
   /*!
+   *    
+   * | rise |-->| map (half) |-->| zip |-->| dump |
+   *    |                           ^
+   *    |                           |
+   *    |--> | map (twice) |-->-->--|
+   *
+   * */
+  auto source = ezl::fromMem({4, 2, 1, 3, 5}).split();
+  auto risefl = ezl::rise(source).build();
+  auto half = ezl::flow(risefl).map([](int x) {return x / 2.; }).build();  
+  auto twice = ezl::flow(risefl).map([](int x) {return x * 2.; }).build();
+
+  flow(half)
+    .zip(twice).colsDrop<3>().dump("", "number, (half, double)")
+    .run();
+  // removing sources and destination links
+  // after unlinking twice and half are no more recieving from risefl
+  risefl->unlink();
+  half->unlink();
+  twice->unlink();
+  
+  // now instead of zipping into columns, we concat two streams with addition
+  auto concated = *(*(risefl) >> half) + (*(twice) << risefl);
+  ezl::flow(concated)
+    .filter(ezl::tautology()).dump("", "number, half/double")
+    .run();
+  risefl->unlink();
+  concated->unlink();
+  /*!
+   * Now an overly complicated way of zipping with reduce to demonstrate some
+   * features of the dataflow.
    * A flow with reduce that returns a vector as a column. To return vector
-   * as a column, returns a tuple<vector<>> rather than only vector<> which
-   * that implies multiple rows. Instead of returning a new vector everytime
-   * it returns a reference and recieves the result as a reference. The normal
-   * row column parameters can either be const refs or values, one of the
-   * reason being a rows might be streamed to multiple units. The result of
-   * a return however is local to the unit, hence it can be recieved with
-   * reference parameter, modified and the same reference can be returned.
-   * This is far more efficient for big objects like vector etc.
+   * as a column, returns a tuple<vector<>> rather than only vector<> that 
+   * implies multiple rows. Instead of returning a new vector everytimeit 
+   * returns a reference and recieves the result as a reference. The user 
+   * function parameters can either be const refs or values. One of the reason
+   * for immutability is that a row might be streamed to multiple units. The
+   * result of a return however is local to the unit, hence it can be recieved
+   * with reference parameter, updated and the same reference can be returned.
+   * This is very efficient for big objects like vector etc.
    * The ordered property added is not necessary, however the way we use
    * it in the next data-flow makes ordered a better efficient option to add.
    *
    * when recieving result as ref and returning a ref don't forget to put
    * auto& as explicit return type of your lambda (p.s. I just saw the compile
    * error for that)
-   * */
+   * */ 
   auto joiner = ezl::flow<int, double>().reduce<1>(
       [](tuple<vector<double>> &ret, int key, double val) -> auto& {
       std::get<0>(ret).emplace_back(val); 
@@ -117,38 +147,22 @@ void demoFlow() {
       }, tuple<vector<double>>{}).ordered()
       .build();
 
-  /*!
-   * a flow with a splitter followed by a joiner
-   * To the rise we add two map units, one that adds a column with half the
-   * value and one that adds a column with double the value. To both the values
-   * we add joiner data-flow built above that appends the second column of all
-   * the rows with the same value of first column type in a single row.
-   *
-   *    
-   * | rise |-->| map (double) |-->| reduce (joiner) |-->| filter(noop) + dump |
-   *    |                                  ^
-   *    |                                  |
-   *    |--> | map (half) |---->------->---|
-   *
-   * */
-  auto source = ezl::fromMem({4, 2, 1, 3, 5}).split();
-  auto flow1 = ezl::rise(source)
-                  .branchFlow(  // adds flow as a branch
-                    ezl::flow<int>()
-                      .map([](int x) { return double(x)/2.; })
-                      .addFlow(joiner)
-                      .build()
-                  )
-                .map([](int x) { return double(x*2); })
-                .addFlow(joiner)
-                .filter([](int, vector<double> halfnDouble) {
-                   return true; 
-                 }).dump("", "number, (half, double)")
-                .run();
-
+  ezl::flow(risefl)
+    .branchFlow(  // adds flow as a branch
+      ezl::flow<int>()
+        .map([](int x) { return x / 2.; })
+        .addFlow(joiner)
+        .build()
+    )
+    .map([](int x) { return x * 2.; })
+    .addFlow(joiner)
+    .filter([](int, vector<double> halfnDouble) {
+       return true; 
+     }).dump("", "number, (half, double)")
+    .run();
   // running again with different input
   source = source.buffer({6 ,9 ,8 ,7});
-  ezl::flow(flow1).run();
+  ezl::flow(risefl).run();   
 }
 
 int main(int argc, char *argv[]) {

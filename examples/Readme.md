@@ -2,6 +2,7 @@ The demo files include mostly all the features in ezl.
 To learn about ezl, I suggest going by the following sequence:
 
 0. wordcount and pi examples for overview.
+1. 1D-diffusion for some recent features overview.
 1. demoColumns. 
 2. demoMapFilter.
 3. demoFromFile.

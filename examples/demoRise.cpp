@@ -20,20 +20,19 @@
 class Op {
 public:
   auto operator () () {
-    isMore = !isMore;
-    return std::tie(pos, isMore);
+    _isMore = !_isMore;
+    return std::tie(_pos, _isMore);
   }
 
-  // The pair is passed at the beginning of data flow.
-  // The pair contains pos, ranks of processes the unit is running in pos is
-  // from (0, procInfo.second.size() - 1) which is different for every proc.
-  // The rank of current process is at index pos in the ranks vector.
-  void operator () (std::pair<int, std::vector<int>> procInfo) {
-    pos = procInfo.second[procInfo.first];
+  // The information is passed at the beginning of data flow.
+  // contains pos, ranks of processes the unit is running on
+  // The rank of current process is at index pos in the procs vector.
+  void operator () (const int& pos, const std::vector<int>& procs) {
+    _pos = pos;
   }
 private:
-  int pos;
-  bool isMore {true};
+  int _pos;
+  bool _isMore {true};
 };
 
 void demoRise() {

@@ -13,7 +13,7 @@
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
-#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/predicates.hpp>
 
 void demoZip() {
   using std::vector;
@@ -39,7 +39,7 @@ void demoZip() {
   // key column. A rows is streamed ahead as soon as the key streams in from
   // both the inputs. The rows that have no counterpart in the other input
   // stream are not streamed as output. Here the output has 2 rows viz.
-  // (4, 'a', 4, 'a', 3.), (4, 'd', 4, 'd', 4.).
+  // (4, 'a', 4, 'a', 3.), (4, 'd', 2, 'd', 1.).
   ezl::flow(pipe)
     .filter<1>(ezl::gt(3)).colsDrop<3>()
     .zip<2>(pipe).dump("", "with key").run();
@@ -47,15 +47,22 @@ void demoZip() {
   // The pipe is unlinked from all its sources and destinations.
   pipe->unlink();
   
-  // filter with condition < 3
-  auto ltTwoFilter = ezl::flow(pipe)
-                       .filter<1>(ezl::lt(3)).colsDrop<3>().build();
+  // filter that drops first row
+  auto isDrop = true;
+  auto dropOne = ezl::flow(pipe)
+                       .filter<0,0,0>([&isDrop] { 
+                         if (isDrop) {
+                           isDrop = false; 
+                           return false;
+                         } 
+                         return !isDrop; 
+                       }).build();
 
-  // The rows from pipe and ltTwoFilter data-flows are zipped without key.
+  // The rows from pipe and dropOne data-flows are zipped without key.
   // Without key the order of the rows deciedes the zipping / joining.
   // The first row from each of the sources is zipped and so on. The output
   // number of rows is equal to the lesser number of input rows.
-  ezl::flow(pipe).zip(ltTwoFilter).dump("", "w/o key").run();
+  ezl::flow(pipe).zip(dropOne).dump("", "w/o key").run();
 }
 
 int main(int argc, char *argv[]) {

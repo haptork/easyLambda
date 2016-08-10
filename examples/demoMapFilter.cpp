@@ -16,7 +16,7 @@
 
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
-#include <ezl/algorithms/filters.hpp>
+#include <ezl/algorithms/predicates.hpp>
 #include <ezl/algorithms/maps.hpp>
 
 class Op {
@@ -86,8 +86,10 @@ void demoMapFilter() {
         return vector<tuple<int, char>>{make_tuple(x, 'c')};
     }).colsResult()
     .filter<1>(ezl::gt(2)) // row passes if 1st col is > 2
-    .filter(ezl::eq(2, 'c'))
-    .filter<2>(ezl::lt('d'));
+    .filter(ezl::eq(2, 'c')) // satisfies if 1st col == 2 && 2nd col == 'c'
+    .filter<2>(ezl::lt('d'))
+    .filter<1>(ezl::gt(2) || ezl::lt(0)) // 1st col >2 || < 0
+    .filter(!ezl::eq<1>(2) || ezl::eq<2>('c')); // 1st != 2 || 2nd == 'c'
 
   // mergeAr merges, N cols of type T to one col of type std::array<T, N>
   // it can be used to merge one array and N cols or two arrays of type T
