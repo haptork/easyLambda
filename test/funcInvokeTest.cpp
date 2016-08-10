@@ -19,6 +19,8 @@
 #include <ezl/helper/meta/funcInvoke.hpp>
 #include <ctorTeller.hpp>
 
+namespace ezl {
+namespace test {
 using namespace ezl::detail::meta;
 
 void mapInvokeTest();
@@ -68,4 +70,6 @@ void mapInvokeTest() {
 
   // gives a good error msg
   //invokeMap([](int) { return true; }, std::tuple<>{});
+}
+}
 }

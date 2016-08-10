@@ -17,9 +17,11 @@
 #include <boost/mpi.hpp>
 #include <boost/functional/hash.hpp>
 
-#include <ezl/mapreduce/Filter.hpp>
-#include <ezl/mapreduce/Zip.hpp>
+#include <ezl/units/Filter.hpp>
+#include <ezl/units/Zip.hpp>
 
+namespace ezl {
+namespace detail {
 using namespace ezl::detail;
 
 void ZipBasicCallTest();
@@ -47,7 +49,7 @@ void ZipBasicCallTest() {
   Filter<tuple<const int&, const char&>, slct<2,1>, decltype(f1), slct<1,2>>>(f1);
 
   auto z1 = std::make_shared<
-  Zip<decltype(t1), decltype(t2), slct<1>, slct<1>, slct<1,2>, boost::hash<std::tuple<int>>>>();
+  Zip<decltype(t1), decltype(t2), slct<1>, slct<1>, slct<1,2>>>();
   z1->next(r1, z1);
   z1->dataEvent(t1);
   z1->dataEvent(t2);
@@ -60,4 +62,6 @@ void ZipBasicCallTest() {
 int main(int argc, char* argv[]) {
   ZipTest(argc, argv);
   return 0;
+}
+}
 }

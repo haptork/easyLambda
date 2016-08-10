@@ -1,23 +1,9 @@
 #include <ctorTeller.hpp>
-#include <tuple>
 
 #include <boost/mpi.hpp>
 
-
-#include <unitTest/slctTest.cpp>
-#include <unitTest/slctTupleTest.cpp>
-#include <unitTest/funcInvokeTest.cpp>
-#include <unitTest/MapTest.cpp>
-#include <unitTest/FilterTest.cpp>
-// ReduceTest build only in Apple clang due to some different implementatin of
-// tie, nothing related to library. TODO: for gcc as well
-//#include <unitTest/ReduceTest.cpp>
-#include <unitTest/ReduceAllTest.cpp>
-#include <unitTest/fromFileTest.cpp>
-#include <unitTest/MPIBridgeTest.cpp>
-#include <unitTest/RiseTest.cpp>
-
-
+namespace ezl {
+namespace test {
 void slctTest();
 void slctTupleTest();
 void funcInvokeTest();
@@ -36,23 +22,26 @@ int ctorTeller::_moveCtor = 0;
 int ctorTeller::_copyAssign = 0;
 int ctorTeller::_moveAssign = 0;
 
-int main(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-  boost::mpi::communicator comm;
-
+int unittests(int argc, char* argv[]) {
   slctTest();
   slctTupleTest();
   funcInvokeTest();
   MapTest(argc, argv);
-
-  //ReduceTest(argc, argv);
+  ReduceTest(argc, argv);
   ReduceAllTest(argc, argv);
-
   FilterTest(argc, argv);
   fromFileTest(argc, argv);
   MPIBridgeTest(argc, argv);
   RiseTest(argc, argv);
+  std::cout<<"All tests passed successfully\n";
+  return 0;
+}
+}
+}
 
-  std::cout<<"All tests passed successfully"<<std::endl;
+int main(int argc, char* argv[]) {
+  boost::mpi::environment env(argc, argv);
+  boost::mpi::communicator comm;
+  ezl::test::unittests(argc, argv);
   return 0;
 }

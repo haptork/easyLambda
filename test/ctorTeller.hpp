@@ -16,6 +16,10 @@
 #include <iostream>
 #include <string>
 
+#include <boost/functional/hash.hpp>
+
+namespace ezl {
+namespace test {
 struct ctorTeller {
 
   ctorTeller(std::string s = "", bool isReset = false, bool verbose = true): _name{s}, _verbose{verbose} {
@@ -89,5 +93,14 @@ private:
   static int _copyAssign;
   static int _moveAssign;
 };
+
+inline std::size_t hash_value(const ctorTeller& t) {
+    //ctorTeller::display("in const hash");
+    boost::hash<const std::string&> _h;
+    return _h(t.name());
+}
+
+}
+}
 
 #endif // !CTORTELLER_EZL_TEST_H

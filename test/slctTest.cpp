@@ -14,6 +14,8 @@
 
 #include <ezl/helper/meta/slct.hpp>
 
+namespace ezl {
+namespace test {
 using namespace ezl::detail::meta;
 
 void slctTest() {
@@ -83,4 +85,6 @@ void slctTest() {
   //static_assert(std::is_same<slct<1,0,3>, typename saneSlct<6,slct<1,0,3>>::type>::value, "");
   //static_assert(std::is_same<slct<3,4>, typename saneSlct<4,slct<0,0,1,1,1>>::type>::value, "");
 
+}
+}
 }

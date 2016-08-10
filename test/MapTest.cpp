@@ -16,10 +16,13 @@
 
 #include <boost/mpi.hpp>
 
-#include <ezl/mapreduce/Map.hpp>
+#include <ezl/units/Map.hpp>
 #include <ezl/helper/meta/typeInfo.hpp>
 
 #include <ctorTeller.hpp>
+
+namespace ezl {
+namespace test {
 
 using namespace ezl::detail;
 
@@ -202,4 +205,6 @@ void MapCopyPerformanceTest() {
   x2->dataEvent(t3); // no copy
   assert(ctorTeller::copyctor() == 0);
   assert(ctorTeller::movector() == 1);
+}
+}
 }

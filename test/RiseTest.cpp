@@ -16,10 +16,12 @@
 #include <boost/mpi.hpp>
 #include <boost/functional/hash.hpp>
 
-#include <ezl/mapreduce/Rise.hpp>
-#include <ezl/mapreduce/Filter.hpp>
+#include <ezl/units/Rise.hpp>
+#include <ezl/units/Filter.hpp>
 #include <ctorTeller.hpp>
 
+namespace ezl {
+namespace test {
 using namespace ezl::detail;
 
 void RiseBasicTest();
@@ -80,4 +82,6 @@ void RiseBasicTest() {
   r4->pull();
   assert(count == 0);
 
+}
+}
 }

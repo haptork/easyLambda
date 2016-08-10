@@ -17,21 +17,19 @@
 #include <assert.h>
 
 #include <boost/mpi.hpp>
-#include <boost/functional/hash.hpp>
 
-#include <ezl/mapreduce/Rise.hpp>
-#include <ezl/mapreduce/Filter.hpp>
-#include <ezl/helper/ProcReq.hpp>
 #include <ezl/algorithms/fromFile.hpp>
-#include <ctorTeller.hpp>
+#include <ezl/helper/ProcReq.hpp>
+#include <ezl/units/Filter.hpp>
+#include <ezl/units/Rise.hpp>
 
+namespace ezl {
+namespace test {
 using namespace ezl::detail;
 
 void fromFileBasicTest();
 
 void fromFileTest(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-  boost::mpi::communicator comm;
   fromFileBasicTest();
 }
 
@@ -150,4 +148,6 @@ void fromFileStrictSchemaTest() {
   t4->par(Par{vector<int>{0}, array<int, 3>{{1,2,3}}, 0});
   t4->pull();
   assert(count == 14);
+}
+}
 }

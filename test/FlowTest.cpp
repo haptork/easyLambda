@@ -17,16 +17,16 @@
 #include <boost/mpi.hpp>
 #include <boost/functional/hash.hpp>
 
-#include <ezl/mapreduce/Filter.hpp>
+#include <ezl/units/Filter.hpp>
 #include <ezl/pipeline/Flow.hpp>
 
+namespace ezl {
+namespace test {
 using namespace ezl::detail;
 
 void FlowBasicCallTest();
 
 void FlowTest(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-  boost::mpi::communicator comm;
   FlowBasicCallTest();
 }
 
@@ -63,9 +63,5 @@ void FlowBasicCallTest() {
   z1->dataEvent(t1);
   assert(count == 3);
 }
-
-
-int main(int argc, char* argv[]) {
-  FlowTest(argc, argv);
-  return 0;
+}
 }

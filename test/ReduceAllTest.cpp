@@ -17,10 +17,12 @@
 #include <boost/mpi.hpp>
 #include <boost/functional/hash.hpp>
 
-#include <ezl/mapreduce/ReduceAll.hpp>
+#include <ezl/units/ReduceAll.hpp>
 #include <ezl/helper/meta/typeInfo.hpp>
 #include <ctorTeller.hpp>
 
+namespace ezl {
+namespace test {
 using namespace ezl::detail;
 
 void ReduceAllBasicCallTest();
@@ -64,10 +66,10 @@ void ReduceAllOrderedTest() {
   };
 
   auto r1 = std::make_shared<ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1>, decltype(f1),
-       slct<2>>, boost::hash<std::tuple<char>>>>(f1, true, false, false);
+       slct<2>>>>(f1, true, false, 0, false);
 
   auto ret = std::make_shared<ReduceAll<ReduceAllTypes<std::tuple<const size_t&>, slct<1>, slct<>, decltype(f2),
-    slct<1>>, boost::hash<std::tuple<const size_t&>>>>(f2, true, false, false);
+    slct<1>>>>(f2, true, false, 0, false);
   r1->next(ret, r1);
 
   r1->dataEvent(t1);
@@ -95,7 +97,7 @@ void ReduceAllAdjacentTest() {
   };
 
   auto r1 = std::make_shared<ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1>, decltype(f1),
-       slct<2>>, boost::hash<std::tuple<char>>>>(f1, true, true, 3);
+       slct<2>>>>(f1, true, true, 3, true);
 
   r1->dataEvent(t1);
   r1->dataEvent(t2);
@@ -105,7 +107,7 @@ void ReduceAllAdjacentTest() {
   r1->dataEvent(t1);
   r1->dataEvent(t1);
   r1->dataEvent(t1);
-  r1->signalEvent(0);
+  r1->signalEvent(1);
 
   assert(count.size() == 5);
   assert(count[0] == 1);
@@ -132,7 +134,7 @@ void ReduceAllBunchTest() {
   };
 
   auto r1 = std::make_shared<ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1>, decltype(f1),
-       slct<2>>, boost::hash<std::tuple<char>>>>(f1, true, false, 3);
+       slct<2>>>>(f1, true, false, 3, false);
 
   r1->dataEvent(t1);
   r1->dataEvent(t2);
@@ -142,7 +144,7 @@ void ReduceAllBunchTest() {
   r1->dataEvent(t1);
   r1->dataEvent(t1);
   r1->dataEvent(t1);
-  r1->signalEvent(0);
+  r1->signalEvent(1);
 
   assert(count.size() == 4);
   assert(count[0] == 1);
@@ -170,40 +172,35 @@ void ReduceAllBasicCallTest() {
     ch = c; 
     return 1; 
   };
-  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1>, decltype(f1), slct<1,2>>, 
-    boost::hash<std::tuple<char>>> r1{f1, false, false, 0};
+  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1>, decltype(f1), slct<1,2>>> r1{f1, false, false, 0, false};
   r1.dataEvent(t1);
-  r1.signalEvent(0);
+  r1.signalEvent(1);
   assert(ch == 'c');
 
   auto f2 = [&ch](char c, std::vector<std::tuple<>>) { 
     ch = c; 
     return 1; 
   };
-  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<>, decltype(f2), slct<1,2>>, 
-    boost::hash<std::tuple<char>>> r2{f2, false, false, 0};
+  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<>, decltype(f2), slct<1,2>>> r2{f2, false, false, 0, false};
   r2.dataEvent(t1);
 
   auto f3 = [&ch](std::vector<char> c) { 
     return 1; 
   };
-  ReduceAll<ReduceAllTypes<decltype(t1), slct<>, slct<2>, decltype(f3), slct<1>>, 
-    boost::hash<std::tuple<>>> r3{f3, false, false, 0};
+  ReduceAll<ReduceAllTypes<decltype(t1), slct<>, slct<2>, decltype(f3), slct<1>>> r3{f3, false, false, 0, false};
   r3.dataEvent(t1);
 
   auto f4 = [&ch](char c, std::vector<int>, std::vector<double> ) { 
     ch = c; 
     return 1; 
   };
-  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1,3>, decltype(f4), slct<1,2>>, 
-    boost::hash<std::tuple<char>>> r4{f4, false, false, 0};
+  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1,3>, decltype(f4), slct<1,2>>> r4{f4, false, false, 0, false};
   r4.dataEvent(t1);
 
   auto f5 = [&ch](std::tuple<char> c, std::tuple<std::vector<int>, std::vector<double>> ) { 
     return 1; 
   };
-  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1,3>, decltype(f5), slct<1,2>>, 
-    boost::hash<std::tuple<char>>> r5{f5, false, false, 0};
+  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1,3>, decltype(f5), slct<1,2>>> r5{f5, false, false, 0, false};
   r5.dataEvent(t1);
 
 
@@ -211,10 +208,10 @@ void ReduceAllBasicCallTest() {
     ch = c; 
     return 1; 
   };
-  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1,3>, decltype(f6), slct<1,2>>, 
-    boost::hash<std::tuple<char>>> r6{f6, false, false, 0};
+  ReduceAll<ReduceAllTypes<decltype(t1), slct<2>, slct<1,3>, decltype(f6), slct<1,2>>> r6{f6, false, false, 0, false};
   r6.dataEvent(t1);
 }
 
-void ReduceAllValPerformanceTest() {
+void ReduceAllValPerformanceTest() {}
+}
 }

@@ -20,6 +20,8 @@
 
 #include <ctorTeller.hpp>
 
+namespace ezl {
+namespace test {
 using namespace ezl::detail::meta;
 
 void slctTupleTest() {
@@ -117,4 +119,6 @@ void slctTupleTest() {
   static_assert(colCount<std::tuple<int, char>>::value == 2, "");
   static_assert(colCount<std::tuple<int, std::array<char, 4>>>::value == 5, "");
   static_assert(colCount<std::tuple<>>::value == 0, "");
+}
+}
 }
