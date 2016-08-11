@@ -214,7 +214,7 @@ template <size_t N, class Ref> class _ltc : public logicalOps<_ltc<N, Ref>> {
 public:
   _ltc(Ref r) { _ref = r; }
   template <class T> bool operator()(const T &row) {
-    return std::get<N>(row) > _ref;
+    return std::get<N>(row) < _ref;
   }
 
 private:
