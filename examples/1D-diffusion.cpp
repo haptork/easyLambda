@@ -1,53 +1,46 @@
 /*!
  * @file
- * 1D-diffusion: solved 1D heat diffusion equation with explicit finite diff.
- *
+ * 1D-diffusionBench: solution of 1D-heat diffusion equation with explicit finite
+ *               difference.
+ * Shows various dataflow features written concisely.
  * command to run:
- * mpirun -n 4 ./bin/1D-diffusionBench
+ * mpirun -n 4 ./bin/1D-diffusionBench 100 20
  *
  * */
 #include <iostream>
 #include <stdexcept>
-#include <string>
 #include <boost/mpi.hpp>
 
 #include <ezl.hpp>
-#include <ezl/algorithms/reduces.hpp>
-#include <ezl/algorithms/predicates.hpp>
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/partitioners.hpp>
+#include <ezl/algorithms/predicates.hpp>
+#include <ezl/algorithms/reduces.hpp>
 
-using std::make_tuple;
 using std::tuple;
 using std::vector;
-using std::to_string;
-
 using namespace ezl;
 
-void simulation(int nCells, int nSteps, double leftX = -10.0,
-                double rightX = +10.0, double sigma = 3.0, double ao = 1.0,
-                double coeff = 0.375) {
+void simulation(int nCells, int nSteps, double leftX, double rightX,
+                double sigma, double ao, double coeff) {
   auto dx = (rightX - leftX) / (nCells - 1.);
   auto initTemp = [&](int i) {
     auto x = leftX + dx * i + dx / 2.;
     return ao * exp(-x * x / (2. * sigma * sigma));
   };
-  auto interior = [&](const auto &ix) {
-    return (std::get<0>(ix) <= 0) || (std::get<0>(ix) >= nCells - 1);
-  };
   auto stencil = [&](int i, double t) {
-    vector<tuple<int, double>> res{
+    vector<tuple<int, double>> c{
         {i, t}, {i, -2 * coeff * t}, {i - 1, coeff * t}, {i + 1, coeff * t}};
-    res.erase(remove_if(begin(res) + 1, end(res), interior), end(res));
-    return res;
+    c.erase(remove_if(begin(c)+1, end(c), lt<1>(1) || gt<1>(nCells-2)), end(c));
+    return c;
   };
   auto buf = fromMem(rise(iota(nCells)).map(initTemp).dump("ic").runResult());
-  auto fl = rise(buf).map(stencil).colsResult()
-              .reduce<1>(sum(), 0.0).prll(1.).partition(onRange(nCells)).build();
+  auto fl = rise(buf).map(stencil).colsResult().reduce<1>(sum(), 0.).inprocess()
+              .reduce<1>(sum(), 0.).prll(1.).partition(onRange(nCells)).build();
   for (auto i = 0; i < nSteps; ++i) {
     buf.buffer(flow(fl).runResult());
   }
-  rise(buf).filter(tautology()).dump("final.txt").run();
+  rise(buf).dump("final").run();
 }
 
 int main(int argc, char *argv[]) {
@@ -59,7 +52,7 @@ int main(int argc, char *argv[]) {
       cells = std::stoi(argv[1]);
       steps = std::stoi(argv[2]);
     }
-    simulation(cells, steps);
+    simulation(cells, steps, -10., 10., 3., 1., 0.375);
   } catch (const std::exception& ex) {
     std::cerr<<"error: "<<ex.what()<<'\n';
     env.abort(1);  
