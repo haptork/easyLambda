@@ -58,7 +58,7 @@ void displaced(int argc, char* argv[]) {
   auto buffer = ezl::rise(ezl::fromFile<int, array<float, 3>, int>(firstFile)
                             .cols({1, 3, 4, 5, 6})  // id, coords
                             .lammps())
-                  .filter(ezl::tautology()).partition<1>().prll(1.)
+                  .filter(ezl::tautology()).partitionBy<1>().prll(1.)
                   .runResult();
 
   boost::unordered_map<int, array<float, 3>> firstFrame;
@@ -69,10 +69,10 @@ void displaced(int argc, char* argv[]) {
                 .lammps())
       .map<1, 2>([&firstFrame](int id, array<float, 3> coords) {
         return calcDist(coords, firstFrame[id]);
-      }).partition<1>().prll(1.).colsTransform()
+      }).partitionBy<1>().prll(1.).colsTransform()
       .filter<1>(ezl::gt(latConst * toleranceRatio))
       .reduce<2>(ezl::count(), 0).inprocess()
-      .reduce<1>(ezl::sum(), 0).partition(partitionFn)
+      .reduce<1>(ezl::sum(), 0).partitionBy(partitionFn)
       .reduceAll([](vector<tuple<int, int>> a) {
         sort(a.begin(), a.end());
         return a;

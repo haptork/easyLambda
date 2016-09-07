@@ -79,7 +79,7 @@ void demoReduce() {
                     .reduce<1>(ezl::count(), 0LL) // counts in process rows.
                       .inprocess()
                     .reduce<1>(ezl::sum(), 0LL) // sums the counts
-                      .prll(1., ezl::llmode::all | ezl::llmode::task)
+                      .prll(1., ezl::llmode::dupe | ezl::llmode::task)
                     .runResult();
 
   // can return vector to return multiple rows.

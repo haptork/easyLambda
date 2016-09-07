@@ -18,7 +18,7 @@ namespace ezl {
 enum class llmode : int {
   none = 0x00,
   task = 0x01,
-  all = 0x02,
+  dupe = 0x02,
   shard = 0x04
 };
 

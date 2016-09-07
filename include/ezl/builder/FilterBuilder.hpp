@@ -48,13 +48,13 @@ public:
 
   /*!
    * set partition with key for parallelism.
-   * @param i, is... template ints e.g. partition<3,1>() sets third and first column
+   * @param i, is... template ints e.g. partitionBy<3,1>() sets third and first column
    *        as key for partition.
    * @param nh optional partition function that takes tuple of const ref of column types
    *           and returns an integer for the partitioning. The default is hash function.
    * */
   template <int i, int... is, class NH = meta::HashType<I, i, is...>>
-  auto partition(NH &&nh = NH{}) {
+  auto partitionBy(NH &&nh = NH{}) {
     using NP = meta::saneSlct<std::tuple_size<I>::value, i, is...>;
     auto temp = FilterBuilder<I, S, F, O, NP, NH, A>{std::forward<F>(_func), 
         std::move(_prev), std::move(this->_fl), std::forward<NH>(nh)};

@@ -7,7 +7,7 @@
  * mpirung -n 4 ./bin/logreg "data/logreg/train.csv"
  *
  * For running on some different data-set specify the columns etc. in `fromFile`
- * Also change the `dim` parameter and inFile variable.
+ * Also change the `D` parameter and inFile variable.
  * Testing data files can be given as arguments after training data file.
  *
  * benchmarks at the bottom
@@ -24,15 +24,16 @@
 #include <ezl/algorithms/fromFile.hpp>
 
 using namespace std;
+using ezl::fromFile;
+using ezl::fromMem;
+using ezl::rise;
+using ezl::Karta;
+using ezl::llmode;
+using ezl::flow;
 
-double sigmoid(double x) {
-  constexpr auto e = 2.718281828;
-  return 1.0 / (1.0 + pow(e, -x));
-}
-
-template <size_t dim>
-double calcNorm(const array<double, dim> &weights,
-                const array<double, dim> &weightsNew) {
+template <size_t D>
+double calcNorm(const array<double, D> &weights,
+                const array<double, D> &weightsNew) {
   auto sum = 0.;
   for (size_t i = 0; i < weights.size(); ++i) {
     auto minus = weights[i] - weightsNew[i];
@@ -41,64 +42,43 @@ double calcNorm(const array<double, dim> &weights,
   return sqrt(sum);
 }
 
-template <size_t dim>
-auto calcGrad(const double &y, const array<double, dim> &x,
-                const array<double, dim> &w) {
-  array<double, dim> grad;
-  auto dot = std::inner_product(::begin(w), ::end(w), ::begin(x), 0);
-  //auto s = (sigmoid(y * dot) - 1) * y;
-  auto s = sigmoid(dot) - y;
-  for (size_t i = 0; i < w.size(); ++i) {
-    grad[i] = s * x[i];
-  }
-  return grad;
-}
-
 void logreg(int argc, char* argv[]) {
-  if (argc < 2) {
-    ezl::Karta::inst().print0("Provide args as glob pattern for train file(s),"
-                  "followed by test file pattern(s). Continuing with defaults.");
-  }
   std::string inFile = "data/logreg/train.csv";
-  if (argc > 1) inFile = std::string(argv[1]);
-
-  constexpr auto dim = 3;  // number of features
+  if (argc < 2) {
+    Karta::inst().print0("Provide args as glob pattern for train files followed"
+                " by test file pattern(s). Continuing with default: " + inFile);
+  } else {
+    inFile = std::string(argv[1]);
+  }
+  constexpr auto D = 3;  // number of features
   constexpr auto maxIters = 1000;
-
   // specify columns and other read properties if required.
-  auto reader =
-      ezl::fromFile<double, array<double, dim>>(inFile).colSeparator(",");
-
-  // load once in memory
-  auto data = ezl::rise(reader)
-                  .runResult();
-
+  auto reader = fromFile<double, array<double, D>>(inFile).colSeparator(",");
+  auto data = rise(reader).runResult();  // load once in memory
   if (data.empty()) {
-    cout<<"no data\n";
+    Karta::inst().print("no data");
     return;
   }
-
-  auto sumArray = [](auto &a, auto &b) -> auto & {
+  array<double, D> w{}, wn{}, grad{};  // weights initialised to zero;
+  auto sumAr = [](auto &a, auto &b) -> auto & { // updating the reference
     transform(begin(b), end(b), begin(a), begin(a), plus<double>());
     return a;
   };
-
-  array<double, dim> w{};  // weights initialised to zero;
+  auto sigmoid = [](double x) { return 1. / (1. + exp(-x)); };
+  auto calcGrad = [&](const double &y, array<double, D> x) {
+		auto s = sigmoid(inner_product(begin(w), end(w), begin(x), 0.)) - y;
+		for_each(begin(x), end(x), [&s](double& x) { x *= s; });
+		return x;
+  };
   // build flow for final gradient value in all procs
-  auto train = ezl::rise(ezl::fromMem(data))
-                   .map([&w](auto& y, auto& x) {
-                     return calcGrad(y, x, w);    
-                   }).colsTransform()
-                   .reduce(sumArray, array<double, dim>{}).inprocess()
-                   .reduce(sumArray, array<double, dim>{})
-                     .prll(1., ezl::llmode::task | ezl::llmode::all)
-                   .build();
-                 
+  auto train = rise(fromMem(data)).map(calcGrad).colsTransform()
+                 .reduce(sumAr, array<double, D>{}).inprocess()
+                 .reduce(sumAr, array<double, D>{}).prll(1., llmode::dupe)
+                 .build();
   auto iters = 0;
   auto norm = 0.;
   while (iters++ < maxIters) {
-    array<double, dim> wn, grad;
-    tie(grad) =  ezl::flow(train).runResult()[0]; // running flow
+    tie(grad) =  flow(train).runResult()[0]; // running flow
     constexpr static auto gamma = 0.002;
     transform(begin(w), end(w), begin(grad), begin(wn),
                    [](double a, double b) { return a - gamma * b;});
@@ -107,11 +87,12 @@ void logreg(int argc, char* argv[]) {
     constexpr auto epsilon = 0.0001;
     if(norm < epsilon)  break;
   }
-  ezl::Karta::inst().print0("iters: " + to_string(iters-1));
-  ezl::Karta::inst().print0("norm: " + to_string(norm));
+  Karta::inst().print0("iters: " + to_string(iters-1));
+  Karta::inst().print0("norm: " + to_string(norm));
+
   // building testing flow
-  auto testFlow = ezl::rise(reader)
-                      .map<2>([&w](auto x) {
+  auto testFlow = rise(reader)
+                      .map<2>([&](auto x) {
                         auto pred = 0.;
                         for (size_t i = 0; i < get<0>(x).size(); ++i) {
                           pred += w[i] * get<0>(x)[i];
@@ -122,10 +103,10 @@ void logreg(int argc, char* argv[]) {
                         .dump("", "real-y, predicted-y, count")
                       .build();
 
-  for (int i = 1; i < argc; ++i) {
+  for (int i = 1; i < argc; ++i) { // testing all the file patterns
     reader = reader.filePattern(argv[i]);
-    ezl::Karta::inst().print0("Testing file " + string(argv[i]));
-    ezl::flow(testFlow).run();
+    Karta::inst().print0("Testing file " + string(argv[i]));
+    flow(testFlow).run();
   }
 }
 

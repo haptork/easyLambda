@@ -121,7 +121,7 @@ protected:
         _props.procReq.resize(1);
       }
       bool all = false;
-      if (P::size == 0 && (_props.mode & llmode::all)) all = true;
+      if (P::size == 0 && (_props.mode & llmode::dupe)) all = true;
       if (_props.mode & llmode::task) _props.procReq.setTask();
       auto bobj = std::make_shared<MPIBridge<I, P, H>>(
           _props.procReq, all, _props.ordered, std::forward<H>(h));

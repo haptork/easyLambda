@@ -56,15 +56,15 @@ void demoPrll() {
   // The example shows a useful idiom.
   // an inprocess reduce followed by another reduce to make parallism much more
   // effective compared to only one reduce. 
-  // The filter makes the resulting count available in all processes, finally
-  // returned in the variable iSum.
+  // The filter makes the resulting count result duplicate on every process
+  // it runs on, finally returned in the variable iSum.
   auto iSum = 0LL;
   tie(iSum) = ezl::rise(source)
                   .reduce(ezl::count(), 0LL)
                     .inprocess()
                   .reduce(ezl::sum(), 0LL)
                   .filter(ezl::tautology())
-                    .prll(1., ezl::llmode::all | ezl::llmode::task)
+                    .prll(1., ezl::llmode::dupe | ezl::llmode::task)
                   .runResult(1.)[0];
 
   // The source runs in one process, while filter runs on all processes.
@@ -77,7 +77,7 @@ void demoPrll() {
   // parallelization on filter based on column 1 as key for partitioning the data
   auto flow3 = ezl::rise(source).prll(0.25)
                   .filter(ezl::tautology())
-                    .partition<1>().prll(0.75, ezl::llmode::shard | ezl::llmode::task)
+                    .partitionBy<1>().prll(0.75, ezl::llmode::shard | ezl::llmode::task)
                   .reduce<2>(ezl::count(), 0).prll(0.5)
                   .run(4, false);
 
@@ -87,7 +87,7 @@ void demoPrll() {
   // The reduce uses this and flushes the results as soon as the key changes
   // rather than waiting till the end of data.
   auto flowOrd = ezl::rise(source)
-                   .reduce<1>(ezl::count(), 0).partition(hashfn{}).ordered()
+                   .reduce<1>(ezl::count(), 0).partitionBy(hashfn{}).ordered()
                    .build();
 }
 

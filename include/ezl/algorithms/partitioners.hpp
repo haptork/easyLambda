@@ -24,24 +24,24 @@ namespace ezl {
  *
  * Example usage: 
  * @code
- * .partition(onRange(100))
+ * .partitionBy(range(100))
  * @endcode
  *
  * */
 template <class T>
-class _onRange {
+class _range {
 public:
   /*!
    * The possible values start from 0 and end at total - 1.
    * @param total the total number of possible values.
    */
-  _onRange(T total) : _first{0}, _last{total - 1} {}
+  _range(T total) : _first{0}, _last{total - 1} {}
   /*!
    * The possible values start from first and end at last.
    * @param first the initial possible value.
    * @param first the last possible value.
    */
-  _onRange(T first, T last) : _first{first}, _last {last} {}
+  _range(T first, T last) : _first{first}, _last {last} {}
 
   /*!
    * used for partitioning the rows while the dataflow executes
@@ -75,8 +75,8 @@ private:
 };
 
 template <class T>
-auto onRange(T total) {
-  return _onRange<T>(total);
+auto range(T total) {
+  return _range<T>(total);
 }
 
 } // namespace ezl

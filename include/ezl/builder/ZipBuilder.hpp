@@ -68,7 +68,7 @@ public:
    *           and returns an integer for the partitioning. The default is hash function.
    * */
   template <class NH>
-  auto partition(NH &&nh) {
+  auto partitionBy(NH &&nh) {
     auto temp = ZipBuilder<I1, I2, K1, K2, O, NH, A>{
         std::move(this->_prev1), std::move(this->_prev2), std::move(this->_fl),
         std::forward<NH>(nh)};

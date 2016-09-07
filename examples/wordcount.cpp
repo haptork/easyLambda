@@ -7,7 +7,7 @@
  *
  * The command line argument is the glob pattern for desired input files.
  * It can run with any number of processors given with `-n ` mpirun argument.
- * 
+ *
  * benchmarks at the bottom
  * */
 #include <iostream>
@@ -26,9 +26,7 @@ void wordcount(int argc, char* argv[]) {
     return;
   }
   const std::string outFile = "data/output/wc.txt";
-
-  ezl::rise(
-      ezl::fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
+  ezl::rise(ezl::fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
     .reduce<1>(ezl::count(), 0).inprocess()
     .reduce<1>(ezl::sum(), 0).dump(outFile)
     .run();
@@ -40,10 +38,10 @@ int main(int argc, char *argv[]) {
     wordcount(argc, argv);
   } catch (const std::exception& ex) {
     std::cerr<<"error: "<<ex.what()<<'\n';
-    env.abort(1);  
+    env.abort(1);
   } catch (...) {
     std::cerr<<"unknown exception\n";
-    env.abort(2);  
+    env.abort(2);
   }
   return 0;
 }
@@ -55,7 +53,7 @@ int main(int argc, char *argv[]) {
  * *1200MB* | 27.0 | 15.5 | 14.4 |
  *
  * benchmark results: Linux(nfs-3); units: secs
- * *nprocs* | 1x12 | 2x12 | 4x12 | 8x12 |   
+ * *nprocs* | 1x12 | 2x12 | 4x12 | 8x12 |
  * ---      |---   |---   |---   | ---  |
  * *12.5GB* | 178  | 114  | 82   |  80  |
  */

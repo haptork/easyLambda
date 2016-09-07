@@ -36,7 +36,7 @@ void simulation(int nCells, int nSteps, double leftX, double rightX,
   };
   auto buf = fromMem(rise(iota(nCells)).map(initTemp).dump("ic").runResult());
   auto fl = rise(buf).map(stencil).colsResult().reduce<1>(sum(), 0.).inprocess()
-              .reduce<1>(sum(), 0.).prll(1.).partition(onRange(nCells)).build();
+              .reduce<1>(sum(), 0.).prll(1.).partitionBy(range(nCells)).build();
   for (auto i = 0; i < nSteps; ++i) {
     buf.buffer(flow(fl).runResult());
   }

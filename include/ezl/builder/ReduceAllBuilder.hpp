@@ -101,7 +101,7 @@ public:
    *           and returns an integer for the partitioning. The default is hash function.
    * */
   template <class NH>
-  auto partition(NH &&nh) {
+  auto partitionBy(NH &&nh) {
     auto temp = ReduceAllBuilder<I, S, F, O, P, NH, A>{
         std::forward<F>(_func), std::move(_prev), std::move(this->_fl),
         _adjacent, _bunchSize, _fixed, std::forward<NH>(nh)};
