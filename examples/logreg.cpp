@@ -171,5 +171,10 @@ int main(int argc, char *argv[]) {
  *  ---      |---        |---        |---        | ---       |          |
  *  *time(s)*| 190       | 91        | 50        | 36        |  34      |
  *
+ * benchmark results: EC2(nfs-3); input: 2.2GBs; iterations: 10 ; units: secs
+ *  *nprocs*         |    8      |   16      |   32      |
+ *  ---              |---        |---        |---        |
+ *  *time(s)* ezl    | 54        | 27        | 15        |
+ *  *time(s)* PySpark| 150       | 102       | 72        |
  *
  */

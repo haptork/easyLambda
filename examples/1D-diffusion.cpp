@@ -62,3 +62,23 @@ int main(int argc, char *argv[]) {
   }
   return 0;
 }
+
+/*!
+ * The benchmarks are using rand() function for random.
+ * benchmark results: i7(hdd); ncells: 8000000; steps: 10; units: secs
+ *  *nprocs* | 1   | 2   | 4    |
+ *  ---      |---  |---  |---   |
+ *  *time(s)*| 66  | 36  | 22   |
+ * 
+ * benchmark results: Linux(nfs-3); ncells: 1e8; steps 10; units: secs
+ *  *nprocs* | 1x12      | 2x12      | 4x12      | 8x12      |
+ *  ---      |---        |---        |---        | ---       |
+ *  *time(s)*| 300       | 156       | 81        | 42        |
+ *
+ * benchmark results: EC2(nfs-3); ncells: 4e7; steps: 10; units: secs
+ *  *nprocs*         |    8      |   16      |   32      |
+ *  ---              |---        |---        |---        |
+ *  *time(s)* ezl    | 84        | 42        | 25        |
+ *  *time(s)* PySpark| 1200      | 588       | 294       |
+ *
+ */

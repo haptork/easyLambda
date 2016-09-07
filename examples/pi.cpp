@@ -85,4 +85,11 @@ int main(int argc, char *argv[]) {
  *  ---      |---        |---        |---        | ---       |          |
  *  *trials* | 1/8x10^11 | 1/4x10^11 | 1/2x10^11 | 1x10^11   |  2x10^11 |
  *  *time(s)*| 48        | 55        | 58        | 57.5      |  59      |
+ *
+ * benchmark results: EC2(nfs-3); input: 1e10 ; units: secs
+ *  *nprocs*         |    8      |   16      |   32      |
+ *  ---              |---        |---        |---        |
+ *  *time(s) PySpark*| 69        | 36        | 19        |
+ *  *time(s) ezl*    | 69        | 36        | 19        |
+ *
  */

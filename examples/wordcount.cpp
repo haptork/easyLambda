@@ -56,4 +56,15 @@ int main(int argc, char *argv[]) {
  * *nprocs* | 1x12 | 2x12 | 4x12 | 8x12 |
  * ---      |---   |---   |---   | ---  |
  * *12.5GB* | 178  | 114  | 82   |  80  |
+ *
+ * benchmark results: Linux(lustre); units: secs
+ * *nprocs* | 1x24 | 2x24 | 4x24 | 8x24 | 16x24 |
+ * ---      |---   |---   |---   | ---  | ---   |
+ * *12.5GB* |      |  24  | 16   |  13  |  11   |
+ *
+ * benchmark results: EC2(nfs-3); input: 3.2GB; units: secs
+ *  *nprocs* |    8      |   16      |   32      |
+ *  ---      |---        |---        |---        |
+ *  *ezl*    | 39        | 21        | 11        |
+ *  *PySpark*| 780       | 432       | 294       |
  */
