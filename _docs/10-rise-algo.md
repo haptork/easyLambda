@@ -8,7 +8,7 @@ excerpt: "Rise function objects"
 
 Check demoFromFile and demoIO for usage examples of these function objects.
 
-- fromFile
+- fromFile : used to read from a file
 
 - fromMem
 
