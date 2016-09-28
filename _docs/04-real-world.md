@@ -9,7 +9,6 @@ excerpt: "Examples on real problems"
 ## Word Count
 Word count problem involves counting the number of times each word has occurred
 in a data. Following is a complete ezl program for it.
-Following is a complete program for it.
 
 {% highlight cpp %}
 #include <string>
@@ -36,7 +35,7 @@ We include the core ezl header, ezl header for fromFile function object and ezl
 header having function objects for reduce that include count function object.
 The boost mpi environment always needs to be initialized at the top.
 
-The data-flow has rise with an ezl function object fromFile that loads
+The dataflow has rise with an ezl function object fromFile that loads
 tabulated data from files. We pass the types of columns in the angular
 brackets. We are expecting the file name pattern in first command line
 argument. The rowSeparator property with 's' makes any white space into a new
@@ -48,10 +47,10 @@ console. For large data we must pass 0LL or size_t(0) as the initial value of
 the result to avoid overflow. We may wish to dump the results to a file by
 passing filename to the dump property.
 
-When we run this program with multiple cores, the data-flow by default runs on
+When we run this program with multiple cores, the dataflow by default runs on
 all the processes available to MPI ([what is MPI]({{ base_path
 }}/docs/welcome#what-is-mpi)). The riseb by default runs on all the processes
-available to the data-flow and fromFile reads the file(s) in parallel by
+available to the dataflow and fromFile reads the file(s) in parallel by
 dividing the total number of bytes equally among the processes. Since, the
 reduce calculates one total count for each word, every occurrence of the word
 needs to be computed by the same process. For this easyLambda sends same key
@@ -64,7 +63,7 @@ and send to these two processes. There are options to request for processes
 in a different way, the defaults are set on the basis of what we found to be
 reducing overall communication.
 
-The following data-flow reduces the communication and makes the parallel
+The following dataflow reduces the communication and makes the parallel
 run a lot more efficient.
 
 {% highlight cpp %}
@@ -74,7 +73,7 @@ run a lot more efficient.
     .run();
 {% endhighlight %}
 
-In the data-flow there is a reduce with inprocess property. That makes the
+In the dataflow there is a reduce with inprocess property. That makes the
 reduce run on only the rows that are in that process. Maps are inprocess by
 default.  The first reduce outputs the word, count for each word inprocess. The
 secount reduce is not inprocess and hence is applied to the rows after
@@ -181,8 +180,8 @@ object summary passed to reduce having first column as key column for grouping.
 Notice that summary is a generic function which can give summary of any number
 of columns separately even if some of them are arrays. 
 
-After reduce we call the data-flow expression oueUp. This is among the expressions
-that act on the data-flow. It takes us to the one unit up and the next unit we add
+After reduce we call the dataflow expression oueUp. This is among the expressions
+that act on the dataflow. It takes us to the one unit up and the next unit we add
 is added not to reduce but to filter which is one level up. There is nothing added
 to reduce branch and the following units are added to prior unit filter.
 
@@ -218,7 +217,7 @@ id etc for the time-step. ezl fromFile function object has a property lammps
 which gives each atom with time-step value in every row. It also enables safe
 parallel reading from a single dump or multiple files.
 
-In the following data-flow. We find the number of self-interstitials in every
+In the following dataflow. We find the number of self-interstitials in every
 time-step. A self-interstitial is an atom of the same type as the lattice type
 but it is sufficiently far from any of the lattice site in the perfect crystal
 structure.
@@ -272,7 +271,7 @@ reduceAll since we are using ordered property.
 
 It is a popular classification algorithm in machine learning. The logistic
 regression training is done using iterative gradient descent. We are showing
-training as well as testing data-flows for it.
+training as well as testing dataflows for it.
 
 {% highlight cpp %}
   auto reader = ezl::fromFile<double, array<double, dim>>(argv[1])
@@ -280,17 +279,17 @@ training as well as testing data-flows for it.
 
   // load once in memory
   auto trainData = ezl::rise(reader)
-                  .runResult();
+                  .get();
 {% endhighlight %}
 
 The reader is a fromFile function object. The first command line argument has
 the training data file. The training data has first column as result and next
 `dim` number of columns as input variables.
 
-After running the data-flow with runResult, the trainData in different
+After running the dataflow with get, the trainData in different
 processes has different rows loaded from the files, almost equally shared. The
 type of trainData is vector<tuple<double, array<double,dim>> that is same as
-vector of the output columns of the unit on which runResult is called on. We
+vector of the output columns of the unit on which get is called on. We
 can use trainData with raw MPI, any other library or user code. Each process
 will work on its share of data.
 
@@ -324,9 +323,9 @@ source unit. The data is partitioned according to the key. However, for a
 reduce without key all the rows have to reach a single process for reduction so
 it executes in a single process. 
 
-Here, calcnorm map executes in all the processes available to the data-flow since
+Here, calcnorm map executes in all the processes available to the dataflow since
 we request 1.0 ratio of processes with llmode::task mode. Without the task mode it would
-be 1.0 or all the processes of the source unit rather than the data-flow. By default the
+be 1.0 or all the processes of the source unit rather than the dataflow. By default the
 rows are split between the number of processes in a round robin fashion, however with
 llmode::all we make sure that that all the maps in different processes get all the rows.
 
@@ -335,12 +334,12 @@ llmode::all we make sure that that all the maps in different processes get all t
   auto norm = epsilon * 2;
   while (norm < epsilon) {
     array<double, dim> wn;
-    tie(wn, norm) = ezl::flow(trainFlow).runResult()[0];
+    tie(wn, norm) = ezl::flow(trainFlow).get()[0];
     w = move(wn);
   }
 {% endhighlight %}
 
-In the above loop we keep running the training data-flow with updated weights
+In the above loop we keep running the training dataflow with updated weights
 as long as the norm is more than a given epsilon.
 
 {% highlight cpp %}
@@ -366,19 +365,19 @@ as long as the norm is more than a given epsilon.
 We use the final weights from training to test the data-sets given as file
 patterns in command line arguments two onwards.
 
-The ezl::rise unit uses the same reader as the training data-flow. The map
+The ezl::rise unit uses the same reader as the training dataflow. The map
 that follows takes the input features and uses the weights to predict the
 outcome. The reduce calculates the count for each real and predicted outcome
 pair.
 
-After building the data-flow, we run it for different test data-sets by changing
-the input file pattern of the reader and running the data-flow.
+After building the dataflow, we run it for different test data-sets by changing
+the input file pattern of the reader and running the dataflow.
 
 The example demonstrates various useful features, how can the data be loaded into
-memory once and then can be processed multiple times with easyLambda data-flow
-or used elsewhere. It also utilizes the fact that easyLambda data-flow columns
+memory once and then can be processed multiple times with easyLambda dataflow
+or used elsewhere. It also utilizes the fact that easyLambda dataflow columns
 at any step are immutable, hence the input data can be used multiple times and
 is never modified. EasyLambda however makes sure that the copies are created
 only when required and uses const references for column selection etc. It shows
 the use of prll property to spread the data on all processes and how that can
-be used to use the data outside the easyLambda data-flow.
+be used to use the data outside the easyLambda dataflow.

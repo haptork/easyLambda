@@ -22,6 +22,8 @@ Extract the downloaded zip and place the contents of the include directory in
 your compiler include path so that it is available to the compiler. If you do
 not add the directory in the include path then you can give the path of the
 include directory with compiler flag -I.
+* To install newest gcc on Ubuntu or related distros you can check [link](http://askubuntu.com/questions/428198/getting-installing-gcc-g-4-9-on-ubuntu).
+* To install boost with mpi follow the [link](http://www.boost.org/doc/libs/1_61_0/doc/html/mpi/getting_started.html).
 
 ## Compiling
 There are no linking requirements of ezl library but it uses boost::serialization
@@ -52,8 +54,7 @@ files from `ezl/algorithms/` directory need to be included. The function
 objects are grouped according to their use case. The algorithms for use with
 reduce are in reduces.hpp, with filter are in filters.hpp and so on. 
 
-There are
-many examples and demonstrations given in the examples directory, pick an
-example of your interest to begin with. You can check reference for information
-on a specific easyLambda call. Learn by example gives a humble introduction to
-ezl with examples showing many essential features.
+There are many examples and demonstrations given in the examples directory,
+pick an example of your interest to begin with. You can check reference for
+information on a specific easyLambda call. Learn by example gives a humble
+introduction to ezl with examples showing many essential features.
