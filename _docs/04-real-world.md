@@ -6,6 +6,9 @@ excerpt: "Examples on real problems"
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
 
+The section includes some common kind of problems. The code for each or something related
+you can find in the examples of the source repository.
+
 ## Word Count
 Word count problem involves counting the number of times each word has occurred
 in a data. Following is a complete ezl program for it.

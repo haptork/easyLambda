@@ -17,7 +17,7 @@ instructions given below for quick installation and usage.
  - C++ Boost library 1.58 or later with boost-mpi.
  - MPI wrapper compiler (mpic++/mpicxx) and mpirun.
 
-## Getting on AWS:
+## Getting on AWS Elastic
  - Use ami `ami-1bad0978` publicly available on Asia-Pacific(Singapore). The ami can be
    launched for a single node or in a cluster of nodes with [starcluster](http://star.mit.edu/cluster/docs/latest/quickstart.html).
  - SSH with username `ubuntu`.

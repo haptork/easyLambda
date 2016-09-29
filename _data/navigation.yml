@@ -1,7 +1,7 @@
 # main links links
 main:
   - title: "Getting Started"
-    url: /docs/welcome/
+    url: /docs/quick-start-guide/
 
   - title: "Reference"
     url: /docs/starting-dataflow/
@@ -24,11 +24,7 @@ main:
 # documentation links
 docs:
   - title: Getting Started
-    children:
-      - title: "Welcome"
-        url: /docs/welcome/
-      - title: "Quick Start Guide"
-        url: /docs/quick-start-guide/
+    url: /docs/quick-start-guide/
 
   - title: Learn By Example
     children:
