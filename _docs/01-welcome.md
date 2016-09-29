@@ -71,15 +71,25 @@ parallel multi-core or distributed codes easily, to use its many generic
 functions that include parallel type safe reader, summary of data, correlation
 etc or to have fun with dataflow programming in C++. 
 
-The following charts demonstrate the performance of easyLambda for HPC and
-cloud cluster. More benchmarks on hundreds of processes and multiple cores
-are given along with examples source files.
+The following chart demonstrates the performance of easyLambda for HPC cluster
+running with NFSv3. We compared the performance of Monte Carlo pi against bare
+MPI and found it similar. There are benchmarks on more number of processes and
+more problems that you can find along with the example source files in the
+repository.
 
 ![Parallel expressions]({{ site.url }}{{ site.baseurl }}/images/benchhpc.png)
 
+
+The following chart compares the spark and ezl performance on certain problems
+on aws ec2 m3.2xlarge machines. The easyLambda was deployed with starcluster NFS3.
+
 ![Parallel expressions]({{ site.url }}{{ site.baseurl }}/images/benchelastic.png)
 
-The following chart demonstrates the ease of programming with easyLambda.
+The following chart demonstrates the ease of programming with easyLambda. It can
+be argued that how good lines of code represent the ease of programming but this
+factor is a decent indicator especially when the difference is considerable. The
+source code for other comparing works is taken from the examples whenever
+available.
 
 ![Parallel expressions]({{ site.url }}{{ site.baseurl }}/images/benchloc.png)
 
@@ -87,9 +97,9 @@ Some easyLambda features that matter:
 
 - provides a high level programming model over MPI which is way efficient than
   other parallel solutions but severly lacks library support.
-  [1](http://www.sciencedirect.com/science/article/pii/S1877050915017895)
-  [2](http://www.dursi.ca/hpc-is-dying-and-mpi-is-killing-it/).
-- the programming model naturally encourages users to split the code in many
+  [[1]](http://www.sciencedirect.com/science/article/pii/S1877050915017895)
+  [[2]](http://www.dursi.ca/hpc-is-dying-and-mpi-is-killing-it/).
+- The programming model naturally encourages users to split the code in many
   small units that can be reused more with column selection. 
 - It incurs no overhead compared to equivalent serial monolith code or bare MPI
 only code. This is made possible by making minimal copies of data for passing
@@ -99,6 +109,8 @@ user functions for better reuse and interoperability with other libraries.
 - Uniform interface with limited number of well defined list operations that
 have common properties for parallelism, column selection, IO etc simplifies
 programming.
+
+### Contributions
 
 If you are a C++ enthusiast or you like functional programming then there is a
 high chance that you will find the project quite interesting. There are a lot
