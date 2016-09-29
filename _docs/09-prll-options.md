@@ -1,5 +1,5 @@
 ---
-title: "Parallel property"
+title: "Parallelism and Parallel Properties"
 permalink: /docs/prll-options/
 excerpt: "Refernce on prll property"
 ---
@@ -19,90 +19,89 @@ run on separate processes on different rows simultaneously. A reduce is
 parallel on different groups of rows, however it requires that all the rows in
 a group be communicated to the same processor from the map processes.
 
-The easyLambda makes good use of task--parallelism and data--parallelism with 
-optimum defaults for MPI. Every unit has `.prll()` property that can 
-be used to override the defaults if required. The following figure shows the
-overview of parallel options for units in a data--flow. 
+Configuring parallelism in easyLambda involves modifying the process
+allocation and data distribution behaviours either for a unit or the
+dataflow itself. The section, first presents the defaults for parallelism
+chosen in easyLambda and then shows how it can be customized with properties
+that are common across the units. 
+
+## Process Allocation Defaults
+By default, all the processes available to the MPI environment are also
+available to the dataflow. The `run` or `get` expressions have optional
+parameters for process requests that limits the processes allocated to the
+dataflow. Process allocation can be requested by specifying a process count
+either as an integer or as a ratio of total processes used by its source unit.
+Specific processes can also be requested by specifying their MPI ranks.
+
+The rise unit runs on all the processes available to the dataflow. The
+map and filter units run on the same processes as their
+source units and receive data via function calls from them.
+
+The key partitioning reduce, reduceAll and zip run in parallel on half the
+number of processes that their sources have. These units without key
+partitioning run on a single process as all the rows need to be present in a
+single process to be reduced or joined.
+
+## Data Distribution Defaults
+If map or filter units are configured to run in parallel without specifying the
+keys for partitioning, the default data distribution behaviour is to share the
+input data rows among the processes in a round-robin fashion.
+
+If partition by key is specified for a unit, the hash function is used to
+partition the data across the processes. These defaults can be overridden.
 
 ![Parallel expressions]({{ site.url }}{{ site.baseurl }}/images/prll.png)
-
-In the above figure, first unit can be a rise running on {0, 1} process
-ranks, {2,3,4} can be running a map or reduce and so on. It can be seen that a
-reduce unit is by default parallel and map units are by default in-process.
-This is because a reduce requires partitioning of rows on key columns i.e. all
-the rows belonging to the same group need to be communicated to the same
-process. The reduce units can be made to run in-process with
-`inprocess()` property.
-
-The defaults are that a data-flow has all the processes available to MPI
-environment, rise has all the processes available to the data-flow, maps and
-filters run on same processes as their source, reduce and reduceAll run in
-parallel, on half the processes of their source. This configuration decreases
-the communication cost and scales well for different problems. We will see the
-benchmarks for different problems with these defaults below in benchmarks.
-
-If for a map or filter prll property is used without the key columns,
-the input data rows are, by default, shared among the processes in a
-round-robin fashion. This can be used in sharding like operations or to spread
-input data coming from a single stream to a number of nodes. With `duplicateOnAll`
-mode the input data rows can be duplicated to all the processes running the
-unit. 
-
-Some patterns that are used frequently can be formed by a combination of these
-parallel properties, such as combiner and broadcast. 
-
-An in-process reduce is equivalent to what is termed as combiner in basic
-MapReduce model. For parallel efficiency, it is important to have an
-in-process reduction before reducing across processes to decrease overall
-communication. 
-
-Broadcast function in MPI makes the data available to all the processes. In
-easyLambda same can be achieved by having `duplicateOnAll` prll mode along with the
-task mode. It can be used to communicate the results to all the processes at
-certain step in the computation or to have the result with `runResult`
-available on all the processes after the data--flow execution finishes. The data
-then can be used outside MPI as required.
-
 
 Check demoPrll for usage. The following are the properties that can be
 added to any unit to change its parallel behaviour.
 
-- prll
+## Prll Property
+The `prll` property configures process allocation and data distribution
+semantics for a unit. Process allocation can be requested by specifying a
+process count either as an integer or as a ratio of processes used by the
+source/parent unit. Specific processes can also be requested by specifying
+their MPI ranks. If the request cannot be satisfied, the program still executes
+with the closest possible allocation.
 
-With `prll(...)` property, the processes can be requested by number of
-processes, ratio of processes of source / parent unit, or exact rank of
-processes. If the requested processes are not available then also the program
-runs correctly with best possible allocation to the unit.
+As an example the prll property can be used with one process or by
+specifying the exact rank of the process that needs to collect all the output
+streaming rows. The `get` expression can be used in combination with this
+to use the output data outside the dataflow.
 
-The prll property has mode as the second argument. A parallel map or
-reduce without task mode can only be allocated with processes from the set of
-processes of its source / parent. This also implies that without task mode, a
-unit does not have more processes than its source. However, in task mode a unit
-gets processes directly from the share of processes available to the data-flow.
-The `run(...)` expression also has optional parameter for process request
-that limits the processes allocated to the data-flow, itself. This process request
-can also be ratio of total processes, exact number of processes or ranks of
-processes (passed as initializer_list<int> or vector<int>).
+The prll property takes process request as first parameter. The second optional
+parameter modifies the default modes of data distribution and allocation for
+that unit. The task mode allots processes from those available to the dataflow
+rather than from its source or parent unit. Without using task mode, a unit
+cannot run on any other process outside the set of processes available to its
+source/parent. Task mode can be used in combination with the data distribution
+modes `shard` or `dupe`. If shard mode is specified, rows are distributed
+amongst the processes in a round--robin fashion. This mode is effective only if
+the data partitioning is not specified for the unit. If dupe mode is specified,
+the rows are duplicated and made available to all the processes.
 
-- hash
+The `dupe` mode can be used to replicate the functionality of the
+`broadcast` function in MPI. This can be used to communicate the
+results at a certain step in the computation or the result rows
+using get() available to all the processes. this data can then
+be used outside easyLambda as well.
 
-The data in reduce is partitioned on key columns. A map unit can also have
-partitioning of data on keys specified along with `prll<...>()` property
-with key column indices inside angular brackets. The default partitioning
-function used is the hash function on keys. The function can be overridden by
-`hash(...)` property.
+## Inprocess property
+The `inprocess` property removes all parallelism behaviour from the
+unit. The unit runs on the same set of processes as its source and there is no
+data distribution across processes. The map and filter
+operations run in--process by default. reduce and other units
+can be configured to run in-process using the inprocess property.
+In-process reduction is a frequently used pattern in parallel programming
+and is sometimes termed as a Combiner operation. The advantage of an in--process
+reduction prior to a global reduction is that only single locally reduced row
+needs to be communicated per key to find the global reduction. This reduces
+communication overhead.
 
-Check example interstitial-count or demoPrll for usage.
-
-- inprocess
-An inprocess unit receives data only from its parent. Map and filter are by
-default inprocess. Reduce and zip are not and recieve all the data for particular
-keys from all the processes. However, it is more efficient to reduce the data inprocess
-and then reduce the overall results. `inprocess()` property can be added to any unit
-to make it process data of its own process only.
-
-- ordered
-If the unit has keys for data partitioning and the unit is not inprocess then adding
-ordering keeps the data from each process in order and the unit gets the data from
-one process in order all at the same time. This may be required for calculations that
-depend on ordering.
+## PartitionBy property
+The `partitionBy` property can be used to configure the columns and
+function to be used for partitioning. The key columns in reduce, reduceAll,
+scan and zip are also used for partitioning between processes. However the
+partitioning columns need to be specified explicitly for a map or
+filter operation. The partitionBy property takes key columns
+as template arguments for map and filter. It takes an optional argument to
+customize the partitioning function.

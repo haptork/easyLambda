@@ -1,21 +1,28 @@
 ---
 title: "Starting A Data Flow"
 permalink: /docs/starting-dataflow/
-excerpt: "Refernce on ways to start a data-flow"
+excerpt: "Refernce on ways to start a dataflow"
 ---
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
 
+
+A dataflow can either begin with a rise unit, a flow expression with input
+stream columns as template arguments or a flow expression with a prior dataflow
+as a parameter to continue building from it. To it new units can be added or
+current unit can be modified with the properties in any order or modify the
+output streaming routes using dataflow properties as shown in next section.
+
 ## ezl::rise
 
-  ezl::rise is the original data source in a data-flow. It is a higher order
+  ezl::rise is the original data source in a dataflow. It is a higher order
   function i.e. it takes another function as input that is called till it
   signals EndOfData. The function returns {row, isEndOfData} or a vector of
   rows in which case EndOfData is implied by returning an empty vector. Check
   the [code
   example](https://github.com/haptork/easyLambda/blob/e496a3e3070b806e8c48124d3454543c4cebc9b7/examples/demoRise.cpp)
   for more. The rise function streams the rows across all the branches of the
-  data-flow when the data-flow runs. It doesn't buffer the rows.
+  dataflow when the dataflow runs. It doesn't buffer the rows.
 
   - Properties:
     1. [prll]({{ base_path }}/docs/prll-expr/)
@@ -31,9 +38,9 @@ excerpt: "Refernce on ways to start a data-flow"
 
 ## ezl::flow
 
-  If a data-flow is not being started with a rise then it can either be started
-  as continuation of another data-flow or it can be started by declaring the
-  data-types of its input parameters without any source. A data-flow that has no
+  If a dataflow is not being started with a rise then it can either be started
+  as continuation of another dataflow or it can be started by declaring the
+  data-types of its input parameters without any source. A dataflow that has no
   source does not do anything when run. 
 
   - Properties (only if continuing from prior flow): no properties.

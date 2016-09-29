@@ -1,15 +1,10 @@
 ---
-title: "Unit Expressions"
+title: "Unit Expressions and Properties"
 permalink: /docs/unit-expr/
-excerpt: "Refernce on unit expressions"
+excerpt: "Refernce on unit properties"
 ---
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
-
-A new computing unit can be added anywhere in the data-flow with the unit
-expressions. They finalize the prior data-flow unit. These are higher order
-functions ie. take another function as input. The units are based on functional
-list operations. 
 
 The input and output types for a unit are fixed. A unit may output zero to many
 rows of some column types. A function can return multiple values / columns by
@@ -38,9 +33,9 @@ int and float respectively, the function for map<3,2> can be fn(int, float),
 fn(const int&, float int&), fn(tuple<int, float>), fn(const tuple<const int&,
 const float&>&). All are equivalent, however constant references or tuple of
 those do not make a copy and can improve the performance. Internally, there
-are no copies made even for shuffle as the rows are represented internally by
-tuple of const references. The parameters for reduce function are similar but
-not exactly same and are described in the specific sections below.
+are no copies made for column selection as the rows are represented internally
+by tuple of const references. The parameters for reduce function are similar
+but not exactly same and are described in the specific sections below.
 
 ## map
 
@@ -62,7 +57,7 @@ for the output, dropping all the input columns.
 
   - Properties:
     1. [prll]({{ base_path }}/docs/prll-expr/)
-    2. [dump]({{ base_path }}/docs/dump-expr/)
+    2. dump
     3. cols
     4. colsDrop
     5. colsTransform
@@ -84,7 +79,7 @@ if the row is passed to the next unit or not.
 
   - Properties:
     1. [prll]({{ base_path }}/docs/prll-expr/)
-    2. [dump]({{ base_path }}/docs/dump-expr/)
+    2. dump
     3. cols
     4. colsDrop
 
@@ -94,20 +89,28 @@ and runs inprocess by default that can be changed with prll property.
 
 ## reduce
 
-A reduce is used for operations that take multiple rows as input to find the
-result such as common aggregation operations like count, sum, correlation etc.
-It takes function and initial value for the result columns as the parameters.
-The value of results is initially set using parameters given to reduce and are
-updated for each row with the returned value of the function. The final value
-of the result is passed to the next unit.
+The reduce takes a function, a list and an initial value
+of the result. The user function passed to it is called for every new input row
+with the current value of the result and the row. The result value is updated
+with the return value of the user function. It is generally used for list
+aggregation operations such as finding sum of all elements.
 
-The reduce result can be calculated for each sub-list or group separately such
-as finding the count of atoms rather for each time-step separately than the
-total atoms all over. This is termed sometimes as reduce by key or segmented
-reduce. This is similar to groupby queries of SQL. The key columns to group
-the rows can be selected by indices e.g. reduce<3, 1> selects third and first
-column as the key. All the non-key columns are value columns by default. However
-with key and value both can be selected e.g. reduce<ezl::key<3,1>, ezl::val<4>>.
+The reduce makes no guarantees about the order in which the function is to be
+called over the list items for updating the result. Hence, it can only be
+applied to lists that are associative under the given function and have an
+identity result value.
+
+The reduce, scan and zip operations can have keys that partition the input rows
+into sublists to calculate the result for each key--defined sublist or group
+separately. A sublist of rows is generally characterized by all the rows having
+the same value of key columns where key columns consist of a subset of the
+total columns. In SQL query syntax, reduce with partitioning is similar to
+aggregate function with `group by`, while a zip with partitioning is
+similar to a `join`. Reduce with partitioning is a frequently useful
+operation, e.g. in computational physics, it is often necessary to calculate
+properties for each time--step separately. E.g. reduce<3, 1> selects third and
+first column as the key. All the non-key columns are value columns by default.
+However with key and value both can be selected e.g. reduce<ezl::key<3,1>, ezl::val<4>>. 
 The input parameters of the function are result columns, followed by key and
 value columns that can be types, const refs or the tuple of key, tuple of value
 followed by tuple of result or tuple of const refs e.g. if 1st, 2nd and 3rd
@@ -119,13 +122,6 @@ reduce<3,1> can be any of the following:
 - fn(tuple<bool>, tuple<float, char>, tuple<int>)
 - fn(const tuple<const bool&>&, const tuple<const float&, const char&>&, const tuple<const int&>&)
 
-Since, the result is updated for every row and the cost of constructing a new
-result and returning it can be higher for some return types, the result
-parameter can be a reference type without const and can be returned as
-reference after modifying. The key or value has to be const reference or it is
-a compile time error, since a single row may stream to multiple units, so ezl
-doesn't allow mutating the input rows. The reduce operation minimizes the copy
-operations to least.
 
 The scan property that is similar to functional scan operation can be used to find
 results like running sum etc. For each input row reduce updates the result as well
@@ -133,18 +129,23 @@ as passes the output row(s) from the result to the next destination units.
 
   - Properties:
     1. [prll]({{ base_path }}/docs/prll-expr/)
-    2. [dump]({{ base_path }}/docs/dump-expr/)
+    2. dump
     3. cols
     4. colsDrop
-    5. ordered
+    5. segmented
     6. scan
 
 The result is updated by calling the user function as the rows stream from the
 parent unit(s). The final result is passed to the next unit(s) only when the
-data streaming ends in ezl::rise unit. However, if the input rows are already
-ordered by the key i.e. all the keys appear contigously then it makes no sense
-to buffer the result till end of data. The **ordered** property solves just this
-issue and makes the current result as soon as the key changes.
+data streaming ends in ezl::rise unit. However, if the data is segmented on key
+columns i.e. all rows with the same key are next to each other, then the
+reduction operation can flush out the results of the key segments to the next
+unit as soon as another key appears on the input stream. This behaviour
+provides pipeline parallelism which is generally not possible with typical
+implementations of the reduce operation. The segmented property can be
+used to enable this behaviour. Segmented reduction can also be used to
+calculate and view partial aggregation results before computing the result of
+the total reduction.
 
 A reduce runs on half the processes of its parent unit when running in parallel.
 The data is partitioned among the processes running reduce based on the key. 
@@ -171,10 +172,10 @@ for reduceAll<3,1> can be any of the following:
 
   - Properties:
     1. [prll]({{ base_path }}/docs/prll-expr/)
-    2. [dump]({{ base_path }}/docs/dump-expr/)
+    2. dump
     3. cols
     4. colsDrop
-    5. ordered
+    5. segmented
     6. adjacent
     7. bunch
 
@@ -194,7 +195,7 @@ for reduceAll<3,1> can be any of the following:
   all the rows with the same keys are next to each other then the reduce only
   holds data for the current key and as soon as a new key appears it sends the
   results for the existing key to the next unit. It is very common to have
-  ordered data especially in simulations and experiments.
+  segmented data especially in simulations and experiments.
 
 ## zip
 

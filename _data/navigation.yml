@@ -36,8 +36,8 @@ docs:
         url: /docs/hello-world/
       - title: "Real world examples"
         url: /docs/real-world/
-      - title: "Data-flow examples"
-        url: /docs/data-flow-eg/
+      - title: "More examples"
+        url: /docs/more/
 
   - title: Reference
     children:
@@ -58,15 +58,15 @@ docs:
 
   - title: Extras
     children:
-      - title: "Modern C++ essentials"
-        url: /docs/cpp-essentials/
-      - title: "Ezl for simulations"
-        url: /docs/lammps/
-      - title: "Parallel Execution Model"
-        url: /docs/parallel-model/
+      #      - title: "Modern C++ essentials"
+      #  url: /docs/cpp-essentials/
+      #- title: "Ezl for simulations"
+      #  url: /docs/lammps/
+      #- title: "Parallel Execution Model"
+      #  url: /docs/parallel-model/
       - title: "Benchmarks"
         url: /docs/benchmarks/
-      - title: "Implementation"
-        url: /docs/implementation/
-      - title: "License"
-        url: /docs/license/
+      - title: "Internals"
+        url: /docs/internals/
+      #- title: "License"
+      #  url: /docs/license/

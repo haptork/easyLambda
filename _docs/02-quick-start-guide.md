@@ -17,6 +17,13 @@ instructions given below for quick installation and usage.
  - C++ Boost library 1.58 or later with boost-mpi.
  - MPI wrapper compiler (mpic++/mpicxx) and mpirun.
 
+## Getting on AWS:
+ - Use ami `ami-1bad0978` publicly available on Asia-Pacific(Singapore). The ami can be
+   launched for a single node or in a cluster of nodes with [starcluster](http://star.mit.edu/cluster/docs/latest/quickstart.html).
+ - SSH with username `ubuntu`.
+ - Clone the easyLambda github repository in the home directory and you are
+   ready to compile and run the examples and your applications.
+
 ## Installing
 Extract the downloaded zip and place the contents of the include directory in
 your compiler include path so that it is available to the compiler. If you do
@@ -35,11 +42,11 @@ Replace path_to_ezl_include with the actual path of ezl include directory in you
 system. If you have added the contents of include directory to your source tree
 or global include path then you don't need to pass -I path_to_ezl_include flag.
 
-You can compile unit-tests with `make unittest` and run with `./bin/unittest`.
+You can compile unit-tests with `make bin/test` and run with `./bin/test`.
 
 You can compile an example using make with `make example fname=name`, replace
 name with the name of the example file for e.g. `make example fname=wordcount`
-to compile wordcount example.
+to compile wordcount example. You can compile all the examples with `make examples`.
 
 ## Running
 
@@ -58,3 +65,5 @@ There are many examples and demonstrations given in the examples directory,
 pick an example of your interest to begin with. You can check reference for
 information on a specific easyLambda call. Learn by example gives a humble
 introduction to ezl with examples showing many essential features.
+
+For any help please let us know via mail or github issues.
