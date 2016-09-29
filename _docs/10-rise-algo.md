@@ -27,7 +27,7 @@ It loads rows from a container or a C++ initializer
 dataflow. If the same list is apriori available to all the processes, splitting
 the data parallelizes the operation. however, if the list is already split
 amongst the processes i.e..  each process has different items in the list, then
-\texttt{split} property is not required.
+`split` property is not required.
 
 ## fromFile
  It loads tabulated data from files in parallel. The

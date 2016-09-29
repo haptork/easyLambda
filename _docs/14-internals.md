@@ -41,7 +41,7 @@ receive the output stream then they it remains same for both regardless of
 which unit operates on the data first. Creating a tuple of immutable references
 is a cheap operation because it involves no copies. 
 
-The default output for \texttt{map} involves concatenation of the input and
+The default output for `map` involves concatenation of the input and
 user function results.  Similarly, for the reduce, it involves concatenation of
 the keys and user function results. This concatenation is implemented by
 creating a tuple of immutable references. With column selection, the final
@@ -53,12 +53,12 @@ Hence, the column selection has no extra performance penalty.
 A dataflow can be characterized solely by its input and output row types.
 A dataflow object can be conceptualized as a black box that takes one type of
 rows and converts them into another type. The abstraction of a dataflow that
-accepts data rows with columns of type \texttt{Ts} and streams out rows with
-columns of type \texttt{Us} is represented in easyLambda with the type
+accepts data rows with columns of type `Ts` and streams out rows with
+columns of type `Us` is represented in easyLambda with the type
 \verb|Flow<<tuple<Ts...>, tuple<Us...>>|. Concretely, a dataflow that accepts
 rows with column types int and char and outputs rows with a bool column would
 have type \verb|Flow<<tuple<int, char>, tuple<bool>>|. This type is derived
-from the types \texttt{Source<Ts...>} and \texttt{Dest<Us...>} that separately
+from the types `Dest<Us...>` that separately
 represent the input and output streams. 
 
 A Flow object is returned with a build or run expression. It is an independent

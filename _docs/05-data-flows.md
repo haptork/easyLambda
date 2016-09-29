@@ -100,6 +100,8 @@ id etc for the time-step. ezl fromFile function object has a property lammps
 which gives each atom with time-step value in every row. It also enables safe
 parallel reading from a single dump or multiple files.
 
+![Parallel expressions]({{ site.url }}{{ site.baseurl }}/images/displaced.png)
+
 In the following dataflow. We find the number of atoms in every time-step that
 get displaced more than a threshold value with respect to their position in first
 frame. The input data-file has atom-id and coordinates in each row and time-step
