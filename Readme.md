@@ -39,7 +39,7 @@ or CSVs in parallel with type-safety etc.
 Check out the 
 [Getting Started](https://haptork.github.io/easyLambda/docs/quick-start-guide/)
 section of the library webpage to know how to install and use it. The library
-can be easily used with aws elastic cloud or a single instance.
+can also be used on aws elastic cloud or single instance.
 
 ## Contributing
 
@@ -49,12 +49,12 @@ or want to support a high level interface for MPI, it is likely that the
 project will interest you. The project has a lot of areas of improvement and
 extension including fault-tolerance, better data-handling, MPI single sided
 communication, optimizing compile-time, improving documentation etc. 
-Check [internals](https://haptork.github.io/easyLambda/internals)
+Check [internals](https://haptork.github.io/easyLambda/docs/internals)
 for details on design and implementation.
 
 ## Examples
 
-You can check detailed walkthrough of the library [here](http://localhost:4000/docs/hello-world/),
+You can check detailed walkthrough of the library [here](https://haptork.github.io/easyLambda/docs/hello-world/),
 starting from simple examples and moving to real world problems ranging from
 scientific simulations to supervised machine learning from everyday data
 analytics tasks. Here we mention some examples in short.
