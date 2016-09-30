@@ -1,12 +1,13 @@
 ---
 title: "Welcome"
 excerpt: "Introduction to easyLambda"
-layout: splash
+layout: single
+author_profile: false
+sidebar:
+  nav: "docs"
 ---
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
-
-## Welcome
 
 Welcome to easyLambda and thanks for your interest. The site aims to be a
 comprehensive guide for easyLambda.
