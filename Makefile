@@ -8,7 +8,8 @@ BUILDDIR := build
 BINDIR := bin
 TESTTARGET := bin/test
 SRCEXT := cpp
-CFLAGS := -Wall -std=c++14 -O3
+CFLAGS := -Wall -std=c++14 -O3# -fno-omit-frame-pointer
+# perf report -g 'graph,0.5,caller'
 LIB := -lboost_mpi -lboost_serialization 
 TESTS := $(shell find $(TESTDIR) -type f -name *.$(SRCEXT))
 SOURCES := $(shell find $(EGDIR) -type f -name *.$(SRCEXT))
@@ -16,6 +17,10 @@ OBJECTS := $(patsubst $(EGDIR)/%,$(BINDIR)/%,$(SOURCES:.$(SRCEXT)=))
 OBJECTSTEST := $(patsubst $(TESTDIR)/%,$(BUILDDIR)/%,$(TESTS:.$(SRCEXT)=.o))
 TESTINC := -I test
 INC := -I include
+
+examples: $(OBJECTS)
+	@mkdir -p $(BINDIR)
+	@echo "Finished"
 
 $(TESTTARGET): $(OBJECTSTEST)
 	@mkdir -p $(BINDIR)
@@ -27,11 +32,9 @@ $(BUILDDIR)/%.o: $(TESTDIR)/%.$(SRCEXT)
 	@echo " $(CC) $(CFLAGS) $(INC) $(TESTINC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) $(TESTINC) -c -o $@ $<
 
 example:
+	@mkdir -p $(BINDIR)
 	@echo " making $(fname)..."
 	@echo " $(CC) examples/$(fname).cpp $(CFLAGS) $(INC) -o $(BUILDDIR)/$(fname) $(LIB)"; $(CC) examples/$(fname).cpp $(CFLAGS) $(INC) -o $(BINDIR)/$(fname) $(LIB)
-
-examples: $(OBJECTS)
-	@echo "Finished"
 
 $(BINDIR)/%: $(EGDIR)/%.$(SRCEXT)
 	@mkdir -p $(BINDIR)
