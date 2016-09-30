@@ -1,5 +1,5 @@
 ---
-title: "Interals"
+title: "Internals"
 permalink: /docs/internals/
 excerpt: "Internal Design and Implementation"
 ---
