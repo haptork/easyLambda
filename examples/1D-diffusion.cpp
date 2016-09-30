@@ -34,11 +34,11 @@ void simulation(int nCells, int nSteps, double leftX, double rightX,
     c.erase(remove_if(begin(c)+1, end(c), lt<1>(1) || gt<1>(nCells-2)), end(c));
     return c;
   };
-  auto buf = fromMem(rise(iota(nCells)).map(initTemp).dump("ic").runResult());
+  auto buf = fromMem(rise(iota(nCells)).map(initTemp).dump("ic").get());
   auto fl = rise(buf).map(stencil).colsResult().reduce<1>(sum(), 0.).inprocess()
               .reduce<1>(sum(), 0.).prll(1.).partitionBy(range(nCells)).build();
   for (auto i = 0; i < nSteps; ++i) {
-    buf.buffer(flow(fl).runResult());
+    buf.buffer(flow(fl).get());
   }
   rise(buf).dump("final").run();
 }

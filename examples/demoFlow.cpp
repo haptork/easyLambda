@@ -3,7 +3,7 @@
  * demo for data-flow.
  *
  * Shows iterative / cyclic data-flow pipeline, a diamond like pipeline with
- * splitterfollowed by a joiner and other expressions such as addFlow, flow<>()
+ * splitterfollowed by a joiner and other expressions such as pipe, flow<>()
  * ![figures](../doc/dataflow.png)
  *
  * Results are dumped on stdout.
@@ -84,13 +84,13 @@ void demoFlow() {
    * */
   auto ld = ezl::rise(ezl::fromMem(buf).split())
     .map<2>([](const vector<int>& v) {
-      return ezl::rise(ezl::fromMem(v)).runResult();
+      return ezl::rise(ezl::fromMem(v)).get();
     }).colsTransform()
-    .addFlow(pivot)  // adds the flow and continues adding to it
+    .pipe(pivot)  // adds the flow and continues adding to it
       .filter<2>(ezl::gt(100)).dump()
       .oneUp()  // moves to adding to pivot again      
     .filter<2>(ezl::lt(100))
-    .addFlow(pivot)
+    .pipe(pivot)
     .run();
   /*!
    *    
@@ -148,14 +148,14 @@ void demoFlow() {
       .build();
 
   ezl::flow(risefl)
-    .branchFlow(  // adds flow as a branch
+    .tee(  // adds flow as a branch
       ezl::flow<int>()
         .map([](int x) { return x / 2.; })
-        .addFlow(joiner)
+        .pipe(joiner)
         .build()
     )
     .map([](int x) { return x * 2.; })
-    .addFlow(joiner)
+    .pipe(joiner)
     .filter([](int, vector<double> halfnDouble) {
        return true; 
      }).dump("", "number, (half, double)")

@@ -13,7 +13,7 @@
  * ![prll options](../doc/prll.png)
  *
  * a run can have a request for procs needed for e.g. .run(4), .run(0.5)
- * or runResult({1,2,3,0})
+ * or get({1,2,3,0})
  * All the units including rise have a prll option to make such a request.
  * 
  * In addition to allocation request mode can also be specified:
@@ -65,7 +65,7 @@ void demoPrll() {
                   .reduce(ezl::sum(), 0LL)
                   .filter(ezl::tautology())
                     .prll(1., ezl::llmode::dupe | ezl::llmode::task)
-                  .runResult(1.)[0];
+                  .get(1.)[0];
 
   // The source runs in one process, while filter runs on all processes.
   // The rows are distributed to all processes in round-robin fashion.

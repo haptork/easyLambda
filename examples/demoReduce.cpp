@@ -80,7 +80,7 @@ void demoReduce() {
                       .inprocess()
                     .reduce<1>(ezl::sum(), 0LL) // sums the counts
                       .prll(1., ezl::llmode::dupe | ezl::llmode::task)
-                    .runResult();
+                    .get();
 
   // can return vector to return multiple rows.
   // vector<tuple<...>> to return multiple rows of multiple cols.

@@ -59,7 +59,7 @@ void displaced(int argc, char* argv[]) {
                             .cols({1, 3, 4, 5, 6})  // id, coords
                             .lammps())
                   .filter(ezl::tautology()).partitionBy<1>().prll(1.)
-                  .runResult();
+                  .get();
 
   boost::unordered_map<int, array<float, 3>> firstFrame;
   for(const auto& it :buffer) firstFrame[get<0>(it)] = get<1>(it);

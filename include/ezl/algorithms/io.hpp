@@ -40,7 +40,7 @@ namespace detail {
  * auto& data = buf.buffer();
  * @endcode
  *
- * Consider using `runResult()` instead of filter and run()
+ * Consider using `get()` instead of filter and run()
  * to get the buffer in return result of a pipeline.
  * */
 template <class T>

@@ -189,7 +189,7 @@ public:
   // @param procs Process request in terms of exact number of processes,
   //    ratio of total processes or exact rank of processes in a vector<int>.
   // @return returns the vector of tuple of output column types.
-  template <class Ptype> auto runResult(Ptype procs, bool refresh = true) {
+  template <class Ptype> auto get(Ptype procs, bool refresh = true) {
     auto fl = build();
     using I = typename decltype(fl)::element_type::otype;
     std::vector<typename meta::SlctTupleType<I>::type> buffer;
@@ -210,9 +210,9 @@ public:
   // rise unit attached to the flow then running has no effect.
   // @param lprocs optional process request as exact ranks in initializer_list<int>
   // @return returns the vector of tuple of output column types.
-  auto runResult(std::initializer_list<int> lprocs = {}, bool refresh = true) {
+  auto get(std::initializer_list<int> lprocs = {}, bool refresh = true) {
     std::vector<int> procs(std::begin(lprocs), std::end(lprocs));
-    return runResult(procs, refresh);
+    return get(procs, refresh);
   }
 
   // builds the current unit but as a branch, any expression that appears after is
@@ -235,11 +235,11 @@ public:
   // unit in the trunk dataflow. Any expression afterwards is applicable to the
   // current unit e.g. if a new unit is added afterwards it gets output data
   // stream from the current dataflow.
-  //                           --> | branch flow within .branchFlow(...) |
+  //                           --> | branch flow within .tee(...) |
   //                           |
   // | cur dataflow | --> | cur unit | --> | next unit / expression |
   template <class I>
-  auto branchFlow(I nx) {
+  auto tee(I nx) {
     auto curUnit = ((T *)this)->_buildUnit();
     nx->prev(curUnit, nx);
     return LoadUnitBuilder<typename decltype(curUnit)::element_type, Fl>{curUnit, _fl};
@@ -251,7 +251,7 @@ public:
   // new unit is added afterwards it gets output data stream from the new flow.
   // | cur dataflow | -->| cur unit | -->| added flow | --> | next unit / expr |
   template <class I>
-  auto addFlow(I nx) {
+  auto pipe(I nx) {
     auto curUnit = ((T *)this)->_buildUnit();
     nx->prev(curUnit, nx);
     return LoadUnitBuilder<typename I::element_type, Fl>{nx, _fl};

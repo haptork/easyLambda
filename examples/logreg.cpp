@@ -54,7 +54,7 @@ void logreg(int argc, char* argv[]) {
   constexpr auto maxIters = 1000;
   // specify columns and other read properties if required.
   auto reader = fromFile<double, array<double, D>>(inFile).colSeparator(",");
-  auto data = rise(reader).runResult();  // load once in memory
+  auto data = rise(reader).get();  // load once in memory
   if (data.empty()) {
     Karta::inst().print("no data");
     return;
@@ -78,7 +78,7 @@ void logreg(int argc, char* argv[]) {
   auto iters = 0;
   auto norm = 0.;
   while (iters++ < maxIters) {
-    tie(grad) =  flow(train).runResult()[0]; // running flow
+    tie(grad) =  flow(train).get()[0]; // running flow
     constexpr static auto gamma = 0.002;
     transform(begin(w), end(w), begin(grad), begin(wn),
                    [](double a, double b) { return a - gamma * b;});

@@ -54,7 +54,7 @@ void demoFromMem(std::string outFile) {
 
   auto flow2 = ezl::rise(mem)
                  .dump(outFile, "load from rvalue array w/o share")
-                 .runResult();
+                 .get();
 }
 
 void demoIO() {
@@ -107,9 +107,9 @@ void demoIO() {
     .filter(ezl::dumpMem(s2))
     .run();
 
-  // a better way to get the results is runResult()
+  // a better way to get the results is get()
   auto rows = ezl::rise(ezl::fromFileNames(inFile).split())
-                .runResult();
+                .get();
 
   assert((s.buffer().size() == s2.size()) && (s2.size() == rows.size()));
   ezl::Karta::inst().print("number of files: "+to_string(rows.size()));
