@@ -12,8 +12,8 @@ tags:
 
 Predicates are functions that return a boolean value. Unary predicates take a
 single parameter
-[drdobbs](http://www.drdobbs.com/effective-standard-c-library-unary-predi/184403777)
-[cppref](http://en.cppreference.com/w/cpp/concept/Predicate). They are useful
+[[drdobbs]](http://www.drdobbs.com/effective-standard-c-library-unary-predi/184403777)
+[[cppref]](http://en.cppreference.com/w/cpp/concept/Predicate). They are useful
 in many higher order functions e.g. '_if' algorithms in standard library such
 as find_if or remove_if, partition etc.  With increase in functional style
 programming and libraries within C++, predicates are going to be used more
@@ -93,8 +93,8 @@ private:
 
 The parameter type of the predicate method is not required to be the type of
 reference (Ref). However, it is necessary that comparing the values of two
-types with `==` is semantically valid. This is to say that templates have [Duck
-typing](https://en.wikipedia.org/wiki/Duck_typing).
+types with `==` is semantically valid. This is to say that templates have [[Duck
+typing]](https://en.wikipedia.org/wiki/Duck_typing).
 
 Similarly, we can have Gt and Lt classes for greater than and less than,
 respectively.
