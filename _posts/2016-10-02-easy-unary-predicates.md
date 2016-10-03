@@ -12,7 +12,7 @@ tags:
 ---
 
 Predicates are functions that return a boolean value. Unary predicates take a
-single parameter
+single parameter to decide the return value
 [[drdobbs]](http://www.drdobbs.com/effective-standard-c-library-unary-predi/184403777)
 [[cppref]](http://en.cppreference.com/w/cpp/concept/Predicate). They are useful
 in many higher order functions e.g. '_if' algorithms in standard library such
@@ -22,10 +22,11 @@ often.
 
 This blog post shows cute, little unary predicates that save some keystrokes
 and work together well. We will walk through the implementation that begins with
-thinking generic and embarks on often used metaprogramming pattern towards the end.
-Let's have a look at what these predicates look like in the first place.
+thinking generic and towards the end embarks on an often used metaprogramming
+pattern. Let's have a look at what these predicates look like in the first
+place and observe their behavior.
 
-**Example-1**: Logical operators
+**Example-1**: Relational operators with logical
 
 {% highlight cpp %}
 auto a = gt(80) || lt(40);
@@ -35,45 +36,43 @@ assert(a(3) == true);
 assert(a_notone_odd(1) == false);
 {% endhighlight %}
 
-**Example-2**: Column selection
+**Example-2**: Multiple columns and column selection
 
 {% highlight cpp %}
-// adding junk values to a vector
-auto v = vector<tuple<int, char, int>>;
+auto v = vector<tuple<int, char, int>>{};
 v.emplace_back(1, 'a', 11);
 v.emplace_back(2, 'b', 22);
 v.emplace_back(3, 'c', 33);
-
+// second column/index > 'b' or whole tuple equals (3, 'c', 33)
 auto c = count_if(begin(v), end(v), lt<2>('b') || eq(3, 'c', 33));
 assert(c == 2);
 {% endhighlight %}
 
-Now, let us see a close to real world example.
+Now, let us see an interesting real world example.
 
-**Example-3**: In a unit circle
+**Example-3**: A unit circle at origin
 
 {% highlight cpp %}
-// If a point is inside a circle of unit radius & center at origin
-auto in_unit_circle = [] (auto a) { 
-  auto x = std::get<0>(a), y = std::get<1>(a);
-  return (x*x + y*y) < 1;
-};
-
-// In first quadrant and in unit circle 
-// In first quadrant requires both the coordinates to be positive
-auto a =  gt(0.,0.) && in_unit_circle(0., 3.);
-
-assert(a(tuple<double, double>{0.3, 0.8}) == true);
-assert(a(pair<double, double>{0.3, -0.3}) == false);
-
-// In second, third or fourth quadrant or in unit circle
-auto b = lt<1>(0.) || lt<2>(0.) || in_unit_circle(0., 3.);
-
-auto v = vector<array<double, 2>> {% raw %}{{{% endraw %}0., .2}, {-5., 0.}, {5., 0.}};
-auto c = count_if(begin(v), end(v), b);
-assert(c == 2);
+  // returns if a point is inside a unit radius circle at origin
+  auto in_unit_circle = [] (auto p) { 
+    auto x = std::get<0>(p), y = std::get<1>(p);
+    return (x*x + y*y) < 1;
+  };
+  auto points = vector<array<double, 2>> {% raw %}{{ {% endraw %}.1, .2}, {-5., .1}, 
+                                          {5., .1}, {-0.4, -.9}};
+  // In first quadrant and in unit circle 
+  auto a = gt<1>(0.) && gt<2>(0.) && in_unit_circle;
+  auto out_unit_circle = !(tautology() && in_unit_circle);
+  // In second, third or fourth quadrant or outside unit circle
+  auto b = lt<1>(0.) || lt<2>(0.) || out_unit_circle;
+  // a == !b
+  for_each(begin(points), end(points), 
+           [&](auto x) { assert(a(x) == !b(x)); });
+  // point can be anything that supports get
+  assert(a(tuple<double, double>{0.3, 0.8}) == true);
+  assert(a(array<double, 2>{0.45, 0.9}) == false);
+  assert(a(pair<double, double>{0.3, -0.3}) == false);
 {% endhighlight %}
-
 
 ## Implementation
 
@@ -95,17 +94,17 @@ private:
 };
 {% endhighlight %}
 
-The parameter type of the predicate method is not required to be the type of
-reference (Ref). However, it is necessary that comparing the values of two
-types with `==` is semantically valid. This is to say that templates have [Duck
-typing](https://en.wikipedia.org/wiki/Duck_typing).
+The parameter type of the function call operator overload is not required to be
+same as the type of reference (Ref). However, it is necessary that comparing
+the values of two types with `==` is semantically valid. This is because
+templates follow [Duck typing](https://en.wikipedia.org/wiki/Duck_typing).
 
 Similarly, we can have Gt and Lt classes for greater than and less than,
 respectively.
 
 Till now there is no logical operator to connect the different predicate
 classes. We know that the behavior of a logical operator is same for all the
-predicates that implies we should not be writing operator overloads for logical
+predicates. It implies we should not be writing operator overloads for logical
 operators separately in each predicate. Let us first try to frame a generic
 logical operator.
 
@@ -127,7 +126,7 @@ private:
 Notice that the And class itself is a predicate (returns boolean on function
 call) which is what we expect it to be. The class implementation simply says
 that it can be instantiated with any two predicates and each time the
-intantiated object will be called with a parameter, it will return the
+instantiated object will be called with a parameter, it will return the
 conjunction of the results of the two predicates for that parameter. The
 templates let us express this in a generic way with only duck-typing
 rules to follow. The `&&` and `forward` are there to express that the
@@ -226,8 +225,8 @@ unusual and so does its name, CRTP (curiously recurring template pattern) which 
 general known as f-bounded polymorphism (even weird).
 
 We skipped over a couple of small details like overloading the logical operators
-for ltype and rtype separately, adding column selection to logical
-operators etc. These details can be found in the code
+for ltype and rtype separately, object generators, adding column selection to
+logical operators etc. These details can be found in the code
 [here](https://github.com/haptork/easyLambda/blob/master/include/ezl/algorithms/predicates.hpp).
 It is part of the [easyLambda](https://haptork.github.io/easyLambda/) library
 for data processing. Don't forget to check the library as well.
