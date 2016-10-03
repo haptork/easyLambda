@@ -4,10 +4,11 @@ comments: true
 categories: 
   - Algorithm
 tags:
-  - intermediate
   - generic programming
   - metaprogramming
   - CRTP
+  - ezl internal
+  - intermediate
 ---
 
 Predicates are functions that return a boolean value. Unary predicates take a
@@ -26,51 +27,53 @@ Let's have a look at what these predicates look like in the first place.
 
 **Example-1**: Logical operators
 
-```cpp
+{% highlight cpp %}
 auto a = gt(80) || lt(40);
 auto a_notone_odd = a && !eq(1) && ([](int x) { return x % 2; });
 
 assert(a(3) == true);
 assert(a_notone_odd(1) == false);
-```
+{% endhighlight %}
 
 **Example-2**: Column selection
 
-```cpp
+{% highlight cpp %}
 // adding junk values to a vector
 auto v = vector<tuple<int, char, int>>;
 v.emplace_back(1, 'a', 11);
 v.emplace_back(2, 'b', 22);
 v.emplace_back(3, 'c', 33);
 
-auto c = count_if(begin(v), end(v),  lt<3>(15) || eq(2, 'b', 22));
+auto c = count_if(begin(v), end(v), lt<2>('b') || eq(3, 'c', 33));
 assert(c == 2);
-```
+{% endhighlight %}
 
 Now, let us see a close to real world example.
 
 **Example-3**: In a unit circle
 
-```cpp
-// tells if a point is inside a circle with unit radius & center at origin
+{% highlight cpp %}
+// If a point is inside a circle of unit radius & center at origin
 auto in_unit_circle = [] (auto a) { 
   auto x = std::get<0>(a), y = std::get<1>(a);
   return (x*x + y*y) < 1;
 };
 
 // In first quadrant and in unit circle 
+// In first quadrant requires both the coordinates to be positive
 auto a =  gt(0.,0.) && in_unit_circle(0., 3.);
 
-assert(a(array<double, 2>{0.3, 0.8}) == true);
+assert(a(tuple<double, double>{0.3, 0.8}) == true);
 assert(a(pair<double, double>{0.3, -0.3}) == false);
 
 // In second, third or fourth quadrant or in unit circle
 auto b = lt<1>(0.) || lt<2>(0.) || in_unit_circle(0., 3.);
 
-auto v = vector<array<double, 2>> { {0., 0.5}, {-10., 0.0}, {10., 0.0} };
+auto v = vector<array<double, 2>> {% raw %}{{{% endraw %}0., .2}, {-5., 0.}, {5., 0.}};
 auto c = count_if(begin(v), end(v), b);
 assert(c == 2);
-```
+{% endhighlight %}
+
 
 ## Implementation
 
@@ -81,20 +84,21 @@ value with the reference value and returns a boolean. Since, the reference
 type and parameter type are not some fixed type, we express it with generic
 programming as follows.
 
-```cpp
+{% highlight cpp %}
 template <class Ref> class Eq {
 public:
   Eq(Ref r) : _ref{r} {}
-  template <class T> bool operator()(const T &row) { return row == _ref; }
+  template <class T> 
+  bool operator()(const T &row) { return row == _ref; }
 private:
   Ref _ref;
 };
-```
+{% endhighlight %}
 
 The parameter type of the predicate method is not required to be the type of
 reference (Ref). However, it is necessary that comparing the values of two
-types with `==` is semantically valid. This is to say that templates have [[Duck
-typing]](https://en.wikipedia.org/wiki/Duck_typing).
+types with `==` is semantically valid. This is to say that templates have [Duck
+typing](https://en.wikipedia.org/wiki/Duck_typing).
 
 Similarly, we can have Gt and Lt classes for greater than and less than,
 respectively.
@@ -105,12 +109,12 @@ predicates that implies we should not be writing operator overloads for logical
 operators separately in each predicate. Let us first try to frame a generic
 logical operator.
 
-```cpp
+{% highlight cpp %}
 template <class Pred1, class Pred2>
 class And {
 public:
-  And(Pred1 &&p1, Pred2 &&p2)
-      : _pred1{std::forward<Pred1>(p1)}, _pred2{std::forward<Pred2>(p2)} {}
+  And(Pred1 &&p1, Pred2 &&p2) : _pred1{forward<Pred1>(p1)}, 
+                                _pred2{forward<Pred2>(p2)} {}
   template <class T> bool operator()(const T &row) {
     return _pred1(row) && _pred2(row);
   }
@@ -118,7 +122,7 @@ private:
   Pred1 _pred1;
   Pred2 _pred2;
 };
-```
+{% endhighlight %}
 
 Notice that the And class itself is a predicate (returns boolean on function
 call) which is what we expect it to be. The class implementation simply says
@@ -126,7 +130,7 @@ that it can be instantiated with any two predicates and each time the
 intantiated object will be called with a parameter, it will return the
 conjunction of the results of the two predicates for that parameter. The
 templates let us express this in a generic way with only duck-typing
-rules to follow. The `&&` and `std::forward` are there to express that the
+rules to follow. The `&&` and `forward` are there to express that the
 template predicate types can be either lvalue or rvalue and in either case
 predicate values will not be copied to the class members. In former case the
 member predicates (_pred1 and _pred2) reference to the constructor parameters
@@ -143,14 +147,16 @@ not.
 Now, let us create an umbrella class with all the logical operator overloads,
 so that we can reuse it to add logical operator overloads to any predicate.
 
-```cpp
+{% highlight cpp %}
 class Logical_ops {
 public:
-  template <class Base, class Pred> auto operator||(Base &&base, Pred &&pred) {
-    return Or<Base, Pred>{std::forward<Base>(base), std::forward<Pred>(pred)};
+  template <class Base, class Pred> 
+  auto operator||(Base &&base, Pred &&pred) {
+    return Or<Base, Pred>{forward<Base>(base), 
+                          forward<Pred>(pred)};
   }
 };
-```
+{% endhighlight %}
 
 We add similar operator overloads for `&&` and `!`. 
 
@@ -173,38 +179,39 @@ first operand would only be Gt. This smells like generic programming but has a
 wee bit more to it. Let us change the Logical_ops to have an implicit first
 operand of any generic template class type.
 
-```cpp
+{% highlight cpp %}
 template <class Base> class Logical_ops {
 public:
   template <class Pred> auto operator||(Pred &&pred) {
-    return _and<Base, Pred>{*(Base *)this, std::forward<Pred>(pred)};
+    return Or<Base, Pred>{*(Base *)this, forward<Pred>(pred)};
   }
 };
-```
+{% endhighlight %}
 
 Finally, we need to change relational predicates to inherit from Logical_ops while
 passing the correct template types to it.
 
-```cpp
+{% highlight cpp %}
 template <class Ref> class Eq : public Logical_ops<Eq<Ref>> {
 public:
   Eq(Ref r) : _ref{r} {}
-  template <class T> bool operator()(const T &row) { return row == _ref; }
+  template <class T> 
+  bool operator()(const T &row) { return row == _ref; }
 private:
   Ref _ref;
 };
-```
+{% endhighlight %}
 
 And, same for logical predicate classes so that we can continue chaining them
 with more logical operators.
 
 
-```cpp
+{% highlight cpp %}
 template <class Pred1, class Pred2>
 class And : public Logical_ops<And<Pred1, Pred2>> {
 public:
   And(Pred1 &&p1, Pred2 &&p2)
-      : _pred1{std::forward<Pred1>(p1)}, _pred2{std::forward<Pred2>(p2)} {}
+      : _pred1{forward<Pred1>(p1)}, _pred2{forward<Pred2>(p2)} {}
   template <class T> bool operator()(const T &row) {
     return _pred1(row) && _pred2(row);
   }
@@ -212,7 +219,7 @@ private:
   Pred1 _pred1;
   Pred2 _pred2;
 };
-```
+{% endhighlight %}
 
 The idea of passing itself as a template parameter for the base class sounds
 unusual and so does its name, CRTP (curiously recurring template pattern) which in
