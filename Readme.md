@@ -1,89 +1,89 @@
 # ezl: easyLambda
-> Parallel dataflows for easy data processing with functional, C++ and MPI
+> Parallel data processing made easy using dataflows in modern C++
 
-## Long story short
+## Design Goals
+EasyLamdba is designed to be usable and performant. 
 
-The project started with the need for a standard way to process data with
-C++. The design goals are composability, easy interface, decoupling IO,
-data-format and parallelism from algorithm logic, minimal overhead accessible
-to anyone who knows C. 
+### Usability 
+The usability goals are :
 
-The header only library is based on dataflow programming with functional list
-operations while making best use of modern C++ advances to have a minimal
++ composable and functional interface
++ decoupled I/O and parallelism from algorithm logic
++ accessible to a C programmer
+
+### Performance
+The peformance goals are : 
+
++ minimal runtime overheads
++ efficient parallel scalability
+
+EasyLambda combines the efficiency of MPI with the usability of a high-level
+programming abstraction. You can write readable parallel code with good runtime
+performance. The header-only library is based on [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) 
+with functional list operations while making best use of modern C++ advances to have a minimal
 overhead implementation with succinct interface. It seamlessly scales from
 multiple cores to hundreds of distributed nodes using efficient MPI
 parallelism.
 
-## Why easyLambda
+## Targeted users
 
-Use ezl for your table / list-processing tasks, to write post-processors for
-simulation results, for iterative machine learning algorithms, to write
-parallel multi-core or distributed codes easily, to use its many generic
-functions that include parallel type safe reader, summary of data, correlation
-etc or to have fun with dataflow programming in C++. 
+EasyLambda can be used for the following tasks :
++ table/list-processing
++ post-processing for physics simulation results
++ running iterative machine learning algorithms
++ parallel type-safe data reading
++ try out dataflow programming
 
-EasyLambda combines the efficiency of MPI with a high level programming
-abstraction. With easyLambda you get easy to understand code with good
-run-time performance.
+EasyLambda will also interest you if you 
++ are a modern C++ enthusiast
++ like functional programming
++ have always wanted a high-level MPI interface
 
+
+## Performance
+
+Check out the benchmarks 
 [![benchmarks](doc/benchmarks.png)](https://haptork.github.io/easyLambda/docs/benchmarks/)
 
-Its component based, provides parallelism by default that is configurable,
-uniform easy interface, enforces no special structure or requirements improving
-code reuse and interoperability. Moreover, there are many ready to use generic
-functions that come with the library such as for easily reading flat-files
-or CSVs in parallel with type-safety etc.
 
 ## Getting Started
 
 Check out the 
 [Getting Started](https://haptork.github.io/easyLambda/docs/quick-start-guide/)
 section of the library webpage to know how to install and use it. The library
-can also be used on aws elastic cloud or single instance.
+can also be used on aws elastic cloud or single instance. 
 
-## Contributing
 
-Suggestions and feedback are welcome. Feel free to contact via mail or issues
-for any query. If you are a modern C++ enthusiast, like functional programming
-or want to support a high level interface for MPI, it is likely that the
-project will interest you. The project has a lot of areas of improvement and
-extension including fault-tolerance, better data-handling, MPI single sided
-communication, optimizing compile-time, improving documentation etc. 
-Check [internals](https://haptork.github.io/easyLambda/docs/internals)
-for details on design and implementation.
 
-## Examples
+# Examples
 
-You can check detailed walkthrough of the library [here](https://haptork.github.io/easyLambda/docs/hello-world/),
-starting from simple examples and moving to real world problems ranging from
-scientific simulations to supervised machine learning from everyday data
-analytics tasks. Here we mention some examples in short.
-
+A detailed walkthrough of the library is given [here](https://haptork.github.io/easyLambda/docs/hello-world/),
 The [examples directory](examples) contains various examples and demonstrations
 for features and options along with explanations.
 
+Here we mention some examples in short.
 The following program calculates frequency of each word in the data files.
 
-#### [Example wordcount](examples/wordcount.cpp)
+## [Example wordcount](examples/wordcount.cpp)
 ```cpp
   ezl::rise(fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
     .reduce<1>(ezl::count(), 0).dump()
     .run();
 ```
 
-The data-flow starts with `rise` and subsequent operations are added to the
-pipeline. In the above example, the pipeline starts with reading data from
-file(s). `fromFile` is a library function that takes column types and file(s)
-glob pattern as input and reads the file(s) in parallel. It has a lot of
+The data-flow pipeline starts with `rise` and subsequent operations are added to it.
+In the above example, the pipeline begins by reading in data from the specified 
+file(s). `fromFile` is a library function that takes column types and the specified 
+file(s) glob pattern as input and reads the file(s) in parallel. It has a lot of
 properties for controlling data-format, parallelism, denormalization etc
 (shown in [demoFromFile](examples/demoFromFile.cpp)).
 
-In reduce we pass the index of the key column to group by, the library function
+In `reduce` we pass the index of the key column to group by, the library function
 for counting and initial value of the result.
 
 Following is the data-flow for calculating pi using Monte-Carlo method.
 
-#### [Example pi (Monte-Carlo)](examples/pi.cpp)
+## [Example pi (Monte-Carlo)](examples/pi.cpp)
 ```cpp
 ezl::rise(ezl::kick(10000)) // 10000 trials shared over all processes
   .map([] { 
@@ -109,7 +109,7 @@ version of the input data-file is given with ezl
 [here](data/datachallenge_cods2016/train.csv). The data contains student
 profiles with scores, gender, job-salary, city etc.
 
-#### [Example cods2016](examples/cods2016.cpp)
+## [Example cods2016](examples/cods2016.cpp)
 ```cpp
 auto scores = ezl::fromFile<char, array<float, 3>>(fileName)
                 .cols({"Gender", "English", "Logical", "Domain"})
@@ -133,6 +133,29 @@ Next, we transform a selected column in-place and then find an aggregate propert
 (correlation) for all the rows.
 
 ----
+
+# Contributing
+
+Suggestions and feedback are welcome. Feel free to contact via mail or issues
+for any query.
+
+The project needs improvement in the following areas : 
+
++ data handling
++ compile times
++ documentation
+
+The project needs extensions to incorporate the following features : 
+
++ fault tolerance
++ MPI single-sided communications 
+
+
+Check [internals](https://haptork.github.io/easyLambda/docs/internals)
+for design and implementation details.
+
+
+# Acknowledgments
 
 A big thanks to cppcon, meetingc++ and other conferences and all C++ expert
 speakers, committee members and compiler implementers for modernising C++ and
