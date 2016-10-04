@@ -113,19 +113,19 @@ inline decltype(auto) invokeHelperThreeTup(Func &&func, Tup &&tup,
 template <class F, class... As>
 inline decltype(auto) invokeMap(
     F &&func, const std::tuple<As...> &args,
-    typename std::enable_if</* !can_call<F, As...>{} &&*/
-    can_call<F, decltype(args)>{}>::type *dummy = 0) {
+    typename std::enable_if< !can_call<F, As...>{} //&&
+    /*can_call<F, decltype(args)>{}*/>::type *dummy = 0) {
+  static_assert(
+      (can_call<F, decltype(args)>{}),
+      "Map fn. can not be called with columns selected as parameters.");
   return func(args);
 }
 
 // map function calls arguments separetely
 template <class F, class... As>
 inline decltype(auto) invokeMap(F &&func, const std::tuple<As...> &args,
-            typename std::enable_if<!can_call<F, decltype(args)>{}
-            /*can_call<F, As...>{}*/>::type *dummy = 0) {
-  static_assert(
-      (can_call<F, As...>{}),
-      "Map fn. can not be called with columns selected as parameters.");
+            typename std::enable_if<//!can_call<F, decltype(args)>{}
+            can_call<F, As...>{}>::type *dummy = 0) {
   return invokeHelperOneTup(std::forward<F>(func), args,
                        std::make_index_sequence<sizeof...(As)>{});
 }

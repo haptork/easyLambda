@@ -102,7 +102,7 @@ void demoMapFilter() {
     .map<1,2>(ezl::mergeAr()).colsTransform() // merges just two cols
     .filter([](const array<int, 2>&, const int&) {return true;})
     .map(ezl::mergeAr()).colsTransform()  // merges an array and int to one col
-    .filter(ezl::gtAr<1>(2));              // row passes if 1st col of array > 2
+    .filter(ezl::gt<1>(2));               // row passes if 1st col of array > 2
 }
 
 int main(int argc, char *argv[]) {

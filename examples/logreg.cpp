@@ -94,8 +94,8 @@ void logreg(int argc, char* argv[]) {
   auto testFlow = rise(reader)
                       .map<2>([&](auto x) {
                         auto pred = 0.;
-                        for (size_t i = 0; i < get<0>(x).size(); ++i) {
-                          pred += w[i] * get<0>(x)[i];
+                        for (size_t i = 0; i < x.size(); ++i) {
+                          pred += w[i] * x[i];
                         }
                         return (sigmoid(pred) > 0.5);
                       }).colsTransform()

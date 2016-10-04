@@ -48,7 +48,7 @@ void cods() {
   * */ 
   auto source = ezl::rise(feat1)
                     .reduce(ezl::count(), 0).dump("", "Total rows:").oneUp()
-                  .filter<2>(ezl::gtAr<4>(0))
+                  .filter<2>(ezl::gt<4>(0))
                   .build();
 
   /*!
