@@ -2,7 +2,11 @@
 > Parallel data processing made easy using dataflows in modern C++
 
 ## Design Goals
-EasyLamdba is designed to be usable and performant. 
+EasyLamdba is designed to be usable and performant. EasyLambda combines 
+the efficiency of MPI with the usability of a high-level programming 
+abstraction. You can write readable parallel code with good runtime
+performance. It seamlessly scales from multiple cores to hundreds of 
+distributed nodes using efficient MPI parallelism.
 
 ### Usability 
 The usability goals are :
@@ -17,13 +21,9 @@ The peformance goals are :
 + minimal runtime overheads
 + efficient parallel scalability
 
-EasyLambda combines the efficiency of MPI with the usability of a high-level
-programming abstraction. You can write readable parallel code with good runtime
-performance. The header-only library is based on [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) 
+The header-only library is based on [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) 
 with functional list operations while making best use of modern C++ advances to have a minimal
-overhead implementation with succinct interface. It seamlessly scales from
-multiple cores to hundreds of distributed nodes using efficient MPI
-parallelism.
+overhead implementation with succinct interface. 
 
 ## Targeted users
 
