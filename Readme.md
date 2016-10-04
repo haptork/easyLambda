@@ -1,46 +1,59 @@
 # ezl: easyLambda
-> Parallel data processing made easy using dataflows in modern C++
+> Parallel data processing made easy using functional and dataflow programming with modern C++
 
-## Design Goals
-EasyLamdba is designed to be usable and performant. EasyLambda combines 
-the efficiency of MPI with the usability of a high-level programming 
-abstraction. You can write readable parallel code with good runtime
-performance. It seamlessly scales from multiple cores to hundreds of 
-distributed nodes using efficient MPI parallelism.
+Welcome to easyLambda and thanks for your interest. The site aims to be a
+comprehensive guide for easyLambda.
 
-### Usability 
-The usability goals are :
+## What is easyLambda
 
-+ composable and functional interface
-+ decoupled I/O and parallelism from algorithm logic
-+ accessible to a C programmer
+EasyLambda is *header only C++14* library for data processing in parallel with
+*functional list operations* (map, filter, reduce, scan, zip) that are tied
+together in *type--safe dataflow*. 
 
-### Performance
-The peformance goals are : 
+EasyLambda is parallel, it scales from multiple cores to *hundreds of distributed*
+nodes *without any need to deal with parallelism* in user code.
 
-+ minimal runtime overheads
-+ efficient parallel scalability
+EasyLambda is fast. It has *minimal overhead in serial execution* and builds upon
+high performance MPI parallelism that is known to be *more efficient than any
+other comparable work*
+[[1]](http://www.sciencedirect.com/science/article/pii/S1877050915017895).
 
-The header-only library is based on [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming) 
-with functional list operations while making best use of modern C++ advances to have a minimal
-overhead implementation with succinct interface. 
+EasyLambda is as *expressive and succinct*, thanks to the *column selection* for
+composition of functions and many *generic algorithms* such as *super configurable
+parallel file reader*, predicates, correlation, summary etc.
 
-## Targeted users
+EasyLambda is intuitive and easy to understand with its *uniform property based*
+(or [ExpressionBuilder](http://martinfowler.com/bliki/ExpressionBuilder.html))
+interface for everything from configuring parallelism to changing behavior of
+generic algorithms to routing dataflow.
 
-EasyLambda can be used for the following tasks :
-+ table/list-processing
-+ post-processing for physics simulation results
-+ running iterative machine learning algorithms
-+ parallel type-safe data reading
-+ try out dataflow programming
+EasyLambda is easily *interoperable* with other libraries like standard library or
+raw MPI code, since it uses *standard data types* and enforces no special
+structure, data-types or requirements on the user functions.
+
+## Why easyLambda
+
+EasyLambda seems to be a good fit for the following tasks:
++ table/list processing and analysis from CSV or flat text files.
++ post-processing of scientific simulation results.
++ running iterative machine learning algorithms.
++ parallel type-safe data reading.
++ to play with dataflow programming and functional list operations.
+
+Since, it can smoothly interoperate with other libraries, it is possible to
+add distributed parallelism using easyLambda to the existing libraries or
+codebase when its programming abstraction fits well e.g. it can be used along
+with bare MPI code or to add distributed training and testing in a machine
+learning library.
 
 EasyLambda will also interest you if you 
 + are a modern C++ enthusiast
-+ like functional programming
++ want to dabble with metaprogramming
++ like functional or dataflow programming
++ have cluster resources that you want to put to use in everyday tasks
 + have always wanted a high-level MPI interface
 
-
-## Performance
+#### Benchmarks
 
 Check out the benchmarks 
 [![benchmarks](doc/benchmarks.png)](https://haptork.github.io/easyLambda/docs/benchmarks/)
@@ -48,11 +61,9 @@ Check out the benchmarks
 
 ## Getting Started
 
-Check out the 
-[Getting Started](https://haptork.github.io/easyLambda/docs/quick-start-guide/)
+Check out the [Getting Started](https://haptork.github.io/easyLambda/docs/quick-start-guide/)
 section of the library webpage to know how to install and use it. The library
 can also be used on aws elastic cloud or single instance. 
-
 
 
 # Examples
@@ -111,7 +122,7 @@ to the problem.
 
 
 
-## [Example cods2016](examples/cods2016.cpp)
+## [Example CSV](examples/cods2016.cpp)
 
 Here is another example from
 [cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html). A stripped
@@ -143,28 +154,33 @@ Next, we transform a selected column in-place and then find an aggregate propert
 
 ----
 
-# Contributing
+## Contributing
 
 Suggestions and feedback are welcome. Feel free to contact via mail or issues
 for any query.
 
-The project needs improvement in the following areas : 
+The project improvements are around the following directions:
 
-+ data handling
-+ compile times
++ compile time optimization
++ use of specialized data structures in various units like reduce etc.
++ addition of more examples
++ design simplifications
++ code reviews
 + documentation
 
-The project needs extensions to incorporate the following features : 
+Future extenstions to incorporate in the project are as follows:
 
-+ fault tolerance
++ fault tolerance.
++ algorithms / functions to plot streaming / buffered data.
 + MPI single-sided communications 
 
 
-Check [internals](https://haptork.github.io/easyLambda/docs/internals)
-for design and implementation details.
+Check [internals](https://haptork.github.io/easyLambda/docs/internals) and
+[blog](https://haptork.github.io/easyLambda/posts/) for design and
+implementation details.
 
 
-# Acknowledgments
+## Acknowledgments
 
 A big thanks to cppcon, meetingc++ and other conferences and all C++ expert
 speakers, committee members and compiler implementers for modernising C++ and
