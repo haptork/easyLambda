@@ -99,10 +99,10 @@ Time of execution is in seconds for different problems. Weak scaling is used
 for pi with number of trials given below the execution times. 
 
 The following table shows benchmarks for logreg problem with
-more number of nodes and bigger data sizes on a Linux cluster with
+more number of processes and bigger data sizes on a Linux cluster with
 Lustre file-system over RDMA. Over RDMA the wordcount with similar
 data takes less than 20 seconds for lowest number of processes viz. 24 and
-reduces to around 10 seconds for 384 nodes. The pi problem does not benefit
+reduces to around 10 seconds for 384 processes. The pi problem does not benefit
 from the file-system and show similar performance as in NFSv3 cluster.
 
 processes| 24 | 48 | 96 | 192| 384| data
