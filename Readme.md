@@ -62,9 +62,12 @@ The [examples directory](examples) contains various examples and demonstrations
 for features and options along with explanations.
 
 Here we mention some examples in short.
-The following program calculates frequency of each word in the data files.
+
 
 ## [Example wordcount](examples/wordcount.cpp)
+
+The following program calculates frequency of each word in the data files.
+
 ```cpp
   ezl::rise(fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
     .reduce<1>(ezl::count(), 0).dump()
@@ -81,9 +84,12 @@ properties for controlling data-format, parallelism, denormalization etc
 In `reduce` we pass the index of the key column to group by, the library function
 for counting and initial value of the result.
 
-Following is the data-flow for calculating pi using Monte-Carlo method.
+
 
 ## [Example pi (Monte-Carlo)](examples/pi.cpp)
+
+Following is the data-flow for calculating pi using Monte-Carlo method.
+
 ```cpp
 ezl::rise(ezl::kick(10000)) // 10000 trials shared over all processes
   .map([] { 
@@ -103,13 +109,16 @@ with the composition of small operations, some are common library functions
 like `count()`, `lt()` (less-than) and some are user-defined functions specific
 to the problem.
 
+
+
+## [Example cods2016](examples/cods2016.cpp)
+
 Here is another example from
 [cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html). A stripped
 version of the input data-file is given with ezl
 [here](data/datachallenge_cods2016/train.csv). The data contains student
 profiles with scores, gender, job-salary, city etc.
 
-## [Example cods2016](examples/cods2016.cpp)
 ```cpp
 auto scores = ezl::fromFile<char, array<float, 3>>(fileName)
                 .cols({"Gender", "English", "Logical", "Domain"})
