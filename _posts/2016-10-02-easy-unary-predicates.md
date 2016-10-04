@@ -222,14 +222,20 @@ private:
 
 The idea of passing itself as a template parameter for the base class sounds
 unusual and so does its name, CRTP (curiously recurring template pattern) which in
-general known as f-bounded polymorphism (even weird).
+general known as f-bounded polymorphism (even weird). It is a no overhead
+abstraction, since it enables static binding rather than dynamic dispatch of
+virtual functions.
 
-We skipped over a couple of small details like overloading the logical operators
-for ltype and rtype separately, object generators, adding column selection to
-logical operators etc. These details can be found in the code
-[here](https://github.com/haptork/easyLambda/blob/master/include/ezl/algorithms/predicates.hpp).
+We skipped over a couple of small details like overloading the logical
+operators for ltype and rtype separately, object generators, adding column
+selection to logical operators etc. These details can be found in the code
+[here](https://github.com/haptork/easyLambda/blob/master/include/ezl/algorithms/predicates.hpp)
+and examples can be found
+[here](https://github.com/haptork/easyLambda/blob/master/examples/demoPredicates.cpp).
 It is part of the [easyLambda](https://haptork.github.io/easyLambda/) library
-for data processing. Don't forget to check the library as well.
+for data processing. The predicates and examples can be used separately without
+any dependence on the easyLambda library. Don't forget to check the library as
+well.
 
 This is just one way out of many possible ways to implement such predicates.
 Please suggest improvements and how you would implement this.
@@ -237,6 +243,7 @@ Please suggest improvements and how you would implement this.
 I am not sure how much useful these predicates are in general but I have found
 them to be pretty useful for data processing. They appear in many
 [examples](https://haptork.github.io/easyLambda/docs/real-world/) in
-easyLambda. I believe that a library with geometrical predicates like
-`in_circle` etc. would also be of use in various cases.
+easyLambda. The technique defined for combining with logical operators can be
+applied to any general predicate. I believe that a library with geometrical
+predicates like `in_circle` etc. would also be of use in various cases.
 
