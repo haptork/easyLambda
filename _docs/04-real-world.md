@@ -51,8 +51,7 @@ the result to avoid overflow. We may wish to dump the results to a file by
 passing filename to the dump property.
 
 When we run this program with multiple cores, the dataflow by default runs on
-all the processes available to MPI ([what is MPI]({{ base_path
-}}/docs/welcome#what-is-mpi)). The riseb by default runs on all the processes
+all the processes available to MPI. The riseb by default runs on all the processes
 available to the dataflow and fromFile reads the file(s) in parallel by
 dividing the total number of bytes equally among the processes. Since, the
 reduce calculates one total count for each word, every occurrence of the word

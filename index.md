@@ -42,7 +42,7 @@ structure, data-types or requirements on the user functions.
 
 ## Why easyLambda
 
-Use ezl for your table / list-processing tasks, to write post-processors for
+Use ezl for the table / list-processing tasks, to write post-processors for
 simulation results, for iterative machine learning algorithms, to write
 parallel multi-core or distributed codes easily, to use its many generic
 functions that include parallel type safe reader, summary of data, correlation
