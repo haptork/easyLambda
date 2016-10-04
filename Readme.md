@@ -122,7 +122,7 @@ to the problem.
 
 
 
-## [Example CSV](examples/cods2016.cpp)
+## [Example CSV stats](examples/cods2016.cpp)
 
 Here is another example from
 [cods2016](http://ikdd.acm.org/Site/CoDS2016/datachallenge.html). A stripped
