@@ -42,20 +42,34 @@ structure, data-types or requirements on the user functions.
 
 ## Why easyLambda
 
-Use ezl for the table / list-processing tasks, to write post-processors for
-simulation results, for iterative machine learning algorithms, to write
-parallel multi-core or distributed codes easily, to use its many generic
-functions that include parallel type safe reader, summary of data, correlation
-etc or to have fun with dataflow programming in C++. 
+EasyLambda is a good fit for the following tasks:
++ table/list processing and analysis from CSV or flat text files.
++ post-processing of scientific simulation results.
++ running iterative machine learning algorithms.
++ parallel type-safe data reading.
++ to play with dataflow programming and functional list operations.
 
-EasyLambda provides good scalability on distributed HPC cluster, cloud cluster
-as well as on multi-core single machine with minimal lines of codes.
+Since, it can smoothly interoperate with other libraries, it is possible to
+add distributed parallelism using easyLambda to the existing libraries or
+codebase when its programming abstraction fits well e.g. it can be used along
+with bare MPI code or with a machine learning library to add distributed training
+and testing.
 
-[![Parallel expressions]({{ site.url }}{{ site.baseurl }}/images/benchmarks.png)]({{ base_path }}/docs/benchmarks/)
+EasyLambda will also interest you if you 
++ are a modern C++ enthusiast
++ want to dabble with metaprogramming
++ like functional and dataflow programming
++ have cluster resources that you want to put to use in everyday tasks without much effort.
++ have always wanted a high-level MPI interface.
+
+#### Benchmarks
 
 EasyLambda combines the efficiency of MPI with a high level programming
 abstraction. With easyLambda you get easy to understand code with good
-run-time performance.
+run-time performance. Check out the benchmarks and comparisons for performance
+and ease of use.
+
+[![Benchmarks]({{ site.url }}{{ site.baseurl }}/images/benchmarks.png)]({{ base_path }}/docs/benchmarks/)
 
 ## Getting Started
 
@@ -78,15 +92,28 @@ library as well.
 
 ## Contributing
 
-If you are a C++ enthusiast or you like functional programming, it is
-very likely that you will find the project quite interesting. There are a lot
-of interesting ways the metaprogramming is being used in easyLambda. It is a
-new library with a tons of scope to improve from small bugfixes to big features
-that can potentially change fundamental ways we program. 
+Suggestions and feedback are welcome. Feel free to contact via mail or issues
+for any query.
 
-Contributions and feedback of any kind are much appreciated. You can use github
-issues or e-mail for any suggestions. Please fork the repository and
-contribute. Check the [blog]({{ site.url }}{{ site.baseurl }}/posts/) and
+Some of the possible directions of improvement:
+
++ compile time optimization
++ use of specialized data structures in various units like reduce etc.
++ addition of more examples e.g. neural nets, simulations etc.
++ design simplifications
++ parallelism optimization
++ code reviews
++ documentation
+
+Possible ideas for future extenstions:
+
++ fault tolerance
++ algorithms / functions to plot streaming and buffered data
++ domain specific algorithms 
++ MPI single-sided communications
++ Experiments to extend current programming abstraction to cover more problems like domain-decomposition etc. 
+
+Check the [blog]({{ site.url }}{{ site.baseurl }}/posts/) and
 [internals](https://haptork.github.io/easyLambda/docs/internals) for discussion
 on some exciting internal and implementation details.
 
