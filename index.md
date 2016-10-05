@@ -43,6 +43,7 @@ structure, data-types or requirements on the user functions.
 ## Why easyLambda
 
 EasyLambda is a good fit for the following tasks:
+
 + table/list processing and analysis from CSV or flat text files.
 + post-processing of scientific simulation results.
 + running iterative machine learning algorithms.
@@ -56,6 +57,7 @@ with bare MPI code or with a machine learning library to add distributed trainin
 and testing.
 
 EasyLambda will also interest you if you 
+
 + are a modern C++ enthusiast
 + want to dabble with metaprogramming
 + like functional and dataflow programming
