@@ -22,7 +22,7 @@ multi core machine.
 The benchmarking results of easyLambda programs for the following problems are
 presented.
 
-- **wc**: The wordcount problem involves file read followed by
+- **wordcount**: The wordcount problem involves file read followed by
 segmented reduce that involves partitioning and communication. The example code
 for wordcount problem are easy to find for any MapReduce like library that has
 reduce with partitioning.
@@ -112,7 +112,7 @@ logreg   | 23s| 24s| 26s| 27s| 30s| weak
 data(GB) | 3 | 6 | 12 | 24 | 48 | -
 
 EasyLambda scales well on multi-cores as shown in the following table. The
-performance is compared with MR-MPI library. The code for the wc problem in
+performance is compared with MR-MPI library. The code for the wordcount problem in
 MR-MPI library is taken from its examples.
 
 processes  | 1 | 2 | 4 | data
