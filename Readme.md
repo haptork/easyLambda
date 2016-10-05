@@ -55,7 +55,11 @@ EasyLambda will also interest you if you
 
 #### Benchmarks
 
-Check out the benchmarks 
+EasyLambda combines the efficiency of MPI with a high level programming
+abstraction. With easyLambda you get easy to understand code with good
+run-time performance. Check out the benchmarks and comparisons for performance
+and ease of use.
+
 [![benchmarks](doc/benchmarks.png)](https://haptork.github.io/easyLambda/docs/benchmarks/)
 
 
