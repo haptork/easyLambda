@@ -69,8 +69,8 @@ can also be used on aws elastic cloud or single instance.
 # Examples
 
 A detailed walkthrough of the library is given [here](https://haptork.github.io/easyLambda/docs/hello-world/),
-The [examples directory](examples) contains various examples and demonstrations
-for features and options along with explanations.
+The [examples directory](examples) contains various examples and demonstrations with explanations
+of features and options.
 
 Here we mention some examples in short.
 
@@ -159,20 +159,21 @@ Next, we transform a selected column in-place and then find an aggregate propert
 Suggestions and feedback are welcome. Feel free to contact via mail or issues
 for any query.
 
-The project improvements are around the following directions:
+Some of the possible directions of improvement:
 
 + compile time optimization
 + use of specialized data structures in various units like reduce etc.
-+ addition of more examples
++ addition of more examples e.g. neural nets, simulations etc.
 + design simplifications
 + parallelism optimization
 + code reviews
 + documentation
 
-Future extenstions to incorporate in the project are as follows:
+Possible ideas for future extenstions:
 
 + fault tolerance
 + algorithms / functions to plot streaming and buffered data
++ domain specific algorithms 
 + MPI single-sided communications
 + Experiments to extend current programming abstraction to cover more problems like domain-decomposition etc. 
 
