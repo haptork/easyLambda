@@ -151,7 +151,7 @@ The lines of code is arguably a decent indicator of readability, less error
 prone code, productivity etc.
 
 The easyLambda library has been used for training & testing image classifiers
-in parallel. It has been used with libraries like openCV, Dlib, tinynn etc.
+in parallel. It has been used with libraries like openCV, Dlib, tiny-dnn etc.
 Besides data analytics and machine learning it has also been used to create
 post-processors for scientific computation with multiple reusable dataflows. 
 EasyLambda models dataflow as a black box [componenet]({{ base_path}}/docs/dataflow-expr#ezlflow)
