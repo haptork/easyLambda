@@ -7,14 +7,15 @@ excerpt: "Benchmarks for performance and ease of use"
 {% include toc icon="gears" title="Contents" %}
 
 EasyLambda aims to provide a high level parallel programming abstraction while
-incurring minimal overheads. It scales from multiple cores to *hundreds of distributed*
-nodes *without any need to deal with parallelism* in user code.
-
-It uses modern C++ features to be expressive and succinct and builds parallelism
-over MPI which is more efficient than other comparable distributed libraries.
+incurring minimal overheads. Whether you are writing parallel code for a multicore
+machine or hundreds of distributed nodes, easyLambda lets you ignore the idiosyncrasises
+of configuring parallelism on these diverse platforms. The code written for a few
+cores on a single machine scales appropriately when a multi-node distributed cluster
+is available. Through the use of modern C++ features, it is expressive and succinct. 
+It is efficient in its parallelism because it uses MPI as its backend. 
 [[1]](http://www.sciencedirect.com/science/article/pii/S1877050915017895).
 
-The section demonstrates performance and ease of programming with easyLambda
+This section demonstrates performance and ease of programming with easyLambda
 with the help of experiments carried out on an HPC cluster, cloud cluster and
 multi core machine.
 
@@ -23,44 +24,48 @@ The benchmarking results of easyLambda programs for the following problems are
 presented.
 
 - **wordcount**: 
-The wordcount problem involves a file read followed by a reduce with partitioning that 
-involves network communication. The example code for wordcount 
-problem are easy to find for any MapReduce like library that has reduce with partitioning.
+The wordcount problem involves a file read followed by a partitioned reduce. The partitioned
+reduce imposes inter-process communications on the problem. The example code for wordcount 
+problem are easy to find for any MapReduce like library that implements a partitioned reduce.
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/wordcount.cpp)
 [[walkthrough]]({{ base_path }}/docs/real-world#word-count)
 
-- **logreg**: The logistic regression trained with stochastic gradient
-involves reading in the data once and then performing iterations on the data to 
-improve the weights.  The iterations involve calculation of the gradient which 
-is a linear operation on the number of dimensions of the input. Each iteration 
-involves communication. The classic MapReduce such as Hadoop involve disk operations 
-for each iteration making the iterative algorithms slow. The modern framewoks like
-Spark provide an improvement over this.
+- **logreg**: 
+A logistic regression analysis trained with a stochastic gradient is an iterative algorithm.
+It reads in the data once and then iterates over the data to improve the weights. The iterations 
+involve calculation of the gradient which is a linear operation over the number of dimensions of 
+the input. Each iteration involves inter-process communications. Classic MapReduce frameworks 
+such as Hadoop involve disk operations for each iteration making these iterative algorithms slow. 
+Newer frameworks like Spark improve this aspect of performance. 
+
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/logreg.cpp)
 [[walkthrough]]({{ base_path }}/docs/real-world#logistic-regression)
 
-- **pi**: The Monte Carlo example does not involve file system access.
-It involves communication to a single process. Since, the code does not involve
-reduce with partitioning, it can be implemented with raw MPI reduce.
+- **pi**: 
+The Monte Carlo example to generate the digits of pi does not access the filesystem. It only
+requires all communications to be directed to a single process. Since, the code does not involve
+a partitioned reduce, it can be implemented with raw MPI reduce.
+
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/pi.cpp)
 [[walkthrough]]({{ base_path }}/docs/real-world#monte-carlo-pi)
 
-- **heat**: The code for the problem provides explicit finite
-difference solution for one dimensional heat equation. It requires file system
-writes for writing results of the cells / grid. It involves multiple iterations
-each having communication of rows from every process to its two adjacent
-processes.
+- **heat**: 
+The solution for this problem provides an explicit finite difference solution for a one 
+dimensional heat equation. It requires filesystem writes in order to write the results 
+of the cells/grid. It involves multiple iterations with each process communicating its
+rows to its two adjacent processes during each iteration. 
+
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/1d-Diffusion.cpp)
 
-The following figure shows execution time of easyLambda and Spark codes
+The following figure shows execution times for easyLambda and Spark codes
 for the problems on different number of processes. The codes were executed on
-amazon's elastic cloud cluster (EC2) with m3.2xlarge instance type. For using
-easyLambda on EC2 StarCluster with NFSv3 filesystem was used. Spark uses HDFS
-as filesystem that is deployed by standard spark-ec2 scripts. 
+amazon's elastic cloud cluster (EC2) with an m3.2xlarge instance type. For using
+easyLambda on EC2, a StarCluster with NFSv3 filesystem was used. Spark uses HDFS
+as a filesystem that is deployed by standard spark-ec2 scripts. 
 
-The codes are taken from the example codes for both the libraries except for the 
-problem 'heat' in Spark. For this problem the Spark and easyLambda code are made
-isomorphic and as close to each other as possible. The easyLambda performance
+The codes are taken from the examples included with both these libraries except
+for the problem 'heat' in Spark. For this problem the Spark and easyLambda code are
+made isomorphic and as close to each other as possible. The easyLambda performance
 is invariably around an order of magnitude better. However, Spark provides
 fault tolerance and better data handling features that easyLambda lacks as of
 now. There are also differences in the basic philosophy, target community and
@@ -69,7 +74,7 @@ use cases of the two.
 <figure>
   <img src="{{ site.url }}{{ site.baseurl }}/images/benchelastic.png" alt="benchelastic">
   <figcaption>
-    The execution times of easyLambda and Spark codes on amazon elastic cloud
+    The execution times of easyLambda and Spark codes on amazon elastic butt
     cluster for various problems. The pi problem is run for 1e10 trials, while
     heat problem is run for 10 iterations with 4e7 cells, wordcount has data
     size of 3.2GB while logreg has data size of 2.2GB and is run for 10
