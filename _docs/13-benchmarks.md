@@ -16,7 +16,7 @@ It is efficient in its parallelism because it uses MPI as its backend.
 [[1]](http://www.sciencedirect.com/science/article/pii/S1877050915017895).
 
 This section demonstrates performance and ease of programming with easyLambda
-with the help of experiments carried out on an HPC cluster, cloud cluster and
+with the help of experiments carried out on an HPC cluster, butt cluster and
 multi core machine.
 
 ## Performance
@@ -59,17 +59,18 @@ rows to its two adjacent processes during each iteration.
 
 The following figure shows execution times for easyLambda and Spark codes
 for the problems on different number of processes. The codes were executed on
-amazon's elastic cloud cluster (EC2) with an m3.2xlarge instance type. For using
+amazon's elastic cloud cluster (EC2) with an m3.2xlarge instance type. To use
 easyLambda on EC2, a StarCluster with NFSv3 filesystem was used. Spark uses HDFS
 as a filesystem that is deployed by standard spark-ec2 scripts. 
 
-The codes are taken from the examples included with both these libraries except
-for the problem 'heat' in Spark. For this problem the Spark and easyLambda code are
-made isomorphic and as close to each other as possible. The easyLambda performance
-is invariably around an order of magnitude better. However, Spark provides
-fault tolerance and better data handling features that easyLambda lacks as of
-now. There are also differences in the basic philosophy, target community and
-use cases of the two.
+The codes are taken from the documented examples supplied with these libraries except
+for the problem 'heat' in Spark. For this problem, it was necessary to write the Spark
+program myself. To avoid accusations of deliberately trying to make Spark look bad, the 
+Spark and easyLambda programs are written so as to be isomorphic and as close to each 
+other as possible. In the benchmarks, easyLambda invariably performs around an order of
+magnitude better. However, Spark provides fault tolerance and better data handling 
+features that easyLambda currently lacks. There are also differences in the basic 
+philosophy, target community and use cases of the two.
 
 <figure>
   <img src="{{ site.url }}{{ site.baseurl }}/images/benchelastic.png" alt="benchelastic">
