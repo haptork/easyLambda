@@ -23,8 +23,8 @@ The benchmarking results of easyLambda programs for the following problems are
 presented.
 
 - **wordcount**: 
-The wordcount problem involves a file read followed by a segmented reduce that 
-involves partitioning and network communication. The example code for wordcount 
+The wordcount problem involves a file read followed by a reduce with partitioning that 
+involves network communication. The example code for wordcount 
 problem are easy to find for any MapReduce like library that has reduce with partitioning.
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/wordcount.cpp)
 [[walkthrough]]({{ base_path }}/docs/real-world#word-count)
