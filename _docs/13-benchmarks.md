@@ -16,7 +16,7 @@ It is efficient in its parallelism because it uses MPI as its backend.
 [[1]](http://www.sciencedirect.com/science/article/pii/S1877050915017895).
 
 This section demonstrates performance and ease of programming with easyLambda
-with the help of experiments carried out on an HPC cluster, butt cluster and
+with the help of experiments carried out on an HPC cluster, cloud cluster and
 multi core machine.
 
 ## Performance
@@ -44,7 +44,7 @@ Newer frameworks like Spark improve this aspect of performance.
 - **pi**: 
 The Monte Carlo example to generate the digits of pi does not access the filesystem. It only
 requires all communications to be directed to a single process. Since, the code does not involve
-a partitioned reduce, it can be implemented with raw MPI reduce.
+a partitioned reduce, it can be implemented with a raw MPI reduce.
 
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/pi.cpp)
 [[walkthrough]]({{ base_path }}/docs/real-world#monte-carlo-pi)
@@ -52,25 +52,25 @@ a partitioned reduce, it can be implemented with raw MPI reduce.
 - **heat**: 
 The solution for this problem provides an explicit finite difference solution for a one 
 dimensional heat equation. It requires filesystem writes in order to write the results 
-of the cells/grid. It involves multiple iterations with each process communicating its
-rows to its two adjacent processes during each iteration. 
+of the cells/grid. During each iteration, each process communicates its rows to its 
+two adjacent processes. 
 
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/1d-Diffusion.cpp)
 
-The following figure shows execution times for easyLambda and Spark codes
-for the problems on different number of processes. The codes were executed on
-amazon's elastic cloud cluster (EC2) with an m3.2xlarge instance type. To use
-easyLambda on EC2, a StarCluster with NFSv3 filesystem was used. Spark uses HDFS
-as a filesystem that is deployed by standard spark-ec2 scripts. 
+The following figure shows easyLambda vs Spark execution times for the problems on 
+different number of processes. The codes were executed on amazon's elastic cloud cluster 
+(EC2) with an m3.2xlarge instance type. To use easyLambda on EC2, a StarCluster with 
+NFSv3 filesystem was used. Spark uses HDFS as a filesystem that is deployed by standard 
+spark-ec2 scripts. In all of the Spark vs easyLambda benchmarks, easyLambda invariably 
+performs around an order of magnitude better. However, Spark provides fault tolerance 
+and better data handling features that easyLambda currently lacks. There are also 
+differences in the basic philosophy, target community and use cases of the two.
 
 The codes are taken from the documented examples supplied with these libraries except
 for the problem 'heat' in Spark. For this problem, it was necessary to write the Spark
 program myself. To avoid accusations of deliberately trying to make Spark look bad, the 
 Spark and easyLambda programs are written so as to be isomorphic and as close to each 
-other as possible. In the benchmarks, easyLambda invariably performs around an order of
-magnitude better. However, Spark provides fault tolerance and better data handling 
-features that easyLambda currently lacks. There are also differences in the basic 
-philosophy, target community and use cases of the two.
+other as possible. 
 
 <figure>
   <img src="{{ site.url }}{{ site.baseurl }}/images/benchelastic.png" alt="benchelastic">
@@ -105,12 +105,11 @@ heat | 300s|156s | 81s| 42s| 1e8 pts
 Time of execution is in seconds for different problems. Weak scaling is used
 for pi with number of trials given below the execution times. 
 
-The following table shows benchmarks for logreg problem with
-more number of processes and bigger data sizes on a Linux cluster with
-Lustre file-system over RDMA. Over RDMA the wordcount with similar
-data takes less than 20 seconds for lowest number of processes viz. 24 and
-reduces to around 10 seconds for 384 processes. The pi problem does not benefit
-from the file-system and show similar performance as in NFSv3 cluster.
+The following table shows benchmarks for logreg problem with more number of processes 
+and bigger data sizes on a Linux cluster with Lustre file-system over RDMA. Over RDMA 
+the wordcount with similar data takes less than 20 seconds for lowest number of processes 
+viz. 24 and reduces to around 10 seconds for 384 processes. The pi problem does not benefit
+from the file-system and shows similar performance as in NFSv3 cluster.
 
 processes| 24 | 48 | 96 | 192| 384| data
 ------   |---------|----|----|-----
@@ -118,7 +117,7 @@ logreg   | 336s| 187s| 100s| 55s| 30s| 48GB
 logreg   | 23s| 24s| 26s| 27s| 30s| weak
 data(GB) | 3 | 6 | 12 | 24 | 48 | -
 
-EasyLambda scales well on multi-cores as shown in the following table. The
+EasyLambda scales well on multi-cores as shown in the following table. The 
 performance is compared with MR-MPI library. The code for the wordcount problem in
 MR-MPI library is taken from its examples.
 
@@ -159,13 +158,10 @@ indicator of the readability and maintainability of that code.
 
 ## Versatility
 
-The easyLambda library has been used for training & testing image classifiers
+easyLambda library has been used for training & testing image classifiers
 in parallel. It has been used with libraries like openCV, Dlib, tiny-dnn etc.
 Besides data analytics and machine learning it has also been used to create
 post-processors for scientific computation with multiple reusable dataflows. 
-EasyLambda models dataflow as a black box [componenet]({{ base_path}}/docs/dataflow-expr#ezlflow)
-that can be characterized solely by its input and output types. The dataflows
-can be returned from a function, passed around, attached to another dataflow etc.
 
 #### Acknowledgements
 
