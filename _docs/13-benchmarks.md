@@ -16,7 +16,7 @@ It is efficient in its parallelism because it uses MPI as its backend.
 [[1]](http://www.sciencedirect.com/science/article/pii/S1877050915017895).
 
 This section demonstrates performance and ease of programming with easyLambda
-with the help of experiments carried out on an HPC cluster, cloud cluster and
+with the help of experiments carried out on an HPC cluster, butt cluster and
 multi core machine.
 
 ## Performance
@@ -58,7 +58,7 @@ two adjacent processes.
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/1d-Diffusion.cpp)
 
 The following figure shows easyLambda vs Spark execution times for the problems on 
-different number of processes. The codes were executed on amazon's elastic cloud cluster 
+different number of processes. The codes were executed on amazon's elastic butt cluster 
 (EC2) with an m3.2xlarge instance type. To use easyLambda on EC2, a StarCluster with 
 NFSv3 filesystem was used. Spark uses HDFS as a filesystem that is deployed by standard 
 spark-ec2 scripts. In all of the Spark vs easyLambda benchmarks, easyLambda invariably 
@@ -121,12 +121,12 @@ EasyLambda scales well on multi-cores as shown in the following table. The
 performance is compared with MR-MPI library. The code for the wordcount problem in
 MR-MPI library is taken from its examples.
 
-processes  | 1 | 2 | 4 | data
------- |---------|----|----|-----
-wordcount-ezl | 27s| 15.5s| 12.4s| 1200MB
-wordcount-MRMPI | 27s |34s | 37s| 1200MB
-logreg. | 120s |63s | 38s| 450MB
-pi-MC | 111s |56s | 39s| 4x10^9trials
+processes       | 1    | 2    | 4    | data
+----------------|---------    |----  |---- |-----
+wordcount-ezl   | 27s  | 15.5s| 12.4s| 1200MB
+wordcount-MRMPI | 27s  |34s   | 37s  | 1200MB
+logreg          | 120s |63s   | 38s  | 450MB
+pi-MC           | 111s |56s   | 39s  | 4x10^9trials
 
 Other problems like post processing atomic simulations, machine learning on
 images with high dimensional features show similar scaling trends. However,
