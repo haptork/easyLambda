@@ -37,9 +37,9 @@ docs:
 
   - title: Reference
     children:
-      - title: "Starting a data-flow"
+      - title: "Starting a dataflow"
         url: /docs/starting-dataflow/
-      - title: "Data-flow Expressions"
+      - title: "Dataflow Expressions"
         url: /docs/dataflow-expr/
       - title: "Units Expressions"
         url: /docs/unit-expr/
