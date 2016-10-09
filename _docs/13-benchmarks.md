@@ -61,7 +61,7 @@ difference solution for one dimensional heat equation. It requires filesystem
 writes in order to write the results of the cells/grid. It involves multiple 
 iterations. In each iteration, a process communicates solution at the edge cells
 with its adjacent processes.
-[[code]](https://github.com/haptork/easyLambda/tree/master/examples/1d-Diffusion.cpp)
+[[code]](https://github.com/haptork/easyLambda/tree/master/examples/1D-diffusion.cpp)
 
 The following figure shows execution times of easyLambda and Spark codes
 for the problems on different number of processes. The codes were executed on
