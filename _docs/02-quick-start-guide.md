@@ -22,20 +22,21 @@ instructions given below for quick installation and usage.
    launched for a single node or in a cluster of nodes with [starcluster](http://star.mit.edu/cluster/docs/latest/quickstart.html).
  - SSH with username `ubuntu`.
  - Clone the easyLambda github repository in the home directory and you are
-   ready to compile and run the examples and your applications.
+   ready to compile and run the examples or your applications.
 
 ## Installing
 Extract the downloaded zip and place the contents of the include directory in
-your compiler include path so that it is available to the compiler. If you do
-not add the directory in the include path then you can give the path of the
-include directory with compiler flag -I.
-* To install newest gcc on Ubuntu or related distros you can check [link](http://askubuntu.com/questions/428198/getting-installing-gcc-g-4-9-on-ubuntu).
+the compiler include path so that it is available to the compiler. If the directory
+is not added to the include path then the path of the include directory with
+compiler flag -I can be given while compiling.
+
+* To install newest gcc on Ubuntu or related distros, check [link](http://askubuntu.com/questions/428198/getting-installing-gcc-g-4-9-on-ubuntu).
 * To install boost with mpi follow the [link](http://www.boost.org/doc/libs/1_61_0/doc/html/mpi/getting_started.html).
 
 ## Compiling
 There are no linking requirements of ezl library but it uses boost::serialization
 and boost::mpi that need to be linked.
-Here is how you can compile a program in general:
+Here is how to compile a program in general:
 `mpic++ file.cpp -Wall -std=c++14 -O3 -I path_to_ezl_include -lboost_mpi -lboost_serialization`
 
 Replace path_to_ezl_include with the actual path of ezl include directory in your
