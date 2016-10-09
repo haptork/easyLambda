@@ -62,9 +62,9 @@ files from `ezl/algorithms/` directory need to be included. The function
 objects are grouped according to their use case. The algorithms for use with
 reduce are in reduces.hpp, with filter are in filters.hpp and so on. 
 
-There are many examples and demonstrations given in the examples directory,
-pick an example of your interest to begin with. You can check reference for
-information on a specific easyLambda call. Learn by example gives a humble
+There are many examples and demonstrations given in the [examples directory](https://github.com/haptork/easyLambda/tree/master/examples/),
+pick an example of your interest to begin with. You can check [reference]({{ site.url }}{{ site.baseurl }}/docs/starting-dataflow/) for
+information on a specific easyLambda call. [Learn by example]({{ site.url }}{{ site.baseurl }}/docs/hello-world/) gives a humble
 introduction to ezl with examples showing many essential features.
 
 For any help please let us know via mail or github issues.
