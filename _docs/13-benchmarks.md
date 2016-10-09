@@ -2,6 +2,7 @@
 title: "Benchmarks"
 permalink: /docs/benchmarks/
 excerpt: "Benchmarks for performance and ease of use"
+comments: true
 ---
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
