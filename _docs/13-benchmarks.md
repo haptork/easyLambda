@@ -34,15 +34,15 @@ reduce with partitioning.
 [[walkthrough]]({{ base_path }}/docs/real-world#word-count)
 
 - **logreg**: 
-It is a popular classification algorithm in machine learning. The logistic 
-regression training is done using iterative stochastic gradient descent 
-which is also used in many other machine learning tasks such as neural networks.
-It involves reading the data once, followed by multiple iterations on it to 
-improve the weights of the classifier. The iterations involve calculation of the 
-gradient which is a linear
-operation on the number of dimensions of the input. Each iteration may entail
-inter-process communications. Classic MapReduce frameworks such as Hadoop involve
-disk operations for each iteration making the iterative algorithms relatively slow
+Logistic regression is a popular classification algorithm in machine learning.
+The logistic regression training is done using iterative stochastic gradient
+descent which is also used in many other machine learning tasks such as neural
+networks. It involves reading the data once, followed by multiple iterations
+on the data to improve the weights of the classifier. The iterations involve
+calculation of the gradient which is a linear operation on the number of
+dimensions of the input. Each iteration may entail inter-process
+communications. Classic MapReduce frameworks such as Hadoop involve disk
+operations for each iteration making the iterative algorithms relatively slow
 when compared to modern frameworks like Spark.
 [[code]](https://github.com/haptork/easyLambda/tree/master/examples/logreg.cpp)
 [[walkthrough]]({{ base_path }}/docs/real-world#logistic-regression)
