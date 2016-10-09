@@ -36,14 +36,14 @@ assert(a(3) == true);
 assert(a_notone_odd(1) == false);
 {% endhighlight %}
 
-**Example-2**: Multiple columns and column selection
+**Example-2**: Multiple elements and element selection
 
 {% highlight cpp %}
 auto v = vector<tuple<int, char, int>>{};
 v.emplace_back(1, 'a', 11);
 v.emplace_back(2, 'b', 22);
 v.emplace_back(3, 'c', 33);
-// second column/index > 'b' or whole tuple equals (3, 'c', 33)
+// second element/index > 'b' or whole tuple equals (3, 'c', 33)
 auto c = count_if(begin(v), end(v), lt<2>('b') || eq(3, 'c', 33));
 assert(c == 2);
 {% endhighlight %}
@@ -227,7 +227,7 @@ abstraction, since it enables static binding rather than dynamic dispatch of
 virtual functions.
 
 We skipped over a couple of small details like overloading the logical
-operators for ltype and rtype separately, object generators, adding column
+operators for ltype and rtype separately, object generators, adding element
 selection to logical operators etc. These details can be found in the code
 [here](https://github.com/haptork/easyLambda/blob/master/include/ezl/algorithms/predicates.hpp)
 and examples can be found
@@ -243,7 +243,7 @@ Please suggest improvements and how you would implement this.
 I am not sure how much useful these predicates are in general but I have found
 them to be pretty useful for data processing. They appear in many
 [examples](https://haptork.github.io/easyLambda/docs/real-world/) in
-easyLambda. The technique defined for combining with logical operators can be
+easyLambda. I have also found element selection quite useful in reusing the
+predicates. The technique defined for combining with logical operators can be
 applied to any general predicate. I believe that a library with geometrical
 predicates like `in_circle` etc. would also be of use in various cases.
-
