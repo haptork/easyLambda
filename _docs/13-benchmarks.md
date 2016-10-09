@@ -1,8 +1,7 @@
-—--
+---
 title: "Benchmarks"
 permalink: /docs/benchmarks/
 excerpt: "Benchmarks for performance and ease of use"
-comments: true
 ---
 {% include base_path %}
 {% include toc icon="gears" title="Contents" %}
@@ -12,8 +11,7 @@ incurring minimal overheads. It scales from multiple cores to *hundreds of distr
 nodes *without any need to deal with parallelism* in user code.
 
 It uses modern C++ features to be expressive and succinct. It builds parallelism
-over MPI which is more efficient than other comparable distributed libraries.
-[[1]](http://www.sciencedirect.com/science/article/pii/S1877050915017895).
+over high performance MPI library. [[1]](http://www.sciencedirect.com/science/article/pii/S1877050915017895).
 
 The section demonstrates performance and ease of programming with easyLambda
 with the help of experiments carried out on an HPC cluster, cloud cluster and
@@ -176,7 +174,7 @@ EasyLambda models dataflow as a black box [componenet]({{ base_path}}/docs/dataf
 that can be characterized solely by its input and output types. The dataflows
 can be returned from a function, passed around, attached to another dataflow etc.
 
-#### Acknowledgements
+**Acknowledgements**
 
 I wish to thank [eicossa](https://github.com/eicossa) and Nitesh for their
 continuous help in pulling this through.
