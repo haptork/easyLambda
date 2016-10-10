@@ -16,7 +16,7 @@ single parameter to decide the return value
 [[drdobbs]](http://www.drdobbs.com/effective-standard-c-library-unary-predi/184403777)
 [[cppref]](http://en.cppreference.com/w/cpp/concept/Predicate). They are useful
 in many higher order functions e.g. '_if' algorithms in standard library such
-as find_if or remove_if, partition etc.  With increase in functional style
+as find_if or remove_if, partition etc. With increase in functional style
 programming and libraries within C++, predicates are going to be used more
 often.
 
@@ -29,7 +29,7 @@ place and observe their behavior.
 **Example-1**: Relational operators with logical
 
 {% highlight cpp %}
-auto a = gt(80) || lt(40);
+auto a = gt(80) || lt(40); // gt for greater than & lt for lesser
 auto a_notone_odd = a && !eq(1) && ([](int x) { return x % 2; });
 
 assert(a(3) == true);
