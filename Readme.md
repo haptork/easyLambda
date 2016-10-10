@@ -84,9 +84,10 @@ Here we mention some examples in short.
 The following program calculates frequency of each word in the data files.
 
 ```cpp
-  ezl::rise(fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
-    .reduce<1>(ezl::count(), 0).dump()
-    .run();
+auto reader = fromFile<string>(argv[1]).rowSeparator('s').colSeparator("");
+ezl::rise(reader)
+  .reduce<1>(ezl::count(), 0).dump()
+  .run();
 ```
 
 The dataflow pipeline starts with `rise` and subsequent operations are added to it.
