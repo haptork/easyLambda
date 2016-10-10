@@ -24,7 +24,11 @@ main:
 # documentation links
 docs:
   - title: Getting Started
-    url: /docs/quick-start-guide/
+    children:
+      - title: "Welcome"
+        url: /
+      - title: "Quick Start"
+        url: /docs/quick-start-guide/
 
   - title: Learn By Example
     children:
