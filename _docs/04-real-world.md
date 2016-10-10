@@ -27,7 +27,10 @@ int main(int argc, char* argv[]) {
 
   boost::mpi::environment env(argc, argv);
   assert(argc > 1);
-  ezl::rise(fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
+  auto reader = fromFile<string>(argv[1])
+                  .rowSeparator('s')
+                  .colSeparator("");
+  ezl::rise(reader)
     .reduce<1>(ezl::count(), 0).dump()
     .run();
   return 0;
@@ -69,10 +72,13 @@ The following dataflow reduces the communication and makes the parallel
 run a lot more efficient.
 
 {% highlight cpp %}
-  ezl::rise(fromFile<string>(argv[1]).rowSeparator('s').colSeparator(""))
-    .reduce<1>(ezl::count(), 0).inprocess()
-    .reduce<1>(ezl::sum(), 0).dump()
-    .run();
+auto reader = fromFile<string>(argv[1])
+                .rowSeparator('s')
+                .colSeparator("");
+rise(reader)
+  .reduce<1>(count(), 0).inprocess()
+  .reduce<1>(sum(), 0).dump()
+  .run();
 {% endhighlight %}
 
 In the dataflow there is a reduce with inprocess property. That makes the
@@ -98,7 +104,7 @@ used to estimate the value of pi. You can read about it more
 [here](http://mathfaculty.fullerton.edu/mathews/n2003/montecarlopimod.html).
 
 {% highlight cpp %}
-ezl::rise(ezl::kick(trials).split())
+rise(ezl::kick(trials).split())
     .map([] { 
       auto x = rand01(); // random value between 0 and 1
       auto y = rand01();
@@ -109,7 +115,7 @@ ezl::rise(ezl::kick(trials).split())
     .reduce(ezl::sum(), 0LL)
     .map([trials](long long res) {
       return (4.0 * res / trials); 
-    }).colsTransform().dump("", "pi in " + std::to_string(trials) + " trials:")
+    }).colsTransform().dump("", "pi in "+to_string(trials)+": ")
     .run();
 {% endhighlight %}
 
@@ -146,18 +152,21 @@ logical and domain scores with respect to gender. We can find similarity of
 the above code with steps in spreadsheet analysis or with an SQL query. 
 
 {% highlight cpp %}
-ezl::rise(ezl::fromFile<char, std::array<float, 3>>(fileName)
+using ezl::summary;
+using ezl::corr;
+ezl::rise(fromFile<char, std::array<float, 3>>(fileName)
             .cols({"Gender", "English", "Logical", "Domain"})
             .colSeparator("\t"))
-  .filter<2>(ezl::gtAr<3>(0.F))
-    .reduceAll<1>(ezl::summary()).dump("", 
-      "Gender split of scores(E, L, D) resp.\n(gender|count|avg|std|min|max)")
+  .filter<2>(gt<3>(0.F))
+    .reduceAll<1>(summary())
+      .dump("", "Gender split of scores(E, L, D) "
+                "\n(gender|count|avg|std|min|max)")
     .oneUp()
   .map<1>([] (char gender) { 
     return float(gender == 'M' || gender == 'm');
   }).colsTransform()
-  .reduceAll(ezl::corr<1>()).dump("corr.txt",
-                                  "Corr. of gender vs. scores\n(gender|E|L|D)")
+  .reduceAll(corr<1>()).dump("corr.txt",
+                             "Corr. of gender vs. scores\n(g|E|L|D)")
   .run();
 {% endhighlight %}
 
@@ -276,37 +285,37 @@ regression training is done using iterative gradient descent. We are showing
 training as well as testing dataflows for it.
 
 {% highlight cpp %}
-  auto reader = ezl::fromFile<double, array<double, dim>>(argv[1])
-                  .colSeparator(",");
+auto reader = ezl::fromFile<double, array<double, D>>(argv[1])
+                .colSeparator(",");
 
-  // load once in memory
-  auto trainData = ezl::rise(reader)
-                  .get();
+// load once in memory
+auto trainData = ezl::rise(reader)
+                .get();
 {% endhighlight %}
 
 The reader is a fromFile function object. The first command line argument has
 the training data file. The training data has first column as result and next
-`dim` number of columns as input variables.
+`D` number of columns as input variables.
 
 After running the dataflow with get, the trainData in different
 processes has different rows loaded from the files, almost equally shared. The
-type of trainData is vector<tuple<double, array<double,dim>> that is same as
+type of trainData is vector<tuple<double, array<double,D>> that is same as
 vector of the output columns of the unit on which get is called on. We
 can use trainData with raw MPI, any other library or user code. Each process
 will work on its share of data.
 
 {% highlight cpp %}
-  array<double, dim> w{};
-  auto trainFlow = ezl::rise(ezl::fromMem(trainData))
-                     .map([&w](auto& y, auto& x) {
-                       return calcGrad(y, x, w);    
-                     }).colsTransform()
-                     .reduce(sumArray, array<double, dim>{}).inprocess()
-                     .reduce(sumArray, array<double, dim>{})
-                     .map(updateWeights).colsResult()
-                     .map(calcNorm(w))
-                       .prll(1.0, ezl::llmode::task | ezl::llmode::all)
-                     .build();
+array<double, D> w{};
+auto trainFl = rise(fromMem(trainData))
+                 .map([&w](auto& y, auto& x) {
+                   return calcGrad(y, x, w);    
+                 }).colsTransform()
+                 .reduce(sumArray, array<double, D>{}).inprocess()
+                 .reduce(sumArray, array<double, D>{})
+                 .map(updateWeights).colsResult()
+                 .map(calcNorm(w))
+                   .prll(1.0, llmode::task | llmode::all)
+                 .build();
 {% endhighlight %}
 
 The weights `w` are initialized to zero with `{}` for initialization.
@@ -335,8 +344,8 @@ llmode::all we make sure that that all the maps in different processes get all t
 {% highlight cpp %}
   auto norm = epsilon * 2;
   while (norm < epsilon) {
-    array<double, dim> wn;
-    tie(wn, norm) = ezl::flow(trainFlow).get()[0];
+    array<double, D> wn;
+    tie(wn, norm) = ezl::flow(trainFl).get()[0];
     w = move(wn);
   }
 {% endhighlight %}
@@ -345,23 +354,23 @@ In the above loop we keep running the training dataflow with updated weights
 as long as the norm is more than a given epsilon.
 
 {% highlight cpp %}
-  auto testFlow = ezl::rise(reader)
-                      .map<2>([&w](const auto& x) {
-                        auto pred = 0.;
-                        for (size_t i = 0; i < get<0>(x).size(); ++i) {
-                          pred += w[i] * get<0>(x)[i];
-                        }
-                        return (sigmoid(pred) > 0.5);
-                      }).colsTransform()
-                      .reduce<1, 2>(ezl::count(), 0)
-                        .dump("", "real-y, predicted-y, count")
-                      .build();
+auto testFl = rise(reader)
+                .map<2>([&w](const auto& x) {
+                  auto pred = 0.;
+                  for (size_t i = 0; i < get<0>(x).size(); ++i) {
+                    pred += w[i] * get<0>(x)[i];
+                  }
+                  return (sigmoid(pred) > 0.5);
+                }).colsTransform()
+                .reduce<1, 2>(ezl::count(), 0)
+                  .dump("", "real-y, predicted-y, count")
+                .build();
 
-  for (int i = 1; i < argc; ++i) {
-    reader = reader.filePattern(argv[i]);
-    cout<<"Testing for "<<argv[i]<<endl;
-    ezl::flow(testFlow).run();
-  }
+for (int i = 1; i < argc; ++i) {
+  reader = reader.filePattern(argv[i]);
+  cout<<"Testing for "<<argv[i]<<endl;
+  ezl::flow(testFl).run();
+}
 {% endhighlight %}
 
 We use the final weights from training to test the data-sets given as file
