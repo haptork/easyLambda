@@ -154,9 +154,10 @@ the above code with steps in spreadsheet analysis or with an SQL query.
 {% highlight cpp %}
 using ezl::summary;
 using ezl::corr;
-ezl::rise(fromFile<char, std::array<float, 3>>(fileName)
-            .cols({"Gender", "English", "Logical", "Domain"})
-            .colSeparator("\t"))
+auto reader = fromFile<char, std::array<float, 3>>(fileName)
+                .cols({"Gender", "English", "Logical", "Domain"})
+                .colSeparator("\t");
+ezl::rise(reader)
   .filter<2>(gt<3>(0.F))
     .reduceAll<1>(summary())
       .dump("", "Gender split of scores(E, L, D) "

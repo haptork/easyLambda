@@ -156,9 +156,10 @@ another C / C++ function.
 The following program calculates frequency of each word in the data files.
 
 {% highlight ruby %}
-  ezl::rise(fromFile<string>(argv[1]).rowSeparator(' ')))
-    .reduce<1>(ezl::count(), 0).dump()
-    .run();
+auto reader = fromFile<string>(argv[1]).rowSeparator(' ');
+ezl::rise(reader)
+  .reduce<1>(ezl::count(), 0).dump()
+  .run();
 {% endhighlight %}
 
 The dataflow starts with `rise` and subsequent operations are added to the
