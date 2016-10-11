@@ -315,7 +315,7 @@ auto trainFl = rise(fromMem(trainData))
                  .reduce(sumArray, array<double, D>{})
                  .map(updateWeights).colsResult()
                  .map(calcNorm(w))
-                   .prll(1.0, llmode::task | llmode::all)
+                   .prll(1.0, llmode::task | llmode::dupe)
                  .build();
 {% endhighlight %}
 
@@ -336,10 +336,9 @@ reduce without key all the rows have to reach a single process for reduction so
 it executes in a single process. 
 
 Here, calcnorm map executes in all the processes available to the dataflow since
-we request 1.0 ratio of processes with llmode::task mode. Without the task mode it would
-be 1.0 or all the processes of the source unit rather than the dataflow. By default the
+we request 1.0 ratio of processes with llmode::task mode. By default the
 rows are split between the number of processes in a round robin fashion, however with
-llmode::all we make sure that that all the maps in different processes get all the rows.
+llmode::dupe we make sure that that all the maps in different processes get all the rows.
 
 
 {% highlight cpp %}
@@ -387,9 +386,9 @@ the input file pattern of the reader and running the dataflow.
 
 The example demonstrates various useful features, how can the data be loaded into
 memory once and then can be processed multiple times with easyLambda dataflow
-or used elsewhere. It also utilizes the fact that easyLambda dataflow columns
-at any step are immutable, hence the input data can be used multiple times and
-is never modified. EasyLambda however makes sure that the copies are created
+or used elsewhere. It also utilizes the fact that the data
+at any step is immutable, hence the input data can be used multiple times and
+is never modified. The library implementation however makes sure that the copies are created
 only when required and uses const references for column selection etc. It shows
 the use of prll property to spread the data on all processes and how that can
 be used to use the data outside the easyLambda dataflow.
