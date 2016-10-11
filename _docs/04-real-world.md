@@ -344,7 +344,7 @@ llmode::all we make sure that that all the maps in different processes get all t
 
 {% highlight cpp %}
   auto norm = epsilon * 2;
-  while (norm < epsilon) {
+  while (norm > epsilon) {
     array<double, D> wn;
     tie(wn, norm) = ezl::flow(trainFl).get()[0];
     w = move(wn);
