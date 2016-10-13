@@ -43,7 +43,7 @@ auto v = vector<tuple<int, char, int>>{};
 v.emplace_back(1, 'a', 11);
 v.emplace_back(2, 'b', 22);
 v.emplace_back(3, 'c', 33);
-// second element/index > 'b' or whole tuple equals (3, 'c', 33)
+// second element/index lt 'b' or whole tuple equals (3, 'c', 33)
 auto c = count_if(begin(v), end(v), lt<2>('b') || eq(3, 'c', 33));
 assert(c == 2);
 {% endhighlight %}
