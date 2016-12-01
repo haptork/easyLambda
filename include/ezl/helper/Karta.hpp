@@ -89,7 +89,7 @@ public:
 
   auto getId() { return _counter++; }
 
-  const int nProc() { return _nProc; }
+  const int &nProc() const { return _nProc; }
 
   void refresh() { 
     _procs.clear();
@@ -192,7 +192,7 @@ public:
     --_isRunning;
   }
 
-  const int rank() const { return _rank; }
+  const int &rank() const { return _rank; }
 
   const boost::mpi::communicator &comm() const { return _comm; }
 

@@ -49,9 +49,9 @@ public:
 
   ProcReq() {}
 
-  const Type type() const { return _type; }
+  const Type &type() const { return _type; }
 
-  const bool task() const { return _task; }
+  const bool &task() const { return _task; }
 
   void setTask(bool task = true) { _task = task; }
   
