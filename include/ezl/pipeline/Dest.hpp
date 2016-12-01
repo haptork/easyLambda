@@ -79,7 +79,7 @@ public:
     assert(self.get() == this && "the self shared object needs to be passed");
     auto id = pr->id();
     if (_prev.find(id) == std::end(_prev)) {
-      auto it = _prev.emplace(id, pr.get());
+      auto it = _prev.emplace(id, pr);
       if (!pr->next(self, pr)) {
         _prev.erase(it.first);
         return false;
@@ -117,7 +117,7 @@ protected:
   auto sig(int sigCount) { _sigCount = sigCount >= 0 ? sigCount : 0; }
   auto& sig() { return _sigCount; }
 private:
-  std::map<int, Source<Type>*> _prev;
+  std::map<int, std::shared_ptr<Source<Type>>> _prev;
   size_t _id;
   int _sigCount {0};
 };
