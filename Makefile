@@ -34,7 +34,7 @@ $(BUILDDIR)/%.o: $(TESTDIR)/%.$(SRCEXT)
 example:
 	@mkdir -p $(BINDIR)
 	@echo " making $(fname)..."
-	@echo " $(CC) examples/$(fname).cpp $(CFLAGS) $(INC) -o $(BUILDDIR)/$(fname) $(LIB)"; $(CC) examples/$(fname).cpp $(CFLAGS) $(INC) -o $(BINDIR)/$(fname) $(LIB)
+	@echo " $(CC) examples/$(fname).cpp $(CFLAGS) $(INC) -o $(BINDIR)/$(fname) $(LIB) "; $(CC) examples/$(fname).cpp $(CFLAGS) $(INC) -o $(BINDIR)/$(fname) $(LIB)
 
 $(BINDIR)/%: $(EGDIR)/%.$(SRCEXT)
 	@mkdir -p $(BINDIR)
