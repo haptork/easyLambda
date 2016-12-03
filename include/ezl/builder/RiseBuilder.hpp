@@ -20,9 +20,6 @@
 #include <ezl/helper/ProcReq.hpp>
 #include <ezl/units/Rise.hpp>
 
-#define SUPERLA DataFlowExpr<RiseBuilder<F>, std::nullptr_t>,                    \
-                DumpExpr<RiseBuilder<F>, meta::slct<>>
-
 namespace ezl {
 namespace detail {
 
@@ -34,7 +31,10 @@ template <class T, class O> struct DumpExpr;
  * Builder for Rise
  *
  * */
-template <class F> struct RiseBuilder : SUPERLA {
+template <class F>
+struct RiseBuilder
+    : DataFlowExpr<RiseBuilder<F>, typename meta::RiseTypes<F>::type>,
+      DumpExpr<RiseBuilder<F>, meta::slct<>> {
 public:
   RiseBuilder(F&& sourceFunc) : _sourceFunc{std::forward<F>(sourceFunc)}, _procReq{} {}
 
@@ -93,6 +93,7 @@ public:
   auto _buildUnit() {
     auto obj = std::make_shared<Rise<F>>(_procReq, std::forward<F>(_sourceFunc), _procSink);
     DumpExpr<RiseBuilder, meta::slct<>>::_postBuild(obj);
+    this->_fl.flprev(obj);
     return obj;
   }
 

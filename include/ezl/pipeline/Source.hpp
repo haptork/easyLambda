@@ -52,7 +52,7 @@ public:
     assert(self.get() == this && "the self shared object needs to be passed");
     auto id = nx->id();
     if (_next.find(id) == std::end(_next)) {
-      auto it = _next.emplace(id, nx.get());
+      auto it = _next.emplace(id, nx);
       if (nx->prev(self, nx) == false) {
         _next.erase(it.first);
         return false;
@@ -92,7 +92,7 @@ public:
   inline const auto &next() const { return _next; }
 
 private:
-  std::map<int, Dest<Type>*> _next;
+  std::map<int, std::shared_ptr<Dest<Type>>> _next;
   size_t _id;
 };
 } // namespace ezl
