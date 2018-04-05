@@ -77,7 +77,7 @@ void demoReduceAll() {
   // order as input.
   ezl::flow(pipe1)
     .reduceAll<2>(ezl::summary()).ordered()
-    .filter([](array<double, 5>) { // count, mean, stddev, max, min
+    .filter([](array<double, 5>) { // mean, stddev, min, max, count
       return true;
     });
 
