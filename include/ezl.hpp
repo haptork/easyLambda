@@ -35,7 +35,7 @@ template <class I> inline auto flow(std::vector<std::shared_ptr<I>> vpr) {
   auto noop = std::make_shared<NoOp<typename I::otype>>();
   fl.addFirst(noop);
   for (auto& pr : vpr) if (pr) pr->next(noop, pr);
-  return detail::LoadUnitBuilder<I, typename I::otype> {noop, fl};
+  return detail::LoadUnitBuilder<NoOp<typename I::otype>, typename I::otype> {noop, fl};
 }
 // start a dataflow from a list of prior dataflow or units
 template <class I> inline auto flow(std::initializer_list<std::shared_ptr<I>> vpr) {
