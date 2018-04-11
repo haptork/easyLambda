@@ -14,7 +14,7 @@
 
 #include <ezl.hpp>
 #include <ezl/algorithms/predicates.hpp>
-
+/*
 void demoZip() {
   using std::vector;
   using std::tuple;
@@ -64,11 +64,31 @@ void demoZip() {
   // number of rows is equal to the lesser number of input rows.
   ezl::flow(pipe).zip(dropOne).dump("", "w/o key").run();
 }
+*/
+void demoMultipleSourceZip() {
+  using std::tuple; using std::vector;
+  vector<tuple<int, char>> oddInp;
+  oddInp.emplace_back(3, 'a');
+  oddInp.emplace_back(7, 'c');
+  oddInp.emplace_back(5, 'b');
+  vector<tuple<int, char>> evenInp;
+  evenInp.emplace_back(8, 'd');
+  evenInp.emplace_back(6, 'c');
+  evenInp.emplace_back(2, 'a');
+  evenInp.emplace_back(4, 'b');
+
+  auto odd = ezl::rise(ezl::fromMem(oddInp)).prll({1})
+             .build();
+  auto even = ezl::rise(ezl::fromMem(evenInp)).prll({0})
+             .build();
+  ezl::flow(odd).zip<2>(even).dump("", "odd & even").prll({2}).run();
+}
 
 int main(int argc, char *argv[]) {
   boost::mpi::environment env(argc, argv, false);
   try {
-    demoZip();
+    // demoZip();
+    demoMultipleSourceZip();
   } catch (const std::exception& ex) {
     std::cerr<<"error: "<<ex.what()<<'\n';
     env.abort(1);  

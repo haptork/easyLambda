@@ -19,26 +19,47 @@
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/predicates.hpp>
 
+void demoMultipleSourceFlow() {
+  auto even = ezl::rise(ezl::fromMem({4, 2, 0, 6, 8})).prll({0})
+             .build();
+  auto odd = ezl::rise(ezl::fromMem({5, 3, 1, 7, 9})).prll({1})
+             .build();
+  auto all = ezl::flow<int>()
+             .filter(ezl::tautology()).prll({3}).dump("", "odds & evens")
+             .build();
+  *all << even;
+  *all << odd;
+  ezl::flow(all).run();
+  all->unlink();
+
+  // another flow
+  auto  odd2 = ezl::flow(odd).filter(ezl::tautology()).prll({2}).build();
+  *all << odd;
+  *all << odd2;
+  ezl::flow(all).run();
+}
+
 /*!
  * returns a map-flow that can be placed in a pipeline later.
- * 
- * In place of auto we can explicitly mention type, the alternate fn. signature: 
+ *
+ * In place of auto we can explicitly mention type, the alternate fn. signature:
  *
  * `shared_ptr<ezl::Flow<tuple<char, int>, tuple<char, string>>> sqr();`
- * 
+ *
  * The first tuple has input column types and second has output column types.
  *
  * To the returned flow we can add more units that take the input rows same as
  * this flow streams out or we can add the current flow to the units that
  * stream the rows same as the flow's input row type.
  *
- * We can think of a flow as a black-box stream manipulator that can have 
+ * We can think of a flow as a black-box stream manipulator that can have
  * multiple units or flows but is identified with only its input and output
  * types, where one kind of rows stream in to result in another type of stream.
  *
  * If we want to just add more units to a flow and use it only as source, we may
  * also write shared_ptr<ezl::Source<tuple<type1, ...>>>. Similarly, if we only
- * want to use the current flow where data just comes in from some other sources,
+ * want to use the current flow where data just comes in from some other
+ *sources,
  * we may use shared_ptr<ezl::Dest<tuple<type1, ...>>>.
  * */
 auto sqr() {
@@ -169,6 +190,7 @@ int main(int argc, char *argv[]) {
   boost::mpi::environment env(argc, argv, false);
   try {
     demoFlow();
+    demoMultipleSourceFlow();
   } catch (const std::exception& ex) {
     std::cerr<<"error: "<<ex.what()<<'\n';
     env.abort(1);  
