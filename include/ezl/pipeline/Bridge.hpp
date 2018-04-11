@@ -70,9 +70,18 @@ public:
   virtual void forwardPar(const Par *pr) override final {
     if (_visited) return;
     _visited = true;
-    _parHandle = pr;
-    if (!_parred) _dataBegin();
-    _parred = true;
+    ++_parred;
+    if (_parred == 1) {
+      _parCp = *pr;
+      _parHandle = &_parCp;
+    } else {
+      for (auto it : *pr) {
+        if (std::find(_parCp.begin(), _parCp.end(), it) == _parCp.end()) {
+          _parCp.add(it);
+        }
+      }
+    }
+    if (_parred >= this->sig()) _dataBegin();
     if (!Source<IO>::next().empty()) {
       for (auto &it : Source<IO>::next()) {
         it.second->forwardPar(&(Task::par()));
@@ -91,7 +100,7 @@ public:
     if (i == 0) this->incSig();
     else if (this->decSig() == 0) {
       _dataEnd(i);
-      _parred = false;
+      _parred = 0;
     }
     for (auto &it : this->next()) {
       it.second->signalEvent(i);
@@ -113,7 +122,8 @@ private:
   virtual void _dataBegin() = 0;  // Implementation for dataBegin.
   virtual void _dataEnd(int j) = 0;  // Implementation for dataEnd.
   const Par* _parHandle;  // parallel info for prior task
-  bool _parred{false};
+  Par _parCp;  // parallel info for prior task
+  int _parred{0};
   bool _traversingRoots{false};
   bool _traversingTasks{false};
   bool _visited{false};

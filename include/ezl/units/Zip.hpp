@@ -201,11 +201,11 @@ private:
           meta::slctTupleRef(meta::tieTup(it1->second.front(),
                                           it2->second.front()),
                              Oslct{});
-      it1->second.pop_front();
-      it2->second.pop_front();
       for (auto &it : Source<otype>::next()) {
         it.second->dataEvent(otemp);
       }
+      it1->second.pop_front();
+      it2->second.pop_front();
     }
     if (it1->second.empty()) _index1.erase(it1);
     if (it2->second.empty()) _index2.erase(it2);

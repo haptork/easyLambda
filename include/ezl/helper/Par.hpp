@@ -56,6 +56,17 @@ public:
 
   auto end() const { return std::cend(_ranks); }
 
+  auto add(int p) {
+    if (std::find(std::begin(_ranks), std::end(_ranks), p) == std::end(_ranks)) {
+      _ranks.push_back(p);
+      ++_nProc;
+    }
+    if (inRange() == false && rank() == p) {
+      _pos = _ranks.size() - 1;
+      _inRange = true;
+    }
+  }
+
   const auto &operator[](int index) const { return _ranks[index]; }
 
 private:
