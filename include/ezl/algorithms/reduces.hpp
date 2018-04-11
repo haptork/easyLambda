@@ -67,13 +67,13 @@ private:
 
 
 template <class... Fns>
-auto fnForAllCol(Fns... fns) {
+auto everyColFns(Fns... fns) {
   return FnsForAllCol<Fns...>(std::make_tuple(fns...));
 }
 
 template <class... Fns>
-auto fnForEachCol(Fns... fns) {
-  return FnForEachCol<Fns...>(std::make_tuple(fns...));
+auto perColFns(Fns... fns) {
+  return FnsForEachCol<Fns...>(std::make_tuple(fns...));
 }
 
 template <class Fn>
@@ -130,15 +130,15 @@ private:
   Fn _fn;
 };
 
-// usage: wrap(std::plus<double>())
+// usage: wrapBiFnReduce(std::plus<double>())
 template <class T>
-auto wrapBinaryFn(T &&t) {
+auto wrapBiFnReduce(T &&t) {
   return Wrap<T>{std::forward<T>(t)};
 }
 
-// usage: wrapPred(std::greater<int>())
+// usage: wrapPredReduce(std::greater<int>())
 template <class T>
-auto wrapPred(T &&t) {
+auto wrapPredReduce(T &&t) {
   return WrapPred<T>{std::forward<T>(t)};
 }
 
