@@ -100,11 +100,11 @@ public:
   }
 
   // A rudimentary log to be extended later.
-  void log(std::string msg, LogMode mode = LogMode::info) {
+  void log(std::string msg, LogMode mode = LogMode::info) const {
     if (mode & _logMode) std::cerr<<_rank<<": "<<msg<<std::endl;
   }
 
-  void log0(std::string msg, LogMode mode = LogMode::info) {
+  void log0(std::string msg, LogMode mode = LogMode::info) const {
     if ((mode & _logMode) && _rank == 0) std::cerr<<msg<<std::endl;
   }
 
@@ -235,10 +235,12 @@ private:
       }
     }
     if (cur.empty()) {
-      std::cerr << "Process allocation to some units is not possible\
- with requested ranks. Please check the process ranks requested or leave it\
- for auto-allocation"
-                << std::endl;
+      log0(
+          std::string{
+              "Process allocation to some units is not possible with requested "
+              "ranks. Please check the process ranks requested or leave it for "
+              "auto-allocation"},
+          LogMode::warning);
       return _giveProcs(1, all);
     }
     return cur;
