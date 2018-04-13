@@ -270,8 +270,19 @@ private:
     //assert(priority.size() == prods.size());
     std::vector<int> all;
     std::vector<std::vector<int>> assigned;
+    std::set<Task*> bros;
     for (auto i = 0; i < int(prods.size()); i++) {
       for (auto &jt : prods[i]) {
+        auto bro = jt->sameProcBro();
+        if (bro != nullptr) {
+          auto it = bros.find(bro);
+          if (it == std::end(bros)) {
+            bros.insert(jt);
+            continue;
+          } else {
+            bros.erase(it);
+          }
+        }
         all.clear();
         if (!jt->procReq().task()) {
           all.insert(std::begin(all), std::begin(priority[i]),
@@ -324,6 +335,13 @@ private:
                     std::array<int, 3>{{_curTag, _curTag + 1, _curTag + 2}},
                     _comm.rank()});
         _curTag += 3;
+        if (bro != nullptr) {
+          bro->par(Par{curProcs,
+                    std::array<int, 3>{{_curTag, _curTag + 1, _curTag + 2}},
+                    _comm.rank()});
+          _curTag += 3;
+          _markAlloc(curProcs);
+        }
         // TODO: why resetting _curTag crashes some applications like displaced
         //if (_curTag + 3 > boost::mpi::environment::max_tag()) _curTag = 1;
         assigned.push_back(curProcs);

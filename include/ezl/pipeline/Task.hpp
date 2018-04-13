@@ -26,10 +26,14 @@ namespace ezl {
  * */
 class Task {
 public:
-  Task (ProcReq req) : _procReq{req} {}
+  Task (ProcReq req, Task* bro = nullptr) : _procReq{req}, _sameProcBro{bro} {
+    if (bro) bro->sameProcBro(this); 
+  }
   virtual void pull() = 0;
   virtual void prePull() {};
   virtual std::vector<Task *> branchTasks() = 0;
+  void sameProcBro(Task* bro) { _sameProcBro = bro; }
+  Task *sameProcBro() { return _sameProcBro; }
   void par(const Par &obj) { _par = obj; }
   const ProcReq &procReq() const { return _procReq; }
 
@@ -39,6 +43,7 @@ protected:
 private:
   Par _par;
   ProcReq _procReq;
+  Task *_sameProcBro;
 
 };
 } // namespace ezl

@@ -82,8 +82,9 @@ public:
    * @return shared_ptr of Zip object.
    * */
   auto _buildUnit() {
-    _prev1 = PrllExpr<ZipBuilder>::_preBuild(this->_prev1, K1{}, std::forward<H>(_h));
-    _prev2 = PrllExpr<ZipBuilder>::_preBuild(this->_prev2, K2{}, std::forward<H>(_h));
+    _prev1 = PrllExpr<ZipBuilder>::_preBuild(this->_prev1, K1{}, std::forward<H>(_h), true);
+    _prev2 = PrllExpr<ZipBuilder>::_preBuild(this->_prev2, K2{},
+                                             std::forward<H>(_h));
     auto obj = std::make_shared<Zip<I1, I2, K1, K2, O>>();
     obj->prev(_prev1, obj);
     obj->prev(_prev2, obj);

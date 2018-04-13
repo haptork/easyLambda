@@ -28,7 +28,7 @@ template <typename IO>
 class Bridge : public Dest<IO>, public Source<IO>, public Task {
 
 public:
-  Bridge(ProcReq p) : Task{p} {}
+  Bridge(ProcReq p, Task* bro) : Task{p, bro} {}
 
   /*!
    * traverse back to the source looking for the root.
