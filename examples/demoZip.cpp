@@ -14,7 +14,7 @@
 
 #include <ezl.hpp>
 #include <ezl/algorithms/predicates.hpp>
-/*
+
 void demoZip() {
   using std::vector;
   using std::tuple;
@@ -59,18 +59,18 @@ void demoZip() {
                        }).build();
 
   // The rows from pipe and dropOne data-flows are zipped without key.
-  // Without key the order of the rows deciedes the zipping / joining.
+  // Without key the order of the rows decides the zipping / joining.
   // The first row from each of the sources is zipped and so on. The output
   // number of rows is equal to the lesser number of input rows.
   ezl::flow(pipe).zip(dropOne).dump("", "w/o key").run();
 }
-*/
+
 void demoMultipleSourceZip() {
   using std::tuple; using std::vector;
-  vector<tuple<int, char>> oddInp;
-  oddInp.emplace_back(3, 'a');
-  oddInp.emplace_back(7, 'c');
-  oddInp.emplace_back(5, 'b');
+  vector<tuple<int, char, double>> oddInp;
+  oddInp.emplace_back(3, 'a', 3.3);
+  oddInp.emplace_back(7, 'c', 7.7);
+  oddInp.emplace_back(5, 'b', 5.5);
   vector<tuple<int, char>> evenInp;
   evenInp.emplace_back(8, 'd');
   evenInp.emplace_back(6, 'c');
@@ -87,7 +87,7 @@ void demoMultipleSourceZip() {
 int main(int argc, char *argv[]) {
   boost::mpi::environment env(argc, argv, false);
   try {
-    // demoZip();
+    demoZip();
     demoMultipleSourceZip();
   } catch (const std::exception& ex) {
     std::cerr<<"error: "<<ex.what()<<'\n';
