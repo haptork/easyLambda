@@ -103,8 +103,8 @@ private:
   };
 
 public:
-  MPIBridge(ProcReq r, bool toAll, bool ordered, Partitioner p)
-      : Bridge<IO>{r}, _toAll{toAll}, _ordered{ordered}, _partitioner{p} {}
+  MPIBridge(ProcReq r, bool toAll, bool ordered, Partitioner p, Task* bro)
+      : Bridge<IO>{r, bro}, _toAll{toAll}, _ordered{ordered}, _partitioner{p} {}
 
   // expects  this->parHandle() != nullptr &&
   //          this->parHandle()->inRange() && this->par().nProc()>0

@@ -117,12 +117,12 @@ protected:
   template <class I, class P, class H>
   auto _preBuild(std::shared_ptr<Source<I>> pre, P, H&& h, bool storeLast = false) {
     if (_props.isPrll) {
-      if (P::size == 0 && (_props.mode & llmode::none)) {
+      if (P::size == 0 && (_props.mode == llmode::none)) {
         _props.procReq.resize(1);
       }
       bool all = false;
-      if (P::size == 0 && (_props.mode & llmode::dupe)) all = true;
-      if (_props.mode & llmode::task) _props.procReq.setTask();
+      if (P::size == 0 && (_props.mode == llmode::dupe)) all = true;
+      if (_props.mode == llmode::task) _props.procReq.setTask();
       auto bobj = std::make_shared<MPIBridge<I, P, H>>(
           _props.procReq, all, _props.ordered, std::forward<H>(h), _last);
       if(storeLast) _last = bobj.get();
