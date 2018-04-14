@@ -36,7 +36,7 @@ void demoReduce() {
   inp.emplace_back(4, 'a', 3.F);
   inp.emplace_back(4, 'c', 4.F);
 
-  auto pipe1 = ezl::rise(ezl::fromMem(inp)).build();
+  auto pipe1 = ezl::rise(ezl::fromMem(inp).split()).build();
 
   // output cols are key, result of the UDF.
   // cols can be selected in any order by specifying indices in cols<...>()
@@ -101,8 +101,18 @@ void demoReduce() {
   // running sum with scan property of reduce
   // the result at every input element is also passed to the next unit
   ezl::flow(pipe1)
-    .reduce<ezl::key<>, ezl::val<1>>(std::plus<int>(), 0).scan().dump()
+    .reduce<ezl::key<>, ezl::val<1>>(std::plus<int>(), 0).scan()
     .build();
+
+  // reduce wrap function and everyColFns
+  ezl::flow(pipe1)
+    .reduce<2>(everyColFns(ezl::wrapBiFnReduce(std::plus<int>())), 0, 0.0).dump()
+    .build();
+
+  // reduce wrap predicate and perColFns
+  ezl::flow(pipe1)
+    .reduce<2>(perColFns(ezl::wrapPredReduce(std::greater<int>()), ezl::sum()), 0, 0.0)
+    .run();
 
   // UDF params can be key, value, result column types, or their const-refs
   // tuple of key, tuple of value, tuple of result column types or const-refs,

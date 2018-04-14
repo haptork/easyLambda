@@ -48,15 +48,8 @@ void demoZip() {
   pipe->unlink();
   
   // filter that drops first row
-  auto isDrop = true;
   auto dropOne = ezl::flow(pipe)
-                       .filter<0,0,0>([&isDrop] { 
-                         if (isDrop) {
-                           isDrop = false; 
-                           return false;
-                         } 
-                         return !isDrop; 
-                       }).build();
+                       .filter<0,0,1>(ezl::gt(1.1)).build();
 
   // The rows from pipe and dropOne data-flows are zipped without key.
   // Without key the order of the rows decides the zipping / joining.
