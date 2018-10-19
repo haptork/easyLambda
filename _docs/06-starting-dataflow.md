@@ -25,7 +25,7 @@ output streaming routes using dataflow properties as shown in next section.
   dataflow when the dataflow runs. It doesn't buffer the rows.
 
   - Properties:
-    1. [prll]({{ base_path }}/docs/prll-expr/)
+    1. [prll]({{ base_path }}/docs/prll-options/)
     2. [dump]({{ base_path }}/docs/dump-expr/)
 
   Easylambda has function objects for rise given in ezl/algorithms/io.hpp such as
