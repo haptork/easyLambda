@@ -41,7 +41,7 @@ void MPIBridgeDataEventTest() {
   using ezl::Par;
 
   using emptyHash = boost::hash<std::tuple<>>;
-  auto mb = std::make_shared<MPIBridge<std::tuple<int>, slct<>, emptyHash>>(ProcReq{0}, false, false, emptyHash{});
+  auto mb = std::make_shared<MPIBridge<std::tuple<int>, slct<>, emptyHash>>(ProcReq{0}, false, false, emptyHash{}, nullptr);
   auto count = 0;
   auto f1 = [&count]() { ++count; return 0; };
   auto ret = std::make_shared<Filter<decltype(mb)::element_type::otype, slct<>, decltype(f1),slct<1>>>(f1);

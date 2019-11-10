@@ -35,7 +35,6 @@ void FlowBasicCallTest() {
   using meta::slct;
   using std::tuple;
 
-  auto t1 = make_tuple(3, 'c', 4.);
   auto count = 0;;
   auto f1 = [&count](char c, int i) { 
     ++count; 
@@ -56,6 +55,7 @@ void FlowBasicCallTest() {
                                   tuple<const int&, const char&>>>();
   z1->addFirst(r1);
   z1->addLast(r2);
+  auto t1 = make_tuple(3, 'c', 4.0F);
   z1->dataEvent(t1);
   assert(count == 2);
   count = 0;
