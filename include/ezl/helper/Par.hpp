@@ -27,8 +27,8 @@ namespace ezl {
  * */
 class Par {
 public:
-  Par(std::vector<int> procs, std::array<int, 3> t, int rank)
-      : _rank{rank}, _ranks(procs), _tags{{t[0], t[1], t[2]}}, _isLocal{false} {
+  Par(std::vector<int> procs, std::array<int, 3> t, int rank)  // isLocal{false}
+      : _rank{rank}, _ranks(procs), _tags{{t[0], t[1], t[2]}} {
     _nProc = procs.size();
     auto it = std::find(std::begin(procs), std::end(procs), _rank);
     if (it == std::end(procs)) {
@@ -40,7 +40,7 @@ public:
     }
   }
 
-  Par() : _rank{_comm.rank()}, _ranks {_rank}, _isLocal{true} {}
+  Par() : _rank{_comm.rank()}, _ranks {_rank} {}  // _isLocal{true} 
 
   const bool &inRange() const { return _inRange; }
 
@@ -77,7 +77,7 @@ private:
   std::array<int, 3> _tags{};
   int _pos{0};
   bool _inRange{true};
-  bool _isLocal;
+  //bool _isLocal;
 };
 } // namespace ezl
 
