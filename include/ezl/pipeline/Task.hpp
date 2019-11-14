@@ -29,6 +29,7 @@ public:
   Task (ProcReq req, Task* bro = nullptr) : _procReq{req}, _sameProcBro{bro} {
     if (bro) bro->sameProcBro(this); 
   }
+  virtual ~Task() {}
   virtual void pull() = 0;
   virtual void prePull() {};
   virtual std::vector<Task *> branchTasks() = 0;
@@ -38,7 +39,7 @@ public:
   const ProcReq &procReq() const { return _procReq; }
 
 protected:
-  inline const Par& par() const { return _par; }
+ inline const Par& par() const { return _par; }
 
 private:
   Par _par;

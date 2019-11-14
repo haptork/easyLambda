@@ -40,7 +40,7 @@ template <typename Type> class Dest {
 
 public:
   Dest() : _id{Karta::inst().getId()} {}
-
+  virtual ~Dest() {}
   virtual void dataEvent(const Type &data) = 0;
 
   virtual void dataEvent(const std::vector<Type> &vData) {

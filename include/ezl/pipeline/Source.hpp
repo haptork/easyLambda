@@ -38,6 +38,8 @@ public:
 
   Source() : _id{Karta::inst().getId()} {}
 
+  virtual ~Source() {}
+
   /*!
    * While adding the next dest, it also calls
    * its `prev` with self. Use of self obviates the
@@ -78,7 +80,6 @@ public:
       it.second->unPrev(this);
     }
   }
-                   
 
   /*!
    * traverse back from any unit to all the connected root sources.
