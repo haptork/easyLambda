@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/haptork/easyLambda.svg?branch=master)](https://travis-ci.org/haptork/easyLambda)
+[![codecov](https://codecov.io/gh/haptork/easyLambda/branch/master/graph/badge.svg)](https://codecov.io/gh/haptork/easyLambda)
+
 # ezl: easyLambda
 > Parallel data processing made easy using functional and dataflow programming with modern C++
 
