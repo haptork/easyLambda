@@ -7,11 +7,11 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-5
+      - g++-6
       - libboost-all-dev
 
 script:
-  - CXX=/usr/bin/g++-5 CC=/usr/bin/gcc-5 cmake -D ENABLE_MPI=NO -D ENABLE_COVERAGE:BOOL=TRUE . 
+  - CXX=/usr/bin/g++-6 CC=/usr/bin/gcc-6 cmake -D ENABLE_MPI=NO -D ENABLE_COVERAGE:BOOL=TRUE . 
   - cmake --build . --
   - ctest
-  - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-5
+  - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-6
