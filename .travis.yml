@@ -11,7 +11,7 @@ addons:
       - libboost-all-dev
 
 script:
-  - CXX=/usr/bin/g++-5 CC=/usr/bin/gcc-5 cmake -D ENABLE_COVERAGE:BOOL=TRUE . 
-  - cmake -DENABLE_MPI=no --build .
+  - CXX=/usr/bin/g++-5 CC=/usr/bin/gcc-5 cmake -D ENABLE_MPI=NO -D ENABLE_COVERAGE:BOOL=TRUE . 
+  - cmake --build . --
   - ctest
   - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-5
