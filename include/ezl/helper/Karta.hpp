@@ -12,6 +12,7 @@
 #ifndef KARTA_EZL_H
 #define KARTA_EZL_H
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <map>

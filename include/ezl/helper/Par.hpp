@@ -12,6 +12,7 @@
 #ifndef PAR_EZL_H
 #define PAR_EZL_H
 
+#include <algorithm>
 #include <array>
 #include <vector>
 
