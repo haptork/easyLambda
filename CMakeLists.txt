@@ -57,7 +57,7 @@ endif()
 file(GLOB TESTS test/*.cpp)
 
 add_executable(${PROJECT_NAME}_test ${TESTS})
-target_link_libraries(${PROJECT_NAME}_test ${Boost_LIBRARIES} ${MPI_CXX_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_test ${Boost_LIBRARIES} ${MPI_CXX_LIBRARIES} --coverage)
 target_include_directories(${PROJECT_NAME}_test PUBLIC test)
 
 include(CTest)
@@ -72,7 +72,7 @@ file(GLOB EXAMPLES examples/*.cpp)
 foreach(x ${EXAMPLES})
   get_filename_component(FNAME ${x} NAME_WE)
   add_executable(${FNAME} ${x})
-  target_link_libraries(${FNAME} ${Boost_LIBRARIES} ${MPI_CXX_LIBRARIES})
+  target_link_libraries(${FNAME} ${Boost_LIBRARIES} ${MPI_CXX_LIBRARIES} --coverage)
   add_test(NAME ${FNAME}
             COMMAND "${CMAKE_BINARY_DIR}/${FNAME}"
             WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")
