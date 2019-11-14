@@ -1,0 +1,3 @@
+ignore:
+  - "test" # ignoring tests
+  - "examples"  # ignoring examples
