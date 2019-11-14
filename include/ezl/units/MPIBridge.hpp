@@ -9,15 +9,13 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
-#ifndef __MPIBRIDGE_SIMR__
-#define __MPIBRIDGE_SIMR__
+#if !defined MPIBRIDGE_EZL_H && !defined NOMPI
+#define MPIBRIDGE_EZL_H
 
-#include <iostream>
 #include <map>
 #include <tuple>
 #include <vector>
 
-#include <boost/mpi.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/array.hpp>
 
@@ -287,8 +285,8 @@ private:
           for (auto &hold : vhold) it.second->dataEvent(hold);
         }
         if (_debug && vhold.size() >= _every) {
-          std::cout << this->par().rank() << ", " << it->first << "- Vrecvd "
-                    << vhold.size() << std::endl;
+          //std::cout << this->par().rank() << ", " << it->first << "- Vrecvd "
+          //          << vhold.size() << std::endl;
         }
       } while ((!maxIters || iters++ < maxIters) && req->test());
       break;
@@ -314,8 +312,8 @@ private:
           continue;
         }
         if(_debug && it->second.tick>_every) {
-          std::cout<<this->par().rank()<<"RecievCount: "<<it->first<<", "
-            <<it->second.tick<<", "<<std::endl;
+          // std::cout<<this->par().rank()<<"RecievCount: "<<it->first<<", "
+          //   <<it->second.tick<<", "<<std::endl;
         }
         it->second.tick = 0;
       }
@@ -411,8 +409,8 @@ private:
       _recvrs[target].tick++;
       if(_recvrs[target].tick < _recvrs[target].counter) return true;
       if(_debug && _recvrs[target].tick > _every) {
-        std::cout<<this->par().rank()<<", "<<target<<" SendTick: "
-          <<_recvrs[target].tick<<", "<<_recvrs[target].buffer.size()<<std::endl;
+        // std::cout<<this->par().rank()<<", "<<target<<" SendTick: "
+        //   <<_recvrs[target].tick<<", "<<_recvrs[target].buffer.size()<<std::endl;
       }
       _recvrs[target].tick = 0;
     }
@@ -433,8 +431,8 @@ private:
             target, this->par().tag(2), _recvrs[target].sentBuf);
         //_recvrs[target].dataSent+=_recvrs[target].sentBuf.size();
         if(_debug && _recvrs[target].sentBuf.size()>_every) {
-          std::cout<<this->par().rank()<<", "<<target
-          <<"- Vsent "<<_recvrs[target].sentBuf.size()<<std::endl;
+          // std::cout<<this->par().rank()<<", "<<target
+          // <<"- Vsent "<<_recvrs[target].sentBuf.size()<<std::endl;
         }
       }
       if (counterCheck) {

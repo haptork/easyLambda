@@ -14,9 +14,6 @@
 #include <type_traits>
 #include <assert.h>
 
-#include <boost/mpi.hpp>
-#include <boost/functional/hash.hpp>
-
 #include <ezl/units/Filter.hpp>
 #include <ezl/pipeline/Flow.hpp>
 

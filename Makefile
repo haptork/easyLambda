@@ -8,9 +8,9 @@ BUILDDIR := build
 BINDIR := bin
 TESTTARGET := bin/test
 SRCEXT := cpp
-CFLAGS := -Wall -std=c++14 -O3# -fno-omit-frame-pointer
+CFLAGS := -Wall -std=c++14 -O3 # -DNOMPI # uncomment this flag if not using parallelism with MPI and boost
+LIB := -lboost_mpi -lboost_serialization # can be commented if -DNOMPI is used above
 # perf report -g 'graph,0.5,caller'
-LIB := -lboost_mpi -lboost_serialization 
 TESTS := $(shell find $(TESTDIR) -type f -name *.$(SRCEXT))
 SOURCES := $(shell find $(EGDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(EGDIR)/%,$(BINDIR)/%,$(SOURCES:.$(SRCEXT)=))

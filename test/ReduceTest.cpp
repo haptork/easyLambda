@@ -14,8 +14,6 @@
 #include <type_traits>
 #include <assert.h>
 
-#include <boost/mpi.hpp>
-
 #include <ezl/units/Reduce.hpp>
 #include <ezl/helper/meta/typeInfo.hpp>
 #include <ctorTeller.hpp>

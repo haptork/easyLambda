@@ -34,7 +34,7 @@ authors and should not be interpreted as representing official policies, either
 expressed
 or implied, of Christopher Allen Ogden.
 */
-#ifndef SERIALIZE_TUPLE
+#if !defined SERIALIZE_TUPLE && !defined NOMPI
 #define SERIALIZE_TUPLE
 
 #include <tuple>

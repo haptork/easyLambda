@@ -14,9 +14,6 @@
 #include <type_traits>
 #include <assert.h>
 
-#include <boost/mpi.hpp>
-#include <boost/functional/hash.hpp>
-
 #include <ezl/units/Filter.hpp>
 #include <ezl/units/Zip.hpp>
 
@@ -27,8 +24,6 @@ using namespace ezl::detail;
 void ZipBasicCallTest();
 
 void ZipTest(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-  boost::mpi::communicator comm;
   ZipBasicCallTest();
 }
 

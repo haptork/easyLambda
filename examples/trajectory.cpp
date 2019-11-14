@@ -15,7 +15,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/reduces.hpp>
@@ -70,7 +69,8 @@ void trajectory(int argc, char* argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  // boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     trajectory(argc, argv);
   } catch (const exception& ex) {

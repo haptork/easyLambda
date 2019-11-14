@@ -15,7 +15,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include <boost/mpi.hpp>
 #include <boost/unordered_map.hpp>
 
 #include <ezl.hpp>
@@ -62,7 +61,7 @@ void displaced(int argc, char* argv[]) {
                   .get();
 
   boost::unordered_map<int, array<float, 3>> firstFrame;
-  for(const auto& it :buffer) firstFrame[get<0>(it)] = get<1>(it);
+  for(const auto& it :buffer) firstFrame[std::get<0>(it)] = std::get<1>(it);
 
   ezl::rise(ezl::fromFile<int, array<float, 3>, int>(allFiles)
                 .cols({1, 3, 4, 5, 6}) // id, coords, timestep
@@ -82,7 +81,8 @@ void displaced(int argc, char* argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  // boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     displaced(argc, argv);
   } catch (const std::exception& ex) {

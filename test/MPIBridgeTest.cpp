@@ -9,11 +9,11 @@
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying LICENSE.md or copy at * http://boost.org/LICENSE_1_0.txt)
  * */
+#ifndef NOMPI
 #include <tuple>
 #include <type_traits>
 #include <assert.h>
 
-#include <boost/mpi.hpp>
 #include <boost/functional/hash.hpp>
 
 #include <ezl/units/MPIBridge.hpp>
@@ -54,3 +54,4 @@ void MPIBridgeDataEventTest() {
 }
 }
 }
+#endif

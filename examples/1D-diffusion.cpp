@@ -9,7 +9,6 @@
  * */
 #include <iostream>
 #include <stdexcept>
-#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
@@ -44,7 +43,7 @@ void simulation(int nCells, int nSteps, double leftX, double rightX,
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     auto cells = 100;
     auto steps = 20;

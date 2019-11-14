@@ -10,7 +10,6 @@
 #include <stdexcept>
 #include <tuple>
 #include <vector>
-#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/predicates.hpp>
@@ -78,7 +77,8 @@ void demoMultipleSourceZip() {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  // boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     demoZip();
     demoMultipleSourceZip();

@@ -12,6 +12,10 @@
 #ifndef EZL_EZL_H
 #define EZL_EZL_H
 
+#ifndef NOMPI
+#include <boost/mpi.hpp>
+#endif
+
 #include <memory>
 #include <tuple>
 

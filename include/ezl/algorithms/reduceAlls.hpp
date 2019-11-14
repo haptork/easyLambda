@@ -186,8 +186,8 @@ public:
   auto operator()(const std::tuple<Ks...> &, const std::tuple<Vs...> &val) {
     std::vector<double> res;
     res.reserve(sizeof...(Vs));
-    std::vector<double> diff(get<I - 1>(val).size());
-    double sqsum = _calcRefDiff(get<I - 1>(val), diff);
+    std::vector<double> diff(std::get<I - 1>(val).size());
+    double sqsum = _calcRefDiff(std::get<I - 1>(val), diff);
     _corr(val, diff, sqsum, std::make_index_sequence<sizeof...(Vs)>{}, res);
     //std::reverse(std::begin(res), std::end(res));
     return std::make_tuple(res);

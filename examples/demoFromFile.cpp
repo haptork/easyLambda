@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/fromFile.hpp>
@@ -103,7 +102,8 @@ void demoFromFile() {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  // boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     demoFromFile();
   } catch (const std::exception& ex) {

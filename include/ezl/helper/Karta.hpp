@@ -12,12 +12,11 @@
 #ifndef KARTA_EZL_H
 #define KARTA_EZL_H
 
+#include <iostream>
 #include <vector>
 #include <map>
 #include <set>
 #include <unordered_set>
-
-#include <boost/mpi.hpp>
 
 #include <ezl/pipeline/Task.hpp>
 #include <ezl/helper/Par.hpp>
@@ -194,7 +193,7 @@ public:
 
   const int &rank() const { return _rank; }
 
-  const boost::mpi::communicator &comm() const { return _comm; }
+  const auto &comm() const { return _comm.internal(); }
 
 private:
   // increments allocation count and sorts to get least occupied processs at
@@ -351,7 +350,7 @@ private:
     return assigned;
   }
 
-  boost::mpi::communicator _comm;
+  ezl::detail::CommWrapper _comm;
    int _curTag{1}; // Getting exhausted too quickly :(
   int _nProc;
   int _rank;

@@ -16,6 +16,8 @@
 #include <tuple>
 #include <type_traits>
 
+#include <boost/functional/hash.hpp>
+
 #include <ezl/helper/meta/funcInvoke.hpp>
 #include <ezl/helper/meta/slctTuple.hpp>
 #include <ezl/helper/meta/slct.hpp>

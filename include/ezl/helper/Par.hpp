@@ -12,10 +12,10 @@
 #ifndef PAR_EZL_H
 #define PAR_EZL_H
 
-#include <boost/mpi.hpp>
-
 #include <array>
 #include <vector>
+
+#include <ezl/helper/MpiWrapper.hpp>
 
 namespace ezl {
 
@@ -70,7 +70,7 @@ public:
   const auto &operator[](int index) const { return _ranks[index]; }
 
 private:
-  boost::mpi::communicator _comm;
+  ezl::detail::CommWrapper _comm;
   int _rank;
   std::vector<int> _ranks;
   int _nProc{1};

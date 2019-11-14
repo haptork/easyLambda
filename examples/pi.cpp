@@ -12,7 +12,6 @@
 #include <random>
 #include <stdexcept>
 
-#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/predicates.hpp>
@@ -60,7 +59,7 @@ void valueOfPi(int argc, char* argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     valueOfPi(argc, argv);
   } catch (const std::exception& ex) {

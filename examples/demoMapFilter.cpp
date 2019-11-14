@@ -12,8 +12,6 @@
 #include <tuple>
 #include <vector>
 
-#include <boost/mpi.hpp>
-
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
 #include <ezl/algorithms/predicates.hpp>
@@ -106,7 +104,8 @@ void demoMapFilter() {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  // boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     demoMapFilter();
   } catch (const std::exception& ex) {

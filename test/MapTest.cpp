@@ -14,8 +14,6 @@
 #include <type_traits>
 #include <assert.h>
 
-#include <boost/mpi.hpp>
-
 #include <ezl/units/Map.hpp>
 #include <ezl/helper/meta/typeInfo.hpp>
 
@@ -35,8 +33,6 @@ void MapCopyPerformanceTest();
 void MapReturnPerformanceTest();
 
 void MapTest(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-  boost::mpi::communicator comm;
   MapBasicCallTest();
   MapCopyPerformanceTest();
   MapReturnPerformanceTest();

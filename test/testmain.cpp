@@ -1,6 +1,5 @@
+#include <ezl.hpp>
 #include <ctorTeller.hpp>
-
-#include <boost/mpi.hpp>
 
 namespace ezl {
 namespace test {
@@ -31,8 +30,10 @@ int unittests(int argc, char* argv[]) {
   ReduceAllTest(argc, argv);
   FilterTest(argc, argv);
   fromFileTest(argc, argv);
-  MPIBridgeTest(argc, argv);
   RiseTest(argc, argv);
+#ifndef NOMPI
+  MPIBridgeTest(argc, argv);
+#endif
   std::cout<<"All tests passed successfully\n";
   return 0;
 }
@@ -40,8 +41,7 @@ int unittests(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-  boost::mpi::communicator comm;
+  ezl::Env env{argc, argv, false};
   ezl::test::unittests(argc, argv);
   return 0;
 }

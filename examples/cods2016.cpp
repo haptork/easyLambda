@@ -11,7 +11,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/predicates.hpp>
@@ -68,7 +67,8 @@ void cods() {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  // boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     cods();
   } catch (const exception& ex) {

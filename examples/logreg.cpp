@@ -15,7 +15,6 @@
 #include <array>
 #include <iostream>
 #include <stdexcept>
-#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
@@ -111,7 +110,7 @@ void logreg(int argc, char* argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     logreg(argc, argv);
   } catch (const exception& ex) {

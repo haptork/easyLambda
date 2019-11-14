@@ -116,6 +116,7 @@ public:
 protected:
   template <class I, class P, class H>
   auto _preBuild(std::shared_ptr<Source<I>> pre, P, H&& h, bool storeLast = false) {
+    #ifndef NOMPI
     if (_props.isPrll) {
       if (P::size == 0 && (_props.mode == llmode::none)) {
         _props.procReq.resize(1);
@@ -130,6 +131,7 @@ protected:
       pre = bobj;
       return pre;
     }
+    #endif
     return pre;
   }
 

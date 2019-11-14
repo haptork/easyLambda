@@ -16,8 +16,6 @@
 #include <type_traits>
 #include <assert.h>
 
-#include <boost/mpi.hpp>
-
 #include <ezl/algorithms/fromFile.hpp>
 #include <ezl/helper/ProcReq.hpp>
 #include <ezl/units/Filter.hpp>

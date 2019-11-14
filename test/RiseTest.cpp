@@ -13,9 +13,6 @@
 #include <type_traits>
 #include <assert.h>
 
-#include <boost/mpi.hpp>
-#include <boost/functional/hash.hpp>
-
 #include <ezl/units/Rise.hpp>
 #include <ezl/units/Filter.hpp>
 #include <ctorTeller.hpp>

@@ -34,7 +34,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <tuple>
-#include <boost/mpi.hpp>
 
 #include <ezl.hpp>
 #include <ezl/algorithms/io.hpp>
@@ -92,7 +91,8 @@ void demoPrll() {
 }
 
 int main(int argc, char *argv[]) {
-  boost::mpi::environment env(argc, argv, false);
+  // boost::mpi::environment env(argc, argv, false);
+  ezl::Env env{argc, argv, false};
   try {
     demoPrll();
   } catch (const std::exception& ex) {

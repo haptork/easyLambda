@@ -14,9 +14,6 @@
 #include <type_traits>
 #include <assert.h>
 
-#include <boost/mpi.hpp>
-#include <boost/functional/hash.hpp>
-
 #include <ezl/units/ReduceAll.hpp>
 #include <ezl/helper/meta/typeInfo.hpp>
 #include <ctorTeller.hpp>
@@ -34,8 +31,6 @@ void ReduceAllBunchTest();
 void ReduceAllAdjacentTest();
 
 void ReduceAllTest(int argc, char* argv[]) {
-  boost::mpi::environment env(argc, argv);
-  boost::mpi::communicator comm;
   ReduceAllBasicCallTest();
   ReduceAllOrderedTest();
   ReduceAllBunchTest();
